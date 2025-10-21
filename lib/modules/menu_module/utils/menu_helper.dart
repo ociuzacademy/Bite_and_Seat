@@ -1,10 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
+import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bite_and_seat/core/enums/food_time.dart';
 import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/models/food_item.dart';
 import 'package:bite_and_seat/modules/booking_module/view/booking_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MenuHelper {
   final BuildContext context;
@@ -116,5 +119,15 @@ class MenuHelper {
       context,
       BookingPage.route(cartItems: cartItems.value, foodTime: foodTime.value),
     );
+  }
+
+  void userLogout() {
+    final AuthBloc authBloc = context.read<AuthBloc>();
+    authBloc.add(AuthEvent.userLoggingOut());
+  }
+
+  void navigateToLogin() {
+    Navigator.pop(context);
+    Navigator.pushAndRemoveUntil(context, LoginPage.route(), (route) => false);
   }
 }

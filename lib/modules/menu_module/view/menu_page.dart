@@ -1,18 +1,20 @@
-import 'package:bite_and_seat/modules/complaints_module/view/complaints_page.dart';
-import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
-import 'package:bite_and_seat/modules/orders_module/view/orders_page.dart';
-import 'package:bite_and_seat/modules/profile_module/view/profile_page.dart';
+import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
+import 'package:bite_and_seat/widgets/loaders/overlay_loader.dart';
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bite_and_seat/core/constants/app_constants.dart';
-import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/core/enums/food_time.dart';
 import 'package:bite_and_seat/core/models/cart_item_model.dart';
+import 'package:bite_and_seat/core/theme/app_palette.dart';
+import 'package:bite_and_seat/modules/complaints_module/view/complaints_page.dart';
 import 'package:bite_and_seat/modules/menu_module/utils/menu_helper.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/breakfast_items_widget.dart';
-import 'package:bite_and_seat/modules/menu_module/widgets/dinner_items_widget.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/evening_snack_items_widget.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/lunch_items_widget.dart';
+import 'package:bite_and_seat/modules/orders_module/view/orders_page.dart';
+import 'package:bite_and_seat/modules/profile_module/view/profile_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -33,7 +35,7 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _helper = MenuHelper(
       cartItems: _cartItems,
       context: context,
@@ -72,9 +74,6 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
               case 2:
                 _foodTime.value = FoodTime.eveningSnacks;
                 break;
-              default:
-                _foodTime.value = FoodTime.dinner;
-                break;
             }
             _cartItems.value = [];
           },
@@ -89,7 +88,6 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
             ),
             Tab(icon: Icon(Icons.lunch_dining, size: 24), text: 'Lunch'),
             Tab(icon: Icon(Icons.coffee, size: 24), text: 'Snacks'),
-            Tab(icon: Icon(Icons.dinner_dining, size: 24), text: 'Dinner'),
           ],
         ),
       ),
@@ -134,60 +132,67 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  LoginPage.route(),
-                  (route) => false,
-                );
-              },
+              onTap: _helper.userLogout,
             ),
           ],
         ),
       ),
-      body: ValueListenableBuilder(
-        valueListenable: _cartItems,
-        builder: (context, cartItems, child) => TabBarView(
-          controller: _tabController,
-          children: <Widget>[
-            BreakfastItemsWidget(
-              foodTime: FoodTime.breakfast,
-              foodItems: AppConstants.breakfastFoodItems,
-              cartItems: cartItems,
-              onAddingItem: _helper.addItemToCart,
-              onRemovingQuantity: _helper.decreaseQuantity,
-              onAddingQuantity: _helper.increaseQuantity,
-              onSkippingAddToCart: _helper.skipAddToCartProcess,
-            ),
-            LunchItemsWidget(
-              foodTime: FoodTime.lunch,
-              foodItems: AppConstants.lunchFoodItems,
-              cartItems: cartItems,
-              onAddingItem: _helper.addItemToCart,
-              onRemovingQuantity: _helper.decreaseQuantity,
-              onAddingQuantity: _helper.increaseQuantity,
-              onSkippingAddToCart: _helper.skipAddToCartProcess,
-            ),
-            EveningSnackItemsWidget(
-              foodTime: FoodTime.eveningSnacks,
-              foodItems: AppConstants.eveningSnackFoodItems,
-              cartItems: cartItems,
-              onAddingItem: _helper.addItemToCart,
-              onRemovingQuantity: _helper.decreaseQuantity,
-              onAddingQuantity: _helper.increaseQuantity,
-              onSkippingAddToCart: _helper.skipAddToCartProcess,
-            ),
-            DinnerItemsWidget(
-              foodTime: FoodTime.dinner,
-              foodItems: AppConstants.dinnerFoodItems,
-              cartItems: cartItems,
-              onAddingItem: _helper.addItemToCart,
-              onRemovingQuantity: _helper.decreaseQuantity,
-              onAddingQuantity: _helper.increaseQuantity,
-              onSkippingAddToCart: _helper.skipAddToCartProcess,
-            ),
-          ],
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          switch (state) {
+            case AuthLoading _:
+              OverlayLoader.show(context, message: 'User logging out...');
+              break;
+            case LogoutSuccess():
+              OverlayLoader.hide();
+              _helper.navigateToLogin();
+              break;
+            case AuthError(:final errorMessage):
+              OverlayLoader.hide();
+              CustomSnackbar.showError(
+                context,
+                message: 'Error: $errorMessage',
+              );
+              break;
+            default:
+              OverlayLoader.hide();
+              break;
+          }
+        },
+        child: ValueListenableBuilder(
+          valueListenable: _cartItems,
+          builder: (context, cartItems, child) => TabBarView(
+            controller: _tabController,
+            children: <Widget>[
+              BreakfastItemsWidget(
+                foodTime: FoodTime.breakfast,
+                foodItems: AppConstants.breakfastFoodItems,
+                cartItems: cartItems,
+                onAddingItem: _helper.addItemToCart,
+                onRemovingQuantity: _helper.decreaseQuantity,
+                onAddingQuantity: _helper.increaseQuantity,
+                onSkippingAddToCart: _helper.skipAddToCartProcess,
+              ),
+              LunchItemsWidget(
+                foodTime: FoodTime.lunch,
+                foodItems: AppConstants.lunchFoodItems,
+                cartItems: cartItems,
+                onAddingItem: _helper.addItemToCart,
+                onRemovingQuantity: _helper.decreaseQuantity,
+                onAddingQuantity: _helper.increaseQuantity,
+                onSkippingAddToCart: _helper.skipAddToCartProcess,
+              ),
+              EveningSnackItemsWidget(
+                foodTime: FoodTime.eveningSnacks,
+                foodItems: AppConstants.eveningSnackFoodItems,
+                cartItems: cartItems,
+                onAddingItem: _helper.addItemToCart,
+                onRemovingQuantity: _helper.decreaseQuantity,
+                onAddingQuantity: _helper.increaseQuantity,
+                onSkippingAddToCart: _helper.skipAddToCartProcess,
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: ValueListenableBuilder(

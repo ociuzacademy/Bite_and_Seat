@@ -37,8 +37,6 @@ class OrderDetailsHelper {
         return 'Lunch';
       case FoodTime.eveningSnacks:
         return 'Evening Snacks';
-      default:
-        return 'Dinner';
     }
   }
 

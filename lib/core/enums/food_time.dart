@@ -1,1 +1,1 @@
-enum FoodTime { breakfast, lunch, eveningSnacks, dinner }
+enum FoodTime { breakfast, lunch, eveningSnacks }

@@ -77,8 +77,8 @@ class OrdersPage extends StatefulWidget {
     OrderModel(
       orderId: 'RES-2023-0010',
       date: DateTime(2023, 12, 16),
-      timeSlot: AppConstants.nightSlots[0],
-      foodTime: FoodTime.dinner,
+      timeSlot: AppConstants.morningSlots[0],
+      foodTime: FoodTime.breakfast,
       cartItems: [
         CartItemModel(
           itemId: "FD-DI-01",

@@ -109,38 +109,6 @@ class AppConstants {
       endTime: TimeOfDay(hour: 18, minute: 29),
     ),
   ];
-  static const List<TimeSlotModel> nightSlots = [
-    TimeSlotModel(
-      slotId: "21",
-      startTime: TimeOfDay(hour: 18, minute: 30),
-      endTime: TimeOfDay(hour: 18, minute: 59),
-    ),
-    TimeSlotModel(
-      slotId: "22",
-      startTime: TimeOfDay(hour: 19, minute: 0),
-      endTime: TimeOfDay(hour: 19, minute: 29),
-    ),
-    TimeSlotModel(
-      slotId: "23",
-      startTime: TimeOfDay(hour: 19, minute: 30),
-      endTime: TimeOfDay(hour: 19, minute: 59),
-    ),
-    TimeSlotModel(
-      slotId: "24",
-      startTime: TimeOfDay(hour: 20, minute: 0),
-      endTime: TimeOfDay(hour: 20, minute: 29),
-    ),
-    TimeSlotModel(
-      slotId: "25",
-      startTime: TimeOfDay(hour: 20, minute: 30),
-      endTime: TimeOfDay(hour: 20, minute: 59),
-    ),
-    TimeSlotModel(
-      slotId: "26",
-      startTime: TimeOfDay(hour: 21, minute: 0),
-      endTime: TimeOfDay(hour: 21, minute: 29),
-    ),
-  ];
 
   static const List<FoodItem> breakfastFoodItems = [
     FoodItem(
@@ -378,80 +346,6 @@ class AppConstants {
       imageUrl:
           "https://www.shutterstock.com/shutterstock/photos/1077264602/display_1500/stock-photo-tasty-egg-pakora-or-pakoda-served-with-tomato-ketchup-1077264602.jpg",
       rate: 15,
-      itemsPerPlate: 1,
-    ),
-  ];
-  static const List<FoodItem> dinnerFoodItems = [
-    FoodItem(
-      foodItemId: "FD-DI-01",
-      name: "Meals",
-      imageUrl: "https://images.unsplash.com/photo-1625398407796-82650a8c135f",
-      rate: 60,
-      itemsPerPlate: 1,
-    ),
-    FoodItem(
-      foodItemId: "FD-DI-02",
-      name: "Chicken Biryani",
-      imageUrl: "https://images.unsplash.com/photo-1701579231305-d84d8af9a3fd",
-      rate: 120,
-      itemsPerPlate: 1,
-    ),
-    FoodItem(
-      foodItemId: "FD-DI-03",
-      name: "Half Chicken Biryani",
-      imageUrl: "https://images.unsplash.com/photo-1701579231305-d84d8af9a3fd",
-      rate: 60,
-      itemsPerPlate: 1,
-    ),
-    FoodItem(
-      foodItemId: "FD-DI-04",
-      name: "Veg Biryani",
-      imageUrl: "https://images.unsplash.com/photo-1630409346824-4f0e7b080087",
-      rate: 50,
-      itemsPerPlate: 1,
-    ),
-    FoodItem(
-      foodItemId: "FD-DI-05",
-      name: "Beef Biryani",
-      imageUrl:
-          "https://cdn.pixabay.com/photo/2021/01/10/04/38/rice-5904095_1280.jpg",
-      rate: 120,
-      itemsPerPlate: 1,
-    ),
-    FoodItem(
-      foodItemId: "FD-DI-06",
-      name: "Half Beef Biryani",
-      imageUrl:
-          "https://cdn.pixabay.com/photo/2021/01/10/04/38/rice-5904095_1280.jpg",
-      rate: 60,
-      itemsPerPlate: 1,
-    ),
-    FoodItem(
-      foodItemId: "FD-DI-07",
-      name: "Chicken Curry",
-      imageUrl: "https://images.unsplash.com/photo-1708782344490-9026aaa5eec7",
-      rate: 80,
-      itemsPerPlate: 1,
-    ),
-    FoodItem(
-      foodItemId: "FD-DI-08",
-      name: "Beef Curry",
-      imageUrl: "https://images.unsplash.com/photo-1545247181-516773cae754",
-      rate: 80,
-      itemsPerPlate: 1,
-    ),
-    FoodItem(
-      foodItemId: "FD-DI-09",
-      name: "Single Omlette",
-      imageUrl: "https://images.unsplash.com/photo-1646579933415-92109f9805df",
-      rate: 20,
-      itemsPerPlate: 1,
-    ),
-    FoodItem(
-      foodItemId: "FD-DI-10",
-      name: "Double Omlette",
-      imageUrl: "https://images.unsplash.com/photo-1646579933415-92109f9805df",
-      rate: 40,
       itemsPerPlate: 1,
     ),
   ];

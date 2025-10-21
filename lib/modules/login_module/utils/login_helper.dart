@@ -1,38 +1,32 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
-import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class LoginHelper {
   final BuildContext context;
   final GlobalKey<FormState> loginFormKey;
-  final TextEditingController userIdController;
+  final TextEditingController usernameController;
   final TextEditingController passwordController;
 
-  LoginHelper({
+  const LoginHelper({
     required this.context,
     required this.loginFormKey,
-    required this.userIdController,
+    required this.usernameController,
     required this.passwordController,
   });
 
   void login() {
     FocusScope.of(context).unfocus();
     if (loginFormKey.currentState!.validate()) {
-      if (userIdController.text.trim() != 'user') {
-        CustomSnackbar.showError(context, message: 'Invalid user ID');
-      } else {
-        final String password = passwordController.text.trim();
-        if (password.isEmpty || password != '123') {
-          CustomSnackbar.showError(context, message: 'Invalid password');
-        } else {
-          CustomSnackbar.showSuccess(
-            context,
-            message: 'User logged in successfully',
-          );
-          Navigator.pushReplacement(context, MenuPage.route());
-        }
-      }
+      final String username = usernameController.text.trim();
+      final String password = passwordController.text.trim();
+
+      final AuthBloc authBloc = context.read<AuthBloc>();
+
+      authBloc.add(AuthEvent.userLoggingIn(username, password));
     } else {
       CustomSnackbar.showError(
         context,

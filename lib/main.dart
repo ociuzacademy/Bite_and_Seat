@@ -1,21 +1,39 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
+import 'package:bite_and_seat/core/localstorage/auth_storage_functions.dart';
 import 'package:bite_and_seat/core/theme/app_theme.dart';
 import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
-import 'package:flutter/material.dart';
+import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  late final Widget initialWidget;
+  final bool isLoggedIn = await AuthStorageFunctions.getLoginStatus();
+  if (isLoggedIn) {
+    initialWidget = MenuPage();
+  } else {
+    initialWidget = LoginPage();
+  }
+  runApp(MyApp(initialWidget: initialWidget));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget initialWidget;
+  const MyApp({super.key, required this.initialWidget});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Bite&Seat',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightThemeData,
-      home: const LoginPage(),
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (context) => AuthBloc())],
+      child: MaterialApp(
+        title: 'Bite&Seat',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightThemeData,
+        home: initialWidget,
+      ),
     );
   }
 }

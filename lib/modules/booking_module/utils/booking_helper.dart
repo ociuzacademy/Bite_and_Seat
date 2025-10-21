@@ -185,8 +185,6 @@ class BookingHelper {
         return AppConstants.afternoonSlots;
       case FoodTime.eveningSnacks:
         return AppConstants.eveningSlots;
-      default:
-        return AppConstants.nightSlots;
     }
   }
 }

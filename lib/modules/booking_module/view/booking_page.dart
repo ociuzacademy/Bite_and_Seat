@@ -6,17 +6,18 @@ import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/booking_module/utils/booking_helper.dart';
-import 'package:bite_and_seat/modules/booking_module/widgets/date_selection_widget.dart';
 import 'package:bite_and_seat/modules/booking_module/widgets/number_of_persons_widget.dart';
 import 'package:bite_and_seat/modules/booking_module/widgets/time_slot_selection_widget.dart';
 
 class BookingPage extends StatefulWidget {
   final List<CartItemModel> cartItems;
   final FoodTime foodTime;
+  final DateTime selectedDate;
   const BookingPage({
     super.key,
     required this.cartItems,
     required this.foodTime,
+    required this.selectedDate,
   });
 
   @override
@@ -25,8 +26,13 @@ class BookingPage extends StatefulWidget {
   static route({
     required List<CartItemModel> cartItems,
     required FoodTime foodTime,
+    required DateTime selectedDate,
   }) => MaterialPageRoute(
-    builder: (context) => BookingPage(cartItems: cartItems, foodTime: foodTime),
+    builder: (context) => BookingPage(
+      cartItems: cartItems,
+      foodTime: foodTime,
+      selectedDate: selectedDate,
+    ),
   );
 }
 
@@ -35,9 +41,6 @@ class _BookingPageState extends State<BookingPage> {
 
   // Converted state to ValueNotifiers
   final ValueNotifier<int> _currentStep = ValueNotifier<int>(0);
-  final ValueNotifier<DateTime> _selectedDate = ValueNotifier<DateTime>(
-    DateTime.now(),
-  );
   final ValueNotifier<TimeSlotModel?> _selectedTimeSlot =
       ValueNotifier<TimeSlotModel?>(null);
   final ValueNotifier<int> _numberOfPersons = ValueNotifier<int>(1);
@@ -48,7 +51,7 @@ class _BookingPageState extends State<BookingPage> {
       context: context,
       cartItems: widget.cartItems,
       currentStep: _currentStep,
-      selectedDate: _selectedDate,
+      selectedDate: widget.selectedDate,
       selectedTimeSlot: _selectedTimeSlot,
       numberOfPersons: _numberOfPersons,
     );
@@ -59,7 +62,6 @@ class _BookingPageState extends State<BookingPage> {
   @override
   void dispose() {
     _currentStep.dispose();
-    _selectedDate.dispose();
     _selectedTimeSlot.dispose();
     _numberOfPersons.dispose();
     super.dispose();
@@ -67,11 +69,6 @@ class _BookingPageState extends State<BookingPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Generate dates for the next 7 days
-    final List<DateTime> dateOptions = List.generate(7, (index) {
-      return DateTime.now().add(Duration(days: index));
-    });
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Booking'),
@@ -127,7 +124,7 @@ class _BookingPageState extends State<BookingPage> {
                     }
                   },
                   onStepContinue: () {
-                    if (currentStep < 2) {
+                    if (currentStep < 1) {
                       _currentStep.value = currentStep + 1;
                     } else {
                       // Submit booking
@@ -138,27 +135,6 @@ class _BookingPageState extends State<BookingPage> {
                     _currentStep.value = index;
                   },
                   steps: <Step>[
-                    Step(
-                      title: const Text('Select Date'),
-                      content: ValueListenableBuilder<DateTime>(
-                        valueListenable: _selectedDate,
-                        builder: (context, selectedDate, __) =>
-                            DateSelectionWidget(
-                              dateOptions: dateOptions,
-                              selectedDate: selectedDate,
-                              isSameDay: _bookingHelper.isSameDay,
-                              onSelectingDate: (date) {
-                                _selectedDate.value = date;
-                              },
-                              getDayName: _bookingHelper.getDayName,
-                              getMonthName: _bookingHelper.getMonthName,
-                            ),
-                      ),
-                      isActive: currentStep >= 0,
-                      state: currentStep >= 0
-                          ? StepState.complete
-                          : StepState.indexed,
-                    ),
                     Step(
                       title: const Text('Select Time Slot'),
                       content: ValueListenableBuilder<TimeSlotModel?>(

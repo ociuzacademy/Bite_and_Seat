@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bite_and_seat/core/constants/app_constants.dart';
@@ -13,7 +14,7 @@ class BookingHelper {
   final BuildContext context;
   final List<CartItemModel> cartItems;
   final ValueNotifier<int> currentStep;
-  final ValueNotifier<DateTime> selectedDate;
+  final DateTime selectedDate;
   final ValueNotifier<TimeSlotModel?> selectedTimeSlot;
   final ValueNotifier<int> numberOfPersons;
   BookingHelper({
@@ -51,9 +52,7 @@ class BookingHelper {
   void submitBooking() {
     // Handle booking submission
     if (selectedTimeSlot.value == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a time slot')),
-      );
+      CustomSnackbar.showError(context, message: 'Please select a time slot');
       currentStep.value = 1; // Go back to time slot selection
       return;
     }
@@ -67,7 +66,7 @@ class BookingHelper {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Date: ${formatDate(selectedDate.value)}'),
+            Text('Date: ${formatDate(selectedDate)}'),
             Text(
               'Time: ${formatTimeOfDay(selectedTimeSlot.value!.startTime)} - ${formatTimeOfDay(selectedTimeSlot.value!.endTime)}',
             ),
@@ -90,7 +89,7 @@ class BookingHelper {
               Navigator.push(
                 context,
                 TableBookingPage.route(
-                  selectedDate: selectedDate.value,
+                  selectedDate: selectedDate,
                   selectedTimeSlot: selectedTimeSlot.value!,
                   numberOfPeople: numberOfPersons.value,
                   totalRate: totalRate + 10,

@@ -1,20 +1,20 @@
-import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
-import 'package:bite_and_seat/widgets/loaders/overlay_loader.dart';
-import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
+import 'package:bite_and_seat/modules/menu_module/widgets/daily_menu_tab_content.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:bite_and_seat/core/constants/app_constants.dart';
+import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
 import 'package:bite_and_seat/core/enums/food_time.dart';
 import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/complaints_module/view/complaints_page.dart';
+import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu_cubit.dart';
 import 'package:bite_and_seat/modules/menu_module/utils/menu_helper.dart';
-import 'package:bite_and_seat/modules/menu_module/widgets/breakfast_items_widget.dart';
-import 'package:bite_and_seat/modules/menu_module/widgets/evening_snack_items_widget.dart';
-import 'package:bite_and_seat/modules/menu_module/widgets/lunch_items_widget.dart';
+import 'package:bite_and_seat/modules/menu_module/widgets/cart_bottom_bar.dart';
+import 'package:bite_and_seat/modules/menu_module/widgets/date_selection_widget.dart';
 import 'package:bite_and_seat/modules/orders_module/view/orders_page.dart';
 import 'package:bite_and_seat/modules/profile_module/view/profile_page.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bite_and_seat/widgets/loaders/overlay_loader.dart';
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -31,6 +31,8 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
 
   final ValueNotifier<List<CartItemModel>> _cartItems = ValueNotifier([]);
   final ValueNotifier<FoodTime> _foodTime = ValueNotifier(FoodTime.breakfast);
+  final ValueNotifier<DateTime> _selectedDate = ValueNotifier(DateTime.now());
+  final ValueNotifier<String> _dateSelectionType = ValueNotifier('Today');
 
   @override
   void initState() {
@@ -40,7 +42,12 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
       cartItems: _cartItems,
       context: context,
       foodTime: _foodTime,
+      selectedDate: _selectedDate,
+      dateSelectionType: _dateSelectionType,
     );
+
+    // Load initial menu data
+    _helper.loadMenuForSelectedDate();
   }
 
   @override
@@ -48,6 +55,8 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
     _tabController.dispose();
     _cartItems.dispose();
     _foodTime.dispose();
+    _selectedDate.dispose();
+    _dateSelectionType.dispose();
     super.dispose();
   }
 
@@ -159,73 +168,79 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
               break;
           }
         },
-        child: ValueListenableBuilder(
-          valueListenable: _cartItems,
-          builder: (context, cartItems, child) => TabBarView(
-            controller: _tabController,
-            children: <Widget>[
-              BreakfastItemsWidget(
-                foodTime: FoodTime.breakfast,
-                foodItems: AppConstants.breakfastFoodItems,
-                cartItems: cartItems,
-                onAddingItem: _helper.addItemToCart,
-                onRemovingQuantity: _helper.decreaseQuantity,
-                onAddingQuantity: _helper.increaseQuantity,
-                onSkippingAddToCart: _helper.skipAddToCartProcess,
+        child: Column(
+          children: [
+            // Date Selection Widget
+            DateSelectionWidget(
+              selectedDate: _selectedDate,
+              dateSelectionType: _dateSelectionType,
+              onDateSelected: () async {
+                await _helper.selectCustomDate();
+                // Reload menu after date selection
+                _helper.loadMenuForSelectedDate();
+              },
+            ),
+
+            // Tab Content with Bloc Builder
+            Expanded(
+              child: BlocBuilder<DailyMenuCubit, DailyMenuState>(
+                builder: (context, menuState) {
+                  return ValueListenableBuilder(
+                    valueListenable: _cartItems,
+                    builder: (context, cartItems, child) => TabBarView(
+                      controller: _tabController,
+                      children: <Widget>[
+                        DailyMenuTabContent(
+                          menuState: menuState,
+                          foodTime: FoodTime.breakfast,
+                          cartItems: cartItems,
+                          loadMenuForSelectedDate:
+                              _helper.loadMenuForSelectedDate,
+                          onAddingItem: _helper.addItemToCart,
+                          onRemovingQuantity: _helper.decreaseQuantity,
+                          onAddingQuantity: _helper.increaseQuantity,
+                          onSkippingAddToCart: _helper.skipAddToCartProcess,
+                        ),
+                        DailyMenuTabContent(
+                          menuState: menuState,
+                          foodTime: FoodTime.lunch,
+                          cartItems: cartItems,
+                          loadMenuForSelectedDate:
+                              _helper.loadMenuForSelectedDate,
+                          onAddingItem: _helper.addItemToCart,
+                          onRemovingQuantity: _helper.decreaseQuantity,
+                          onAddingQuantity: _helper.increaseQuantity,
+                          onSkippingAddToCart: _helper.skipAddToCartProcess,
+                        ),
+                        DailyMenuTabContent(
+                          menuState: menuState,
+                          foodTime: FoodTime.eveningSnacks,
+                          cartItems: cartItems,
+                          loadMenuForSelectedDate:
+                              _helper.loadMenuForSelectedDate,
+                          onAddingItem: _helper.addItemToCart,
+                          onRemovingQuantity: _helper.decreaseQuantity,
+                          onAddingQuantity: _helper.increaseQuantity,
+                          onSkippingAddToCart: _helper.skipAddToCartProcess,
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
-              LunchItemsWidget(
-                foodTime: FoodTime.lunch,
-                foodItems: AppConstants.lunchFoodItems,
-                cartItems: cartItems,
-                onAddingItem: _helper.addItemToCart,
-                onRemovingQuantity: _helper.decreaseQuantity,
-                onAddingQuantity: _helper.increaseQuantity,
-                onSkippingAddToCart: _helper.skipAddToCartProcess,
-              ),
-              EveningSnackItemsWidget(
-                foodTime: FoodTime.eveningSnacks,
-                foodItems: AppConstants.eveningSnackFoodItems,
-                cartItems: cartItems,
-                onAddingItem: _helper.addItemToCart,
-                onRemovingQuantity: _helper.decreaseQuantity,
-                onAddingQuantity: _helper.increaseQuantity,
-                onSkippingAddToCart: _helper.skipAddToCartProcess,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-      floatingActionButton: ValueListenableBuilder(
+
+      // Cart Bottom Bar
+      bottomNavigationBar: ValueListenableBuilder(
         valueListenable: _cartItems,
-        builder: (context, cartitems, child) => cartitems.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 50,
-                  // width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: AppPalette.firstColor,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Badge(
-                    label: Text("${cartitems.length}"),
-                    backgroundColor: AppPalette.secondColor,
-                    textColor: AppPalette.firstColor,
-                    child: IconButton(
-                      onPressed: _helper.navigateToBooking,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppPalette.firstColor,
-                        iconColor: AppPalette.whiteColor,
-                        foregroundColor: AppPalette.whiteColor,
-                      ),
-                      icon: Icon(Icons.arrow_forward),
-                    ),
-                  ),
-                ),
-              )
-            : SizedBox.shrink(),
+        builder: (context, cartItems, child) => CartBottomBar(
+          cartItems: cartItems,
+          onProceedToBooking: _helper.navigateToBooking,
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

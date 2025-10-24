@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bite_and_seat/core/constants/app_constants.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:bite_and_seat/core/constants/app_urls.dart';
@@ -13,13 +16,22 @@ Future<LoginModel> userLogin({
   try {
     Map<String, dynamic> params = {"username": username, "password": password};
 
-    final resp = await http.post(
-      Uri.parse(AppUrls.loginUrl),
-      body: jsonEncode(params),
-      headers: <String, String>{
-        "Content-Type": "application/json; charset=utf-8",
-      },
-    );
+    final resp = await http
+        .post(
+          Uri.parse(AppUrls.loginUrl),
+          body: jsonEncode(params),
+          headers: <String, String>{
+            "Content-Type": "application/json; charset=utf-8",
+          },
+        )
+        .timeout(
+          Duration(seconds: AppConstants.requestTimeoutSeconds),
+          onTimeout: () {
+            throw TimeoutException(
+              'Request timed out after ${AppConstants.requestTimeoutSeconds} seconds',
+            );
+          },
+        );
 
     if (resp.statusCode == 200) {
       final dynamic decoded = jsonDecode(resp.body);
@@ -31,6 +43,11 @@ Future<LoginModel> userLogin({
         'Failed to login: ${errorResponse['message'] ?? 'Unknown error'}',
       );
     }
+  } on TimeoutException catch (e) {
+    debugPrint('MenuServices: Request timeout - $e');
+    throw Exception(
+      'Request timeout. Please check your internet connection and try again.',
+    );
   } on SocketException {
     throw Exception('No Internet connection');
   } on HttpException {

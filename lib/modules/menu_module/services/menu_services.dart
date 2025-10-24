@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bite_and_seat/core/constants/app_constants.dart';
 import 'package:bite_and_seat/core/constants/app_urls.dart';
 import 'package:bite_and_seat/modules/menu_module/errors/no_menu_exception.dart';
 import 'package:bite_and_seat/modules/menu_module/models/daily_menu_model.dart';
@@ -11,8 +12,6 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class MenuServices {
-  static const int requestTimeoutSeconds = 30; // 30 seconds timeout
-
   static Future<DailyMenuModel> getDailyMenu({
     required DateTime selectedDate,
   }) async {
@@ -26,7 +25,9 @@ class MenuServices {
       ).replace(queryParameters: params);
 
       // Create a timeout duration
-      final Duration timeoutDuration = Duration(seconds: requestTimeoutSeconds);
+      final Duration timeoutDuration = Duration(
+        seconds: AppConstants.requestTimeoutSeconds,
+      );
 
       // Make the HTTP request with timeout
       final resp = await http
@@ -40,7 +41,7 @@ class MenuServices {
             timeoutDuration,
             onTimeout: () {
               throw TimeoutException(
-                'Request timed out after $requestTimeoutSeconds seconds',
+                'Request timed out after ${AppConstants.requestTimeoutSeconds} seconds',
               );
             },
           );

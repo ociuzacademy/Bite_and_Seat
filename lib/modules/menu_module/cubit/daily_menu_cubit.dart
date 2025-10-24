@@ -10,7 +10,7 @@ part 'daily_menu_cubit.freezed.dart';
 class DailyMenuCubit extends Cubit<DailyMenuState> {
   DailyMenuCubit() : super(DailyMenuState.initial());
 
-  Future<void> getDailyMenu({DateTime? selectedDate}) async {
+  Future<void> getDailyMenu({required DateTime selectedDate}) async {
     emit(const DailyMenuState.dailyMenuLoading());
     try {
       final DailyMenuModel dailyMenu = await MenuServices.getDailyMenu(

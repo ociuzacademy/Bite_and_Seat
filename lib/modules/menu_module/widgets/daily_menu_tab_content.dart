@@ -9,6 +9,7 @@ import 'package:bite_and_seat/modules/menu_module/utils/menu_helper.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/daily_menu_error_widget.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/daily_menu_widget.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/menu_unavailable_widget.dart';
+import 'package:intl/intl.dart';
 
 class DailyMenuTabContent extends StatelessWidget {
   final DailyMenuState menuState;
@@ -40,12 +41,17 @@ class DailyMenuTabContent extends StatelessWidget {
       case DailyMenuError(:final errorMessage):
         return DailyMenuErrorWidget(
           errorMessage: errorMessage,
-          loadMenuForSelectedDate: loadMenuForSelectedDate,
+          onRetry: loadMenuForSelectedDate,
+          onBookTable: onSkippingAddToCart,
         );
       case DailyMenuUnavailable(:final date, :final message):
+        final DateFormat formatter = DateFormat('yyyy-MM-dd');
+        final String formattedDate = formatter.format(date);
         return MenuUnavailableWidget(
           message: message,
-          formatedDate: MenuHelper.formatDate(date),
+          formatedDate: formattedDate,
+          onBookTable: onSkippingAddToCart,
+          onRetry: loadMenuForSelectedDate, // Optional retry button
         );
       case DailyMenuSuccess(:final dailyMenu):
         final foodItems = MenuHelper.getFoodItemsForTime(dailyMenu, foodTime);

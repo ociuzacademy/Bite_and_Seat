@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
+import 'package:bite_and_seat/core/constants/app_urls.dart';
 import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
 import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu_cubit.dart';
 import 'package:bite_and_seat/modules/menu_module/models/daily_menu_model.dart';
@@ -221,7 +222,7 @@ class MenuHelper {
             name: item.name,
             rate: double.parse(item.rate),
             itemsPerPlate: int.parse(item.itemPerPlate),
-            imageUrl: item.image,
+            imageUrl: "${AppUrls.baseUrl}/${item.image}",
           ),
         )
         .toList();

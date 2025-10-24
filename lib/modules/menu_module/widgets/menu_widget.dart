@@ -1,7 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 // menu_widget.dart
+import 'package:bite_and_seat/widgets/buttons/primary_button.dart';
 import 'package:flutter/material.dart';
-
 import 'package:bite_and_seat/core/models/food_item.dart';
 import 'package:bite_and_seat/core/enums/food_time.dart';
 import 'package:bite_and_seat/core/models/cart_item_model.dart';
@@ -16,6 +15,7 @@ class MenuWidget extends StatelessWidget {
   final CartItemFunction onRemovingQuantity;
   final CartItemFunction onAddingQuantity;
   final VoidCallback onSkippingAddToCart;
+
   const MenuWidget({
     super.key,
     required this.foodTime,
@@ -29,32 +29,71 @@ class MenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return SingleChildScrollView(
       child: Column(
         children: [
+          // Book Table Section - Only show when cart is empty
           if (cartItems.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Book tables directly?"),
-                  ElevatedButton(
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Want to book tables directly?",
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "Skip adding items and book your table now",
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  PrimaryButton(
+                    text: 'BOOK NOW',
                     onPressed: onSkippingAddToCart,
-                    child: const Text('BOOK'),
+                    width: 120,
                   ),
                 ],
               ),
             ),
+          // Food Items Grid
           GridView.builder(
-            shrinkWrap: true, // Add this
-            physics: const NeverScrollableScrollPhysics(), // Add this
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 0.8, // Adjust this value as needed
+              childAspectRatio: 0.8,
             ),
             itemBuilder: (context, index) {
               final cartItem = cartItems

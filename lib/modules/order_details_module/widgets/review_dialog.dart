@@ -27,7 +27,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
 
   final TextEditingController _commentController = TextEditingController();
 
-  late final ValueNotifier<Map<String, int>> _itemRatings;
+  late final ValueNotifier<Map<int, int>> _itemRatings;
   late final ValueNotifier<int> _overallRating;
 
   @override
@@ -35,12 +35,12 @@ class _ReviewDialogState extends State<ReviewDialog> {
     super.initState();
 
     // Initialize ratings/images maps to defaults for all items
-    final initialRatings = <String, int>{};
+    final initialRatings = <int, int>{};
     for (var item in widget.foodItems) {
       initialRatings[item.itemId] = 0;
     }
 
-    _itemRatings = ValueNotifier<Map<String, int>>(initialRatings);
+    _itemRatings = ValueNotifier<Map<int, int>>(initialRatings);
     _overallRating = ValueNotifier<int>(0);
 
     _reviewDialogHelper = ReviewDialogHelper(
@@ -103,7 +103,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
             const SizedBox(height: 12),
 
             // Rebuild list when either ratings or images change
-            ValueListenableBuilder<Map<String, int>>(
+            ValueListenableBuilder<Map<int, int>>(
               valueListenable: _itemRatings,
               builder: (context, itemRatings, _) {
                 return Column(
@@ -113,7 +113,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
                         item: item,
                         itemRatings: itemRatings,
                         onChangingStarRating: (rating) {
-                          final updated = Map<String, int>.from(itemRatings);
+                          final updated = Map<int, int>.from(itemRatings);
                           updated[item.itemId] = rating;
                           _itemRatings.value = updated;
                         },

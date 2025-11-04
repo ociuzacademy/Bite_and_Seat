@@ -1,13 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
 import 'package:bite_and_seat/core/localstorage/auth_storage_functions.dart';
 import 'package:bite_and_seat/core/theme/app_theme.dart';
 import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
 import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +30,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => AuthBloc()),
         BlocProvider(create: (context) => DailyMenuCubit()),
+        BlocProvider(create: (context) => BookingBloc()),
       ],
       child: MaterialApp(
         title: 'Bite&Seat',

@@ -8,7 +8,7 @@ class ReviewDialogHelper {
   final BuildContext context;
   final String orderId;
   final TextEditingController commentController;
-  late final ValueNotifier<Map<String, int>> itemRatings;
+  late final ValueNotifier<Map<int, int>> itemRatings;
   late final ValueNotifier<int> overallRating;
   ReviewDialogHelper({
     required this.context,

@@ -85,10 +85,7 @@ switch (_that) {
 case _Started():
 return started(_that);case UserLoggingIn():
 return userLoggingIn(_that);case UserLoggingOut():
-return userLoggingOut(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return userLoggingOut(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -153,10 +150,7 @@ switch (_that) {
 case _Started():
 return started();case UserLoggingIn():
 return userLoggingIn(_that.username,_that.password);case UserLoggingOut():
-return userLoggingOut();case _:
-  throw StateError('Unexpected subclass');
-
-}
+return userLoggingOut();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -393,10 +387,7 @@ return initial(_that);case AuthLoading():
 return authLoading(_that);case AuthError():
 return authError(_that);case LoginSuccess():
 return loginSuccess(_that);case LogoutSuccess():
-return logoutSuccess(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return logoutSuccess(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -467,10 +458,7 @@ return initial();case AuthLoading():
 return authLoading();case AuthError():
 return authError(_that.errorMessage);case LoginSuccess():
 return loginSuccess(_that.response);case LogoutSuccess():
-return logoutSuccess();case _:
-  throw StateError('Unexpected subclass');
-
-}
+return logoutSuccess();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///

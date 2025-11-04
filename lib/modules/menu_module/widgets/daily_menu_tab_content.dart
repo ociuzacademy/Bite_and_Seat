@@ -64,8 +64,6 @@ class DailyMenuTabContent extends StatelessWidget {
           onAddingQuantity: onAddingQuantity,
           onSkippingAddToCart: onSkippingAddToCart,
         );
-      default:
-        return SizedBox.shrink();
     }
   }
 }

@@ -1,5 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bite_and_seat/core/constants/app_constants.dart';
@@ -7,23 +6,22 @@ import 'package:bite_and_seat/core/enums/food_time.dart';
 import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
+import 'package:bite_and_seat/modules/booking_module/providers/booking_state_provider.dart';
 import 'package:bite_and_seat/modules/booking_module/widgets/cart_items_list_widget.dart';
 import 'package:bite_and_seat/modules/table_booking_module/view/table_booking_page.dart';
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class BookingHelper {
   final BuildContext context;
   final List<CartItemModel> cartItems;
-  final ValueNotifier<int> currentStep;
+  final BookingStateProvider bookingStateProvider;
   final DateTime selectedDate;
-  final ValueNotifier<TimeSlotModel?> selectedTimeSlot;
-  final ValueNotifier<int> numberOfPersons;
+
   BookingHelper({
     required this.context,
     required this.cartItems,
-    required this.currentStep,
+    required this.bookingStateProvider,
     required this.selectedDate,
-    required this.selectedTimeSlot,
-    required this.numberOfPersons,
   });
 
   void openCart(List<CartItemModel> cartItems) {
@@ -51,9 +49,9 @@ class BookingHelper {
 
   void submitBooking() {
     // Handle booking submission
-    if (selectedTimeSlot.value == null) {
+    if (bookingStateProvider.selectedTimeSlot == null) {
       CustomSnackbar.showError(context, message: 'Please select a time slot');
-      currentStep.value = 1; // Go back to time slot selection
+      bookingStateProvider.setCurrentStep(0); // Go back to time slot selection
       return;
     }
 
@@ -68,9 +66,9 @@ class BookingHelper {
           children: [
             Text('Date: ${formatDate(selectedDate)}'),
             Text(
-              'Time: ${formatTimeOfDay(selectedTimeSlot.value!.startTime)} - ${formatTimeOfDay(selectedTimeSlot.value!.endTime)}',
+              'Time: ${formatTimeOfDay(bookingStateProvider.selectedTimeSlot!.startTime)} - ${formatTimeOfDay(bookingStateProvider.selectedTimeSlot!.endTime)}',
             ),
-            Text('Number of persons: ${numberOfPersons.value}'),
+            Text('Number of persons: ${bookingStateProvider.numberOfPersons}'),
           ],
         ),
         actions: [
@@ -90,8 +88,8 @@ class BookingHelper {
                 context,
                 TableBookingPage.route(
                   selectedDate: selectedDate,
-                  selectedTimeSlot: selectedTimeSlot.value!,
-                  numberOfPeople: numberOfPersons.value,
+                  selectedTimeSlot: bookingStateProvider.selectedTimeSlot!,
+                  numberOfPeople: bookingStateProvider.numberOfPersons,
                   totalRate: totalRate + 10,
                 ),
               );

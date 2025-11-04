@@ -8,7 +8,7 @@ import 'package:bite_and_seat/modules/order_details_module/typedefs/change_star_
 import 'package:bite_and_seat/modules/order_details_module/widgets/star_rating.dart';
 
 class FoodItemRating extends StatelessWidget {
-  final Map<String, int> itemRatings;
+  final Map<int, int> itemRatings;
   final CartItemModel item;
   final ChangeStarRating onChangingStarRating;
   const FoodItemRating({

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 
 class DateSelectionWidget extends StatelessWidget {
-  final ValueNotifier<DateTime> selectedDate;
-  final ValueNotifier<String> dateSelectionType;
+  final DateTime selectedDate;
+  final String dateSelectionType;
   final Future<void> Function() onDateSelected;
 
   const DateSelectionWidget({
@@ -21,9 +21,7 @@ class DateSelectionWidget extends StatelessWidget {
         color: AppPalette.whiteColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(
-              alpha: 0.2,
-            ), // Fixed: changed withValues to withOpacity
+            color: Colors.grey.withValues(alpha: 0.2),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -44,87 +42,66 @@ class DateSelectionWidget extends StatelessWidget {
           // Radio Buttons
           Row(
             children: [
-              ValueListenableBuilder<String>(
-                valueListenable: dateSelectionType,
-                builder: (context, selectionType, child) {
-                  return Row(
-                    children: [
-                      Radio<String>(
-                        value: 'Today',
-                        groupValue: selectionType,
-                        onChanged: (value) {
-                          dateSelectionType.value = value!;
-                          selectedDate.value = DateTime.now();
-                        },
-                        activeColor: AppPalette.firstColor,
+              Row(
+                children: [
+                  Radio<String>(
+                    value: 'Today',
+                    groupValue: dateSelectionType,
+                    onChanged: (value) {
+                      // This will be handled by the parent through callbacks
+                    },
+                    activeColor: AppPalette.firstColor,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // This will be handled by the parent through callbacks
+                    },
+                    child: Text(
+                      'Today',
+                      style: TextStyle(
+                        color: AppPalette.firstColor,
+                        fontWeight: FontWeight.w500,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          dateSelectionType.value = 'Today';
-                          selectedDate.value = DateTime.now();
-                        },
-                        child: Text(
-                          'Today',
-                          style: TextStyle(
-                            color: AppPalette.firstColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 20),
-              ValueListenableBuilder<String>(
-                valueListenable: dateSelectionType,
-                builder: (context, selectionType, child) {
-                  return Row(
-                    children: [
-                      Radio<String>(
-                        value: 'Custom Date',
-                        groupValue: selectionType,
-                        onChanged: (value) {
-                          dateSelectionType.value = value!;
-                          onDateSelected();
-                        },
-                        activeColor: AppPalette.firstColor,
+              Row(
+                children: [
+                  Radio<String>(
+                    value: 'Custom Date',
+                    groupValue: dateSelectionType,
+                    onChanged: (value) {
+                      // This will be handled by the parent through callbacks
+                    },
+                    activeColor: AppPalette.firstColor,
+                  ),
+                  GestureDetector(
+                    onTap: onDateSelected,
+                    child: Text(
+                      'Custom Date',
+                      style: TextStyle(
+                        color: AppPalette.firstColor,
+                        fontWeight: FontWeight.w500,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          dateSelectionType.value = 'Custom Date';
-                          onDateSelected();
-                        },
-                        child: Text(
-                          'Custom Date',
-                          style: TextStyle(
-                            color: AppPalette.firstColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
 
           // Selected Date Display
-          ValueListenableBuilder<DateTime>(
-            valueListenable: selectedDate,
-            builder: (context, date, child) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  'Selected: ${_formatDate(date)}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppPalette.greyColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'Selected: ${_formatDate(selectedDate)}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppPalette.greyColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),

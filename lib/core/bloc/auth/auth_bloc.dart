@@ -1,6 +1,6 @@
 import 'package:bite_and_seat/core/localstorage/auth_storage_functions.dart';
 import 'package:bite_and_seat/modules/login_module/models/login_model.dart';
-import 'package:bite_and_seat/modules/login_module/services/user_login.dart';
+import 'package:bite_and_seat/modules/login_module/services/user_login_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,7 +17,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogIn(UserLoggingIn event, Emitter<AuthState> emit) async {
     emit(AuthState.authLoading());
     try {
-      final LoginModel response = await userLogin(
+      final LoginModel response = await UserLoginService.userLogin(
         username: event.username,
         password: event.password,
       );

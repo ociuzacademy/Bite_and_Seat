@@ -1,36 +1,32 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
-import 'package:bite_and_seat/core/constants/app_urls.dart';
-import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
-import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu_cubit.dart';
-import 'package:bite_and_seat/modules/menu_module/models/daily_menu_model.dart';
-import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
+import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
+import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
+import 'package:bite_and_seat/core/bloc/booking/booking_bloc.dart';
+import 'package:bite_and_seat/core/constants/app_urls.dart';
 import 'package:bite_and_seat/core/enums/food_time.dart';
 import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/models/food_item.dart';
-import 'package:bite_and_seat/modules/booking_module/view/booking_page.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
+import 'package:bite_and_seat/modules/menu_module/classes/step1_booking_details.dart';
+import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu_cubit.dart';
+import 'package:bite_and_seat/modules/menu_module/models/daily_menu_model.dart'
+    hide Item;
+import 'package:bite_and_seat/modules/menu_module/providers/menu_state_provider.dart';
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class MenuHelper {
   final BuildContext context;
-  final ValueNotifier<List<CartItemModel>> cartItems;
-  final ValueNotifier<FoodTime> foodTime;
-  final ValueNotifier<DateTime> selectedDate;
-  final ValueNotifier<String> dateSelectionType;
+  final MenuStateProvider menuStateProvider;
 
-  const MenuHelper({
-    required this.context,
-    required this.cartItems,
-    required this.foodTime,
-    required this.selectedDate,
-    required this.dateSelectionType,
-  });
+  const MenuHelper({required this.context, required this.menuStateProvider});
 
   // Function to add a new item to the cart
   void addItemToCart(FoodItem foodItem) {
-    final currentItems = cartItems.value;
+    final currentItems = menuStateProvider.cartItems;
     final existingItemIndex = currentItems.indexWhere(
       (item) => item.itemId == foodItem.foodItemId,
     );
@@ -38,15 +34,10 @@ class MenuHelper {
     if (existingItemIndex != -1) {
       // Item already exists, increase quantity
       final existingItem = currentItems[existingItemIndex];
-      final updatedItem = CartItemModel(
-        itemId: existingItem.itemId,
-        name: existingItem.name,
-        ratePerItem: existingItem.ratePerItem,
-        count: existingItem.count + 1,
-        rate: existingItem.ratePerItem * (existingItem.count + 1),
+      menuStateProvider.updateCartItemQuantity(
+        foodItem.foodItemId,
+        existingItem.count + 1,
       );
-
-      currentItems[existingItemIndex] = updatedItem;
     } else {
       // Item doesn't exist, add new item
       final newItem = CartItemModel(
@@ -57,37 +48,29 @@ class MenuHelper {
         rate: foodItem.rate,
       );
 
-      currentItems.add(newItem);
+      menuStateProvider.addItemToCart(newItem);
     }
-
-    cartItems.value = List.from(currentItems);
   }
 
   // Function to increase quantity of an item
   void increaseQuantity(FoodItem foodItem) {
-    final currentItems = cartItems.value;
+    final currentItems = menuStateProvider.cartItems;
     final existingItemIndex = currentItems.indexWhere(
       (item) => item.itemId == foodItem.foodItemId,
     );
 
     if (existingItemIndex != -1) {
       final existingItem = currentItems[existingItemIndex];
-      final updatedItem = CartItemModel(
-        itemId: existingItem.itemId,
-        name: existingItem.name,
-        ratePerItem: existingItem.ratePerItem,
-        count: existingItem.count + 1,
-        rate: existingItem.ratePerItem * (existingItem.count + 1),
+      menuStateProvider.updateCartItemQuantity(
+        foodItem.foodItemId,
+        existingItem.count + 1,
       );
-
-      currentItems[existingItemIndex] = updatedItem;
-      cartItems.value = List.from(currentItems);
     }
   }
 
   // Function to decrease quantity of an item
   void decreaseQuantity(FoodItem foodItem) {
-    final currentItems = cartItems.value;
+    final currentItems = menuStateProvider.cartItems;
     final existingItemIndex = currentItems.indexWhere(
       (item) => item.itemId == foodItem.foodItemId,
     );
@@ -97,53 +80,48 @@ class MenuHelper {
 
       if (existingItem.count > 1) {
         // Decrease quantity
-        final updatedItem = CartItemModel(
-          itemId: existingItem.itemId,
-          name: existingItem.name,
-          ratePerItem: existingItem.ratePerItem,
-          count: existingItem.count - 1,
-          rate: existingItem.ratePerItem * (existingItem.count - 1),
+        menuStateProvider.updateCartItemQuantity(
+          foodItem.foodItemId,
+          existingItem.count - 1,
         );
-
-        currentItems[existingItemIndex] = updatedItem;
       } else {
         // Remove item if quantity becomes 0
-        currentItems.removeAt(existingItemIndex);
+        menuStateProvider.removeItemFromCart(foodItem.foodItemId);
       }
-
-      cartItems.value = List.from(currentItems);
     }
   }
 
   void skipAddToCartProcess() {
-    cartItems.value = [];
-    Navigator.push(
-      context,
-      BookingPage.route(
-        cartItems: [],
-        foodTime: foodTime.value,
-        selectedDate: selectedDate.value,
-      ),
+    menuStateProvider.clearCart();
+    final Step1BookingDetails bookingDetails = Step1BookingDetails(
+      bookingType: BookingType.tableOnly,
+      categoryId: _getCategoryId(menuStateProvider.foodTime),
+      bookingDate: menuStateProvider.selectedDate,
+      items: [],
     );
+    final BookingBloc bookingBloc = context.read<BookingBloc>();
+    bookingBloc.add(BookingEvent.step1BookingStarted(bookingDetails));
   }
 
-  void navigateToBooking() {
+  void submitCartForBooking() {
     // Check if selected date is Sunday
-    if (selectedDate.value.weekday == DateTime.sunday) {
+    if (menuStateProvider.selectedDate.weekday == DateTime.sunday) {
       CustomSnackbar.showError(
         context,
         message: 'Canteen is closed on Sunday. Please select another date.',
       );
     }
 
-    Navigator.push(
-      context,
-      BookingPage.route(
-        cartItems: cartItems.value,
-        foodTime: foodTime.value,
-        selectedDate: selectedDate.value,
-      ),
+    final Step1BookingDetails bookingDetails = Step1BookingDetails(
+      bookingType: BookingType.tableOnly,
+      categoryId: _getCategoryId(menuStateProvider.foodTime),
+      bookingDate: menuStateProvider.selectedDate,
+      items: menuStateProvider.cartItems.map((item) {
+        return Item(foodItemId: item.itemId, quantity: item.count);
+      }).toList(),
     );
+    final BookingBloc bookingBloc = context.read<BookingBloc>();
+    bookingBloc.add(BookingEvent.step1BookingStarted(bookingDetails));
   }
 
   Future<void> selectCustomDate() async {
@@ -153,10 +131,10 @@ class MenuHelper {
     // Calculate the initial date for the date picker
     // If current selected date is today, use tomorrow as initial date
     // Otherwise, use the current selected date
-    DateTime initialDateForPicker = selectedDate.value;
-    if (selectedDate.value.year == today.year &&
-        selectedDate.value.month == today.month &&
-        selectedDate.value.day == today.day) {
+    DateTime initialDateForPicker = menuStateProvider.selectedDate;
+    if (menuStateProvider.selectedDate.year == today.year &&
+        menuStateProvider.selectedDate.month == today.month &&
+        menuStateProvider.selectedDate.day == today.day) {
       initialDateForPicker = tomorrow;
     }
 
@@ -172,7 +150,7 @@ class MenuHelper {
     );
 
     if (picked != null) {
-      selectedDate.value = picked;
+      menuStateProvider.setSelectedDate(picked);
 
       // Show error if somehow Sunday is selected (shouldn't happen due to predicate)
       if (picked.weekday == DateTime.sunday) {
@@ -182,13 +160,13 @@ class MenuHelper {
           message: 'Canteen is closed on Sunday. Please select another date.',
         );
         // Reset to today if Sunday is selected
-        selectedDate.value = DateTime.now();
-        dateSelectionType.value = 'Today';
+        menuStateProvider.setSelectedDate(DateTime.now());
+        menuStateProvider.setDateSelectionType('Today');
       }
     } else {
       // If user cancels date picker, reset to Today
-      dateSelectionType.value = 'Today';
-      selectedDate.value = DateTime.now();
+      menuStateProvider.setDateSelectionType('Today');
+      menuStateProvider.setSelectedDate(DateTime.now());
     }
   }
 
@@ -204,7 +182,7 @@ class MenuHelper {
 
   void loadMenuForSelectedDate() {
     final cubit = context.read<DailyMenuCubit>();
-    cubit.getDailyMenu(selectedDate: selectedDate.value);
+    cubit.getDailyMenu(selectedDate: menuStateProvider.selectedDate);
   }
 
   static List<FoodItem> getFoodItemsForTime(
@@ -218,7 +196,7 @@ class MenuHelper {
         .where((item) => item.category.toLowerCase() == category)
         .map(
           (item) => FoodItem(
-            foodItemId: item.id.toString(),
+            foodItemId: item.id,
             name: item.name,
             rate: double.parse(item.rate),
             itemsPerPlate: int.parse(item.itemPerPlate),
@@ -236,6 +214,17 @@ class MenuHelper {
         return 'lunch';
       case FoodTime.eveningSnacks:
         return 'evening_snacks';
+    }
+  }
+
+  static int _getCategoryId(FoodTime foodTime) {
+    switch (foodTime) {
+      case FoodTime.breakfast:
+        return 1;
+      case FoodTime.lunch:
+        return 2;
+      case FoodTime.eveningSnacks:
+        return 3;
     }
   }
 

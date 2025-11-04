@@ -27,14 +27,14 @@ class OrdersPage extends StatefulWidget {
       foodTime: FoodTime.lunch,
       cartItems: [
         CartItemModel(
-          itemId: "FD-LU-01",
+          itemId: 1,
           name: "Meals",
           ratePerItem: 60.0,
           count: 1,
           rate: 60.0,
         ),
         CartItemModel(
-          itemId: "FD-LU-02",
+          itemId: 2,
           name: "Chicken Biryani",
           ratePerItem: 120.0,
           count: 1,
@@ -54,14 +54,14 @@ class OrdersPage extends StatefulWidget {
       foodTime: FoodTime.lunch,
       cartItems: [
         CartItemModel(
-          itemId: "FD-LU-01",
+          itemId: 1,
           name: "Meals",
           ratePerItem: 60.0,
           count: 1,
           rate: 60.0,
         ),
         CartItemModel(
-          itemId: "FD-LU-03",
+          itemId: 3,
           name: "Half Chicken Biryani",
           ratePerItem: 60.0,
           count: 1,
@@ -81,21 +81,21 @@ class OrdersPage extends StatefulWidget {
       foodTime: FoodTime.breakfast,
       cartItems: [
         CartItemModel(
-          itemId: "FD-DI-01",
+          itemId: 1,
           name: "Meals",
           ratePerItem: 60.0,
           count: 2,
           rate: 60.0,
         ),
         CartItemModel(
-          itemId: "FD-DI-07",
+          itemId: 7,
           name: "Chicken Curry",
           ratePerItem: 80.0,
           count: 1,
           rate: 80.0,
         ),
         CartItemModel(
-          itemId: "FD-DI-08",
+          itemId: 8,
           name: "Beef Curry",
           ratePerItem: 80.0,
           count: 1,

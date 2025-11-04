@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class FoodItem {
-  final String foodItemId;
+  final int foodItemId;
   final String name;
   final String imageUrl;
   final double rate;

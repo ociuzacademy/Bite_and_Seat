@@ -89,10 +89,7 @@ return initial(_that);case DailyMenuLoading():
 return dailyMenuLoading(_that);case DailyMenuError():
 return dailyMenuError(_that);case DailyMenuUnavailable():
 return dailyMenuUnavailable(_that);case DailyMenuSuccess():
-return dailyMenuSuccess(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return dailyMenuSuccess(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -163,10 +160,7 @@ return initial();case DailyMenuLoading():
 return dailyMenuLoading();case DailyMenuError():
 return dailyMenuError(_that.errorMessage);case DailyMenuUnavailable():
 return dailyMenuUnavailable(_that.date,_that.message);case DailyMenuSuccess():
-return dailyMenuSuccess(_that.dailyMenu);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return dailyMenuSuccess(_that.dailyMenu);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///

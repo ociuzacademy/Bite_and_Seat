@@ -1,7 +1,7 @@
 part of 'daily_menu_cubit.dart';
 
 @freezed
-class DailyMenuState with _$DailyMenuState {
+sealed class DailyMenuState with _$DailyMenuState {
   const factory DailyMenuState.initial() = DailyMenuInitial;
   const factory DailyMenuState.dailyMenuLoading() = DailyMenuLoading;
   const factory DailyMenuState.dailyMenuError(String errorMessage) =

@@ -136,7 +136,7 @@ class MenuServices {
             },
           );
 
-      if (resp.statusCode == 200) {
+      if (resp.statusCode == 201) {
         final dynamic decoded = jsonDecode(resp.body);
         final BookingResponseModel response = BookingResponseModel.fromJson(
           decoded,

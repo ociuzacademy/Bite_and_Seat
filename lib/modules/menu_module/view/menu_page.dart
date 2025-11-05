@@ -25,32 +25,24 @@ class MenuPage extends StatefulWidget {
   @override
   State<MenuPage> createState() => _MenuPageState();
 
-  static route() => MaterialPageRoute(builder: (context) => MenuPage());
+  static route() => MaterialPageRoute(builder: (context) => const MenuPage());
 }
 
 class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
-  late final MenuHelper _helper;
   late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+  }
 
-    // Initialize helper after widget is mounted to access Provider
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final menuStateProvider = Provider.of<MenuStateProvider>(
-        context,
-        listen: false,
-      );
-      _helper = MenuHelper(
-        context: context,
-        menuStateProvider: menuStateProvider,
-      );
-
-      // Load initial menu data
-      _helper.loadMenuForSelectedDate();
-    });
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => MenuStateProvider(),
+      child: _MenuPageContent(tabController: _tabController),
+    );
   }
 
   @override
@@ -58,225 +50,263 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
     _tabController.dispose();
     super.dispose();
   }
+}
+
+class _MenuPageContent extends StatefulWidget {
+  final TabController tabController;
+
+  const _MenuPageContent({required this.tabController});
+
+  @override
+  State<_MenuPageContent> createState() => _MenuPageContentState();
+}
+
+class _MenuPageContentState extends State<_MenuPageContent> {
+  MenuHelper? _helper;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Initialize helper when dependencies change (provider becomes available)
+    if (_helper == null) {
+      _initializeHelper();
+    }
+  }
+
+  void _initializeHelper() {
+    final menuStateProvider = Provider.of<MenuStateProvider>(
+      context,
+      listen: false,
+    );
+    setState(() {
+      _helper = MenuHelper(
+        context: context,
+        menuStateProvider: menuStateProvider,
+      );
+    });
+
+    // Load initial menu data after helper is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _helper?.loadMenuForSelectedDate();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MenuStateProvider(),
-      child: Consumer<MenuStateProvider>(
-        builder: (context, menuStateProvider, child) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Booking'),
-              titleTextStyle: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: AppPalette.whiteColor),
-              backgroundColor: AppPalette.firstColor,
-              iconTheme: IconThemeData(color: AppPalette.whiteColor),
-              bottom: TabBar(
-                controller: _tabController,
-                onTap: (value) {
-                  switch (value) {
-                    case 0:
-                      menuStateProvider.setFoodTime(FoodTime.breakfast);
-                      break;
-                    case 1:
-                      menuStateProvider.setFoodTime(FoodTime.lunch);
-                      break;
-                    case 2:
-                      menuStateProvider.setFoodTime(FoodTime.eveningSnacks);
-                      break;
-                  }
-                  menuStateProvider.clearCart();
-                },
-                indicatorColor: AppPalette.secondColor,
-                labelColor: AppPalette.secondColor,
-                unselectedLabelColor: AppPalette.greyColor,
-                labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                tabs: const <Widget>[
-                  Tab(
-                    icon: Icon(Icons.breakfast_dining, size: 24),
-                    text: 'Breakfast',
-                  ),
-                  Tab(icon: Icon(Icons.lunch_dining, size: 24), text: 'Lunch'),
-                  Tab(icon: Icon(Icons.coffee, size: 24), text: 'Snacks'),
-                ],
-              ),
+    // Show loading if helper is not initialized
+    if (_helper == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final helper = _helper!;
+
+    return Consumer<MenuStateProvider>(
+      builder: (context, menuStateProvider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Booking'),
+            titleTextStyle: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: AppPalette.whiteColor),
+            backgroundColor: AppPalette.firstColor,
+            iconTheme: IconThemeData(color: AppPalette.whiteColor),
+            bottom: TabBar(
+              controller: widget.tabController,
+              onTap: (value) {
+                switch (value) {
+                  case 0:
+                    menuStateProvider.setFoodTime(FoodTime.breakfast);
+                    break;
+                  case 1:
+                    menuStateProvider.setFoodTime(FoodTime.lunch);
+                    break;
+                  case 2:
+                    menuStateProvider.setFoodTime(FoodTime.eveningSnacks);
+                    break;
+                }
+                menuStateProvider.clearCart();
+              },
+              indicatorColor: AppPalette.secondColor,
+              labelColor: AppPalette.secondColor,
+              unselectedLabelColor: AppPalette.greyColor,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+              tabs: const <Widget>[
+                Tab(
+                  icon: Icon(Icons.breakfast_dining, size: 24),
+                  text: 'Breakfast',
+                ),
+                Tab(icon: Icon(Icons.lunch_dining, size: 24), text: 'Lunch'),
+                Tab(icon: Icon(Icons.coffee, size: 24), text: 'Snacks'),
+              ],
             ),
-            drawer: Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  DrawerHeader(
-                    decoration: BoxDecoration(color: AppPalette.firstColor),
-                    child: Text(
-                      'Bite & Seat',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            color: AppPalette.whiteColor,
-                            fontWeight: FontWeight.bold,
-                          ),
+          ),
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                  decoration: BoxDecoration(color: AppPalette.firstColor),
+                  child: Text(
+                    'Bite & Seat',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppPalette.whiteColor,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.person),
-                    title: const Text('Profile'),
-                    onTap: () {
-                      Navigator.pop(context); // close drawer
-                      Navigator.push(context, ProfilePage.route());
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.shopping_bag),
-                    title: const Text('Orders'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context, OrdersPage.route());
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.report_problem),
-                    title: const Text('Complaints'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context, ComplaintsPage.route());
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.logout),
-                    title: const Text('Logout'),
-                    onTap: () => _helper.userLogout(),
-                  ),
-                ],
-              ),
-            ),
-            body: MultiBlocListener(
-              listeners: [
-                BlocListener<AuthBloc, AuthState>(
-                  listener: (context, state) {
-                    switch (state) {
-                      case AuthLoading _:
-                        OverlayLoader.show(
-                          context,
-                          message: 'User logging out...',
-                        );
-                        break;
-                      case LogoutSuccess():
-                        OverlayLoader.hide();
-                        _helper.navigateToLogin();
-                        break;
-                      case AuthError(:final errorMessage):
-                        OverlayLoader.hide();
-                        CustomSnackbar.showError(
-                          context,
-                          message: errorMessage,
-                        );
-                        break;
-                      default:
-                        OverlayLoader.hide();
-                        break;
-                    }
+                ),
+                ListTile(
+                  leading: const Icon(Icons.person),
+                  title: const Text('Profile'),
+                  onTap: () {
+                    Navigator.pop(context); // close drawer
+                    Navigator.push(context, ProfilePage.route());
                   },
                 ),
-                BlocListener<BookingBloc, BookingState>(
-                  listener: (context, state) {
-                    switch (state) {
-                      case BookingLoading _:
-                        OverlayLoader.show(context, message: 'Step 1...');
-                        break;
-                      case BookingError(:final errorMessage):
-                        OverlayLoader.hide();
-                        CustomSnackbar.showError(
-                          context,
-                          message: errorMessage,
-                        );
-                        break;
-                      case Step1Completed(:final response):
-                        OverlayLoader.hide();
-                        CustomSnackbar.showSuccess(
-                          context,
-                          message: response.message,
-                        );
-                        Navigator.push(
-                          context,
-                          BookingPage2.route(bookingId: response.order.id),
-                        );
-                        break;
-                      default:
-                    }
+                ListTile(
+                  leading: const Icon(Icons.shopping_bag),
+                  title: const Text('Orders'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, OrdersPage.route());
                   },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.report_problem),
+                  title: const Text('Complaints'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, ComplaintsPage.route());
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Logout'),
+                  onTap: () => helper.userLogout(),
                 ),
               ],
-              child: Column(
-                children: [
-                  // Date Selection Widget
-                  DateSelectionWidget(
-                    selectedDate: menuStateProvider.selectedDate,
-                    dateSelectionType: menuStateProvider.dateSelectionType,
-                    onDateSelected: () async {
-                      await _helper.selectCustomDate();
-                      // Reload menu after date selection
-                      _helper.loadMenuForSelectedDate();
+            ),
+          ),
+          body: MultiBlocListener(
+            listeners: [
+              BlocListener<AuthBloc, AuthState>(
+                listener: (context, state) {
+                  switch (state) {
+                    case AuthLoading _:
+                      OverlayLoader.show(
+                        context,
+                        message: 'User logging out...',
+                      );
+                      break;
+                    case LogoutSuccess():
+                      OverlayLoader.hide();
+                      helper.navigateToLogin();
+                      break;
+                    case AuthError(:final errorMessage):
+                      OverlayLoader.hide();
+                      CustomSnackbar.showError(context, message: errorMessage);
+                      break;
+                    default:
+                      OverlayLoader.hide();
+                      break;
+                  }
+                },
+              ),
+              BlocListener<BookingBloc, BookingState>(
+                listener: (context, state) {
+                  switch (state) {
+                    case BookingLoading _:
+                      OverlayLoader.show(context, message: 'Step 1...');
+                      break;
+                    case BookingError(:final errorMessage):
+                      OverlayLoader.hide();
+                      CustomSnackbar.showError(context, message: errorMessage);
+                      break;
+                    case Step1Completed(:final response):
+                      OverlayLoader.hide();
+                      CustomSnackbar.showSuccess(
+                        context,
+                        message: response.message,
+                      );
+                      Navigator.push(
+                        context,
+                        BookingPage2.route(bookingId: response.order.id),
+                      );
+                      break;
+                    default:
+                  }
+                },
+              ),
+            ],
+            child: Column(
+              children: [
+                // Date Selection Widget
+                DateSelectionWidget(
+                  selectedDate: menuStateProvider.selectedDate,
+                  dateSelectionType: menuStateProvider.dateSelectionType,
+                  onDateSelected: () async {
+                    await helper.selectCustomDate();
+                    // Reload menu after date selection
+                    helper.loadMenuForSelectedDate();
+                  },
+                ),
+
+                // Tab Content with Bloc Builder
+                Expanded(
+                  child: BlocBuilder<DailyMenuCubit, DailyMenuState>(
+                    builder: (context, menuState) {
+                      return TabBarView(
+                        controller: widget.tabController,
+                        children: <Widget>[
+                          DailyMenuTabContent(
+                            menuState: menuState,
+                            foodTime: FoodTime.breakfast,
+                            cartItems: menuStateProvider.cartItems,
+                            loadMenuForSelectedDate:
+                                helper.loadMenuForSelectedDate,
+                            onAddingItem: helper.addItemToCart,
+                            onRemovingQuantity: helper.decreaseQuantity,
+                            onAddingQuantity: helper.increaseQuantity,
+                            onSkippingAddToCart: helper.skipAddToCartProcess,
+                          ),
+                          DailyMenuTabContent(
+                            menuState: menuState,
+                            foodTime: FoodTime.lunch,
+                            cartItems: menuStateProvider.cartItems,
+                            loadMenuForSelectedDate:
+                                helper.loadMenuForSelectedDate,
+                            onAddingItem: helper.addItemToCart,
+                            onRemovingQuantity: helper.decreaseQuantity,
+                            onAddingQuantity: helper.increaseQuantity,
+                            onSkippingAddToCart: helper.skipAddToCartProcess,
+                          ),
+                          DailyMenuTabContent(
+                            menuState: menuState,
+                            foodTime: FoodTime.eveningSnacks,
+                            cartItems: menuStateProvider.cartItems,
+                            loadMenuForSelectedDate:
+                                helper.loadMenuForSelectedDate,
+                            onAddingItem: helper.addItemToCart,
+                            onRemovingQuantity: helper.decreaseQuantity,
+                            onAddingQuantity: helper.increaseQuantity,
+                            onSkippingAddToCart: helper.skipAddToCartProcess,
+                          ),
+                        ],
+                      );
                     },
                   ),
-
-                  // Tab Content with Bloc Builder
-                  Expanded(
-                    child: BlocBuilder<DailyMenuCubit, DailyMenuState>(
-                      builder: (context, menuState) {
-                        return TabBarView(
-                          controller: _tabController,
-                          children: <Widget>[
-                            DailyMenuTabContent(
-                              menuState: menuState,
-                              foodTime: FoodTime.breakfast,
-                              cartItems: menuStateProvider.cartItems,
-                              loadMenuForSelectedDate:
-                                  _helper.loadMenuForSelectedDate,
-                              onAddingItem: _helper.addItemToCart,
-                              onRemovingQuantity: _helper.decreaseQuantity,
-                              onAddingQuantity: _helper.increaseQuantity,
-                              onSkippingAddToCart: _helper.skipAddToCartProcess,
-                            ),
-                            DailyMenuTabContent(
-                              menuState: menuState,
-                              foodTime: FoodTime.lunch,
-                              cartItems: menuStateProvider.cartItems,
-                              loadMenuForSelectedDate:
-                                  _helper.loadMenuForSelectedDate,
-                              onAddingItem: _helper.addItemToCart,
-                              onRemovingQuantity: _helper.decreaseQuantity,
-                              onAddingQuantity: _helper.increaseQuantity,
-                              onSkippingAddToCart: _helper.skipAddToCartProcess,
-                            ),
-                            DailyMenuTabContent(
-                              menuState: menuState,
-                              foodTime: FoodTime.eveningSnacks,
-                              cartItems: menuStateProvider.cartItems,
-                              loadMenuForSelectedDate:
-                                  _helper.loadMenuForSelectedDate,
-                              onAddingItem: _helper.addItemToCart,
-                              onRemovingQuantity: _helper.decreaseQuantity,
-                              onAddingQuantity: _helper.increaseQuantity,
-                              onSkippingAddToCart: _helper.skipAddToCartProcess,
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
+          ),
 
-            // Cart Bottom Bar
-            bottomNavigationBar: CartBottomBar(
-              cartItems: menuStateProvider.cartItems,
-              onProceedToBooking: _helper.submitCartForBooking,
-            ),
-          );
-        },
-      ),
+          // Cart Bottom Bar
+          bottomNavigationBar: CartBottomBar(
+            cartItems: menuStateProvider.cartItems,
+            onProceedToBooking: helper.submitCartForBooking,
+          ),
+        );
+      },
     );
   }
 }

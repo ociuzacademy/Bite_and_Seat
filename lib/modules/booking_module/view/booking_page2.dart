@@ -5,7 +5,9 @@ class BookingPage2 extends StatelessWidget {
   final int bookingId;
   const BookingPage2({super.key, required this.bookingId});
 
-  static route({required int bookingId}) => BookingPage2(bookingId: bookingId);
+  static route({required int bookingId}) => MaterialPageRoute(
+    builder: (context) => BookingPage2(bookingId: bookingId),
+  );
 
   @override
   Widget build(BuildContext context) {

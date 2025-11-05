@@ -40,8 +40,8 @@ class Order {
   final List<OrderSeat> orderSeats;
   final String bookingType;
   final DateTime date;
-  final String timeSlot;
-  final int numberOfPersons;
+  final String? timeSlot;
+  final int? numberOfPersons;
   final List<Table> tables;
   final String tableCharge;
   final String totalAmount;
@@ -56,8 +56,8 @@ class Order {
     required this.orderSeats,
     required this.bookingType,
     required this.date,
-    required this.timeSlot,
-    required this.numberOfPersons,
+    this.timeSlot,
+    this.numberOfPersons,
     required this.tables,
     required this.tableCharge,
     required this.totalAmount,

@@ -1,7 +1,7 @@
 // table_booking_page.dart
+import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/payment_module/view/payment_page.dart';
 import 'package:bite_and_seat/modules/table_booking_module/helper/data_generator.dart';
@@ -12,7 +12,7 @@ import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class TableBookingPage extends StatefulWidget {
   final DateTime selectedDate;
-  final TimeSlotModel selectedTimeSlot;
+  final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPeople;
   final double totalRate;
 
@@ -29,7 +29,7 @@ class TableBookingPage extends StatefulWidget {
 
   static route({
     required DateTime selectedDate,
-    required TimeSlotModel selectedTimeSlot,
+    required CategoryTimeSlotModel selectedTimeSlot,
     required int numberOfPeople,
     required double totalRate,
   }) => MaterialPageRoute(

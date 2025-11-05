@@ -1,15 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:bite_and_seat/core/enums/food_time.dart';
 import 'package:bite_and_seat/core/models/cart_item_model.dart';
-import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu_cubit.dart';
+import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu/daily_menu_cubit.dart';
 import 'package:bite_and_seat/modules/menu_module/typedefs/cart_item_function.dart';
 import 'package:bite_and_seat/modules/menu_module/utils/menu_helper.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/daily_menu_error_widget.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/daily_menu_widget.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/menu_unavailable_widget.dart';
-import 'package:intl/intl.dart';
 
 class DailyMenuTabContent extends StatelessWidget {
   final DailyMenuState menuState;

@@ -1,4 +1,6 @@
 import 'package:bite_and_seat/core/localstorage/auth_storage_functions.dart';
+import 'package:bite_and_seat/modules/booking_module/classes/step2_booking_details.dart';
+import 'package:bite_and_seat/modules/booking_module/services/booking_services.dart';
 import 'package:bite_and_seat/modules/menu_module/services/menu_services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -11,8 +13,9 @@ part 'booking_event.dart';
 part 'booking_state.dart';
 
 class BookingBloc extends Bloc<BookingEvent, BookingState> {
-  BookingBloc() : super(BookingInitial()) {
+  BookingBloc() : super(const BookingInitial()) {
     on<_Step1BookingStarted>(_onStep1);
+    on<_Step2BookingStarted>(_onStep2);
   }
 
   Future<void> _onStep1(
@@ -29,6 +32,23 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       );
 
       emit(BookingState.step1Completed(response));
+    } catch (e) {
+      emit(BookingState.bookingError(e.toString()));
+    }
+  }
+
+  Future<void> _onStep2(
+    _Step2BookingStarted event,
+    Emitter<BookingState> emit,
+  ) async {
+    emit(const BookingState.bookingLoading());
+    try {
+      final BookingResponseModel response = await BookingServices.bookingStep1(
+        orderId: event.orderId,
+        bookingDetails: event.bookingDetails,
+      );
+
+      emit(BookingState.step2Completed(response));
     } catch (e) {
       emit(BookingState.bookingError(e.toString()));
     }

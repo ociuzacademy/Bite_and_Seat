@@ -12,7 +12,7 @@ import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/models/food_item.dart';
 import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
 import 'package:bite_and_seat/modules/menu_module/classes/step1_booking_details.dart';
-import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu_cubit.dart';
+import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu/daily_menu_cubit.dart';
 import 'package:bite_and_seat/modules/menu_module/models/daily_menu_model.dart'
     hide Item;
 import 'package:bite_and_seat/modules/menu_module/providers/menu_state_provider.dart';
@@ -172,7 +172,7 @@ class MenuHelper {
 
   void userLogout() {
     final AuthBloc authBloc = context.read<AuthBloc>();
-    authBloc.add(AuthEvent.userLoggingOut());
+    authBloc.add(const AuthEvent.userLoggingOut());
   }
 
   void navigateToLogin() {
@@ -200,7 +200,7 @@ class MenuHelper {
             name: item.name,
             rate: double.parse(item.rate),
             itemsPerPlate: int.parse(item.itemPerPlate),
-            imageUrl: "${AppUrls.baseUrl}/${item.image}",
+            imageUrl: '${AppUrls.baseUrl}/${item.image}',
           ),
         )
         .toList();

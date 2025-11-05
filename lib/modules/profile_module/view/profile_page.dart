@@ -40,14 +40,14 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: const Text('Profile'),
         backgroundColor: AppPalette.firstColor,
-        iconTheme: IconThemeData(color: AppPalette.secondColor),
+        iconTheme: const IconThemeData(color: AppPalette.secondColor),
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
           color: AppPalette.secondColor,
           fontWeight: FontWeight.bold,
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: AppPalette.secondColor),
+            icon: const Icon(Icons.edit, color: AppPalette.secondColor),
             onPressed: () {
               // Navigate to edit profile page
             },
@@ -67,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 shape: BoxShape.circle,
                 border: Border.all(color: AppPalette.firstColor, width: 3),
               ),
-              child: CircleAvatar(
+              child: const CircleAvatar(
                 radius: 56,
                 backgroundColor: AppPalette.greyColor,
                 child: Icon(

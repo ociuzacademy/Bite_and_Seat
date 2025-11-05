@@ -19,9 +19,9 @@ class AuthField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(color: AppPalette.greyColor),
+        hintStyle: const TextStyle(color: AppPalette.greyColor),
       ),
-      style: TextStyle(color: AppPalette.blackColor),
+      style: const TextStyle(color: AppPalette.blackColor),
       validator: (value) {
         if (value!.isEmpty) {
           return '$hintText is missing';

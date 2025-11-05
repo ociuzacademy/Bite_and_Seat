@@ -15,7 +15,7 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 
-  static route() => MaterialPageRoute(builder: (context) => LoginPage());
+  static route() => MaterialPageRoute(builder: (context) => const LoginPage());
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.425,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -159,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              SizedBox.shrink(),
+              const SizedBox.shrink(),
             ],
           ),
         ),

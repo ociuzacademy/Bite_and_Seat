@@ -10,7 +10,7 @@ class EmptyOrdersList extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.receipt_long, size: 64, color: AppPalette.greyColor),
+          const Icon(Icons.receipt_long, size: 64, color: AppPalette.greyColor),
           const SizedBox(height: 16),
           Text(
             'No reservations yet',

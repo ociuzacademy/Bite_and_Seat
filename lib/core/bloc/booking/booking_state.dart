@@ -7,4 +7,6 @@ sealed class BookingState with _$BookingState {
   const factory BookingState.bookingError(String errorMessage) = BookingError;
   const factory BookingState.step1Completed(BookingResponseModel response) =
       Step1Completed;
+  const factory BookingState.step2Completed(BookingResponseModel response) =
+      Step2Completed;
 }

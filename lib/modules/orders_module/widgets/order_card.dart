@@ -123,7 +123,7 @@ class OrderCard extends StatelessWidget {
                         },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppPalette.errorColor,
-                          side: BorderSide(color: AppPalette.errorColor),
+                          side: const BorderSide(color: AppPalette.errorColor),
                         ),
                         child: const Text('Cancel'),
                       ),

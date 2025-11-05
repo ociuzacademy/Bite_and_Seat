@@ -1,6 +1,7 @@
 // table_booking_provider.dart
 import 'package:flutter/material.dart';
-import 'package:bite_and_seat/core/models/time_slot_model.dart';
+
+import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 import 'package:bite_and_seat/modules/table_booking_module/models/table_model.dart';
 
 class TableBookingProvider with ChangeNotifier {
@@ -8,7 +9,7 @@ class TableBookingProvider with ChangeNotifier {
   String _selectedRoom = 'room1';
   final List<ChairModel> _selectedChairs = [];
   final DateTime selectedDate;
-  final TimeSlotModel selectedTimeSlot;
+  final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPeople;
   final double totalRate;
 

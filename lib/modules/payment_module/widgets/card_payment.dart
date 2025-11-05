@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
-import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
+import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 import 'package:bite_and_seat/modules/payment_module/utils/card_payment_helper.dart';
 import 'package:bite_and_seat/modules/payment_module/widgets/expiry_date_field.dart';
 import 'package:bite_and_seat/modules/payment_module/widgets/payment_container.dart';
@@ -12,7 +12,7 @@ import 'package:bite_and_seat/widgets/text_fields/normal_text_field.dart';
 class CardPayment extends StatefulWidget {
   final double amount;
   final DateTime selectedDate;
-  final TimeSlotModel selectedTimeSlot;
+  final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
   final String selectedRoomId;
   final String selectedTableId;
@@ -85,7 +85,7 @@ class _CardPaymentState extends State<CardPayment> {
                 }
                 return null;
               },
-              labelText: "Cardholder Name",
+              labelText: 'Cardholder Name',
               hintText: "Enter cardholder's name",
               onChange: (value) {
                 _cardNameController.value = _cardNameController.value.copyWith(
@@ -110,7 +110,7 @@ class _CardPaymentState extends State<CardPayment> {
 
                 return null;
               },
-              labelText: "Card Number",
+              labelText: 'Card Number',
               hintText: "Enter card's number",
               textInputType: TextInputType.number,
             ),
@@ -150,7 +150,7 @@ class _CardPaymentState extends State<CardPayment> {
               buttonWidth: double.infinity,
               backgroundColor: AppPalette.firstColor,
               textColor: Colors.white,
-              labelText: "Pay",
+              labelText: 'Pay',
               onClick: _cardPaymentHelper.cardPayment,
             ),
           ],

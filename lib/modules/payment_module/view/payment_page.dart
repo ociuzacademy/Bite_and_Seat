@@ -1,15 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/payment_module/utils/payment_helper.dart';
 import 'package:bite_and_seat/widgets/buttons/custom_button.dart';
 
 class PaymentPage extends StatefulWidget {
   final DateTime selectedDate;
-  final TimeSlotModel selectedTimeSlot;
+  final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
   final String selectedRoomId;
   final String selectedTableId;
@@ -29,7 +29,7 @@ class PaymentPage extends StatefulWidget {
 
   static route({
     required DateTime selectedDate,
-    required TimeSlotModel selectedTimeSlot,
+    required CategoryTimeSlotModel selectedTimeSlot,
     required int numberOfPersons,
     required String selectedRoomId,
     required String selectedTableId,
@@ -99,7 +99,7 @@ class _PaymentPageState extends State<PaymentPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          "Payment Option",
+          'Payment Option',
           style: TextStyle(fontSize: 18.sp, color: Colors.black),
         ),
         centerTitle: true,
@@ -139,7 +139,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Choose Your transaction method",
+                      'Choose Your transaction method',
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.bold,
@@ -195,7 +195,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       buttonWidth: double.infinity,
                       backgroundColor: AppPalette.firstColor,
                       textColor: Colors.white,
-                      labelText: "Confirm Payment Method",
+                      labelText: 'Confirm Payment Method',
                       onClick: _paymentHelper.makePayment,
                     ),
                   ],

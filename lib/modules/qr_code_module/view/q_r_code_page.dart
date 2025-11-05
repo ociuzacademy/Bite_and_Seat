@@ -2,13 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 
-import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
+import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
 
 class QRCodePage extends StatelessWidget {
   final DateTime selectedDate;
-  final TimeSlotModel selectedTimeSlot;
+  final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
   final String selectedRoomId;
   final String selectedTableId;
@@ -26,7 +26,7 @@ class QRCodePage extends StatelessWidget {
 
   static route({
     required DateTime selectedDate,
-    required TimeSlotModel selectedTimeSlot,
+    required CategoryTimeSlotModel selectedTimeSlot,
     required int numberOfPersons,
     required String selectedRoomId,
     required String selectedTableId,
@@ -46,13 +46,13 @@ class QRCodePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Data to encode in QR
     final qrData = {
-      "date": selectedDate.toIso8601String(),
-      "startTime": selectedTimeSlot.startTime.format(context),
-      "endTime": selectedTimeSlot.endTime.format(context),
-      "persons": numberOfPersons,
-      "roomId": selectedRoomId,
-      "tableId": selectedTableId,
-      "totalRate": totalRate,
+      'date': selectedDate.toIso8601String(),
+      'startTime': selectedTimeSlot.startTime,
+      'endTime': selectedTimeSlot.endTime,
+      'persons': numberOfPersons,
+      'roomId': selectedRoomId,
+      'tableId': selectedTableId,
+      'totalRate': totalRate,
     };
 
     final qrCode = QrCode.fromData(
@@ -62,7 +62,7 @@ class QRCodePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Your Booking QR Code"),
+        title: const Text('Your Booking QR Code'),
         centerTitle: true,
       ),
       body: Center(
@@ -74,7 +74,7 @@ class QRCodePage extends StatelessWidget {
               child: Container(
                 width: 250,
                 height: 250,
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
                   border: Border.all(color: AppPalette.blackColor, width: 2),
                   borderRadius: BorderRadius.circular(10),
@@ -92,7 +92,7 @@ class QRCodePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              "Scan this QR at the canteen",
+              'Scan this QR at the canteen',
               style: TextStyle(fontSize: 16),
             ),
             TextButton(

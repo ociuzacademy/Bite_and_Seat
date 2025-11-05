@@ -37,7 +37,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       appBar: AppBar(
         title: const Text('Order Details'),
         backgroundColor: AppPalette.firstColor,
-        iconTheme: IconThemeData(color: AppPalette.secondColor),
+        iconTheme: const IconThemeData(color: AppPalette.secondColor),
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
           color: AppPalette.secondColor,
           fontWeight: FontWeight.bold,

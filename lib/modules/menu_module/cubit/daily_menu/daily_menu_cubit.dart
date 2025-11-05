@@ -8,7 +8,7 @@ part 'daily_menu_state.dart';
 part 'daily_menu_cubit.freezed.dart';
 
 class DailyMenuCubit extends Cubit<DailyMenuState> {
-  DailyMenuCubit() : super(DailyMenuState.initial());
+  DailyMenuCubit() : super(const DailyMenuState.initial());
 
   Future<void> getDailyMenu({required DateTime selectedDate}) async {
     emit(const DailyMenuState.dailyMenuLoading());

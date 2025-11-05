@@ -26,16 +26,16 @@ class OrdersPage extends StatefulWidget {
       timeSlot: AppConstants.afternoonSlots[1],
       foodTime: FoodTime.lunch,
       cartItems: [
-        CartItemModel(
+        const CartItemModel(
           itemId: 1,
-          name: "Meals",
+          name: 'Meals',
           ratePerItem: 60.0,
           count: 1,
           rate: 60.0,
         ),
-        CartItemModel(
+        const CartItemModel(
           itemId: 2,
-          name: "Chicken Biryani",
+          name: 'Chicken Biryani',
           ratePerItem: 120.0,
           count: 1,
           rate: 120.0,
@@ -53,16 +53,16 @@ class OrdersPage extends StatefulWidget {
       timeSlot: AppConstants.afternoonSlots[3],
       foodTime: FoodTime.lunch,
       cartItems: [
-        CartItemModel(
+        const CartItemModel(
           itemId: 1,
-          name: "Meals",
+          name: 'Meals',
           ratePerItem: 60.0,
           count: 1,
           rate: 60.0,
         ),
-        CartItemModel(
+        const CartItemModel(
           itemId: 3,
-          name: "Half Chicken Biryani",
+          name: 'Half Chicken Biryani',
           ratePerItem: 60.0,
           count: 1,
           rate: 60.0,
@@ -80,23 +80,23 @@ class OrdersPage extends StatefulWidget {
       timeSlot: AppConstants.morningSlots[0],
       foodTime: FoodTime.breakfast,
       cartItems: [
-        CartItemModel(
+        const CartItemModel(
           itemId: 1,
-          name: "Meals",
+          name: 'Meals',
           ratePerItem: 60.0,
           count: 2,
           rate: 60.0,
         ),
-        CartItemModel(
+        const CartItemModel(
           itemId: 7,
-          name: "Chicken Curry",
+          name: 'Chicken Curry',
           ratePerItem: 80.0,
           count: 1,
           rate: 80.0,
         ),
-        CartItemModel(
+        const CartItemModel(
           itemId: 8,
-          name: "Beef Curry",
+          name: 'Beef Curry',
           ratePerItem: 80.0,
           count: 1,
           rate: 80.0,
@@ -127,14 +127,14 @@ class _OrdersPageState extends State<OrdersPage> {
       appBar: AppBar(
         title: const Text('My Reservations'),
         backgroundColor: AppPalette.firstColor,
-        iconTheme: IconThemeData(color: AppPalette.secondColor),
+        iconTheme: const IconThemeData(color: AppPalette.secondColor),
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
           color: AppPalette.secondColor,
           fontWeight: FontWeight.bold,
         ),
       ),
       body: orders.isEmpty
-          ? EmptyOrdersList()
+          ? const EmptyOrdersList()
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: orders.length,

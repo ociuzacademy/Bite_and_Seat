@@ -7,7 +7,6 @@ import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/order_details_module/widgets/review_dialog.dart';
 import 'package:bite_and_seat/modules/orders_module/model/order_model.dart';
-import 'package:bite_and_seat/modules/qr_code_module/view/q_r_code_page.dart';
 
 class OrderDetailsHelper {
   final BuildContext context;
@@ -54,7 +53,7 @@ class OrderDetailsHelper {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Check In'),
-        content: Column(
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [Text('Are you going to check in?')],
@@ -67,19 +66,19 @@ class OrderDetailsHelper {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(); // close bottom sheet
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (_) => QRCodePage(
-                    selectedDate: order.date,
-                    selectedTimeSlot: order.timeSlot,
-                    numberOfPersons: order.numberOfPersons,
-                    selectedRoomId: order.roomId,
-                    selectedTableId: order.tableId,
-                    totalRate: order.rate,
-                  ),
-                ),
-                (route) => false,
-              );
+              // Navigator.of(context).pushAndRemoveUntil(
+              //   MaterialPageRoute(
+              //     builder: (_) => QRCodePage(
+              //       selectedDate: order.date,
+              //       selectedTimeSlot: order.timeSlot,
+              //       numberOfPersons: order.numberOfPersons,
+              //       selectedRoomId: order.roomId,
+              //       selectedTableId: order.tableId,
+              //       totalRate: order.rate,
+              //     ),
+              //   ),
+              //   (route) => false,
+              // );
             },
             child: const Text(
               'Confirm',

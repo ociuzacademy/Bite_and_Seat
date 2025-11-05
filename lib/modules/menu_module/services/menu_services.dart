@@ -22,13 +22,13 @@ class MenuServices {
       final DateFormat formatter = DateFormat('yyyy-MM-dd');
       final String formattedDate = formatter.format(selectedDate);
       debugPrint(formattedDate);
-      Map<String, dynamic> params = {"date": formattedDate};
+      Map<String, dynamic> params = {'date': formattedDate};
       final url = Uri.parse(
         AppUrls.dailyMenuUrl,
       ).replace(queryParameters: params);
 
       // Create a timeout duration
-      final Duration timeoutDuration = Duration(
+      const Duration timeoutDuration = Duration(
         seconds: AppConstants.requestTimeoutSeconds,
       );
 
@@ -103,18 +103,18 @@ class MenuServices {
       final DateFormat formatter = DateFormat('yyyy-MM-dd');
       final String formattedDate = formatter.format(bookingDetails.bookingDate);
       Map<String, dynamic> params = {
-        "user": userId.toString(),
-        "booking_type": bookingDetails.bookingType.toString(),
-        "category": bookingDetails.categoryId.toString(),
-        "date": formattedDate,
+        'user': userId.toString(),
+        'booking_type': bookingDetails.bookingType.toString(),
+        'category': bookingDetails.categoryId.toString(),
+        'date': formattedDate,
       };
 
       if (bookingDetails.bookingType == BookingType.prebooked &&
           bookingDetails.items.isNotEmpty) {
-        params["items"] = bookingDetails.items.map((item) {
+        params['items'] = bookingDetails.items.map((item) {
           return {
-            "food_item": item.foodItemId.toString(),
-            "quantity": item.quantity.toString(),
+            'food_item': item.foodItemId.toString(),
+            'quantity': item.quantity.toString(),
           };
         }).toList();
       }
@@ -124,11 +124,11 @@ class MenuServices {
             Uri.parse(AppUrls.step1Url),
             body: jsonEncode(params),
             headers: <String, String>{
-              "Content-Type": "application/json; charset=utf-8",
+              'Content-Type': 'application/json; charset=utf-8',
             },
           )
           .timeout(
-            Duration(seconds: AppConstants.requestTimeoutSeconds),
+            const Duration(seconds: AppConstants.requestTimeoutSeconds),
             onTimeout: () {
               throw TimeoutException(
                 'Request timed out after ${AppConstants.requestTimeoutSeconds} seconds',

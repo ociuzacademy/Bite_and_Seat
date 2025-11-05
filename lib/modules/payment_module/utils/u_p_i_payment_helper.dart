@@ -1,16 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 
-import 'package:bite_and_seat/core/models/time_slot_model.dart';
+import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 import 'package:bite_and_seat/modules/qr_code_module/view/q_r_code_page.dart';
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class UPIPaymentHelper {
   final BuildContext context;
   final GlobalKey<FormState> formKey;
   final double amount;
   final DateTime selectedDate;
-  final TimeSlotModel selectedTimeSlot;
+  final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
   final String selectedRoomId;
   final String selectedTableId;
@@ -44,7 +44,7 @@ class UPIPaymentHelper {
         (route) => false,
       );
     } else {
-      CustomSnackbar.showError(context, message: "Please fill UPI ID.");
+      CustomSnackbar.showError(context, message: 'Please fill UPI ID.');
     }
   }
 }

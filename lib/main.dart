@@ -13,9 +13,9 @@ void main() async {
   late final Widget initialWidget;
   final bool isLoggedIn = await AuthStorageFunctions.getLoginStatus();
   if (isLoggedIn) {
-    initialWidget = MenuPage();
+    initialWidget = const MenuPage();
   } else {
-    initialWidget = LoginPage();
+    initialWidget = const LoginPage();
   }
   runApp(MyApp(initialWidget: initialWidget));
 }
@@ -31,6 +31,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => AuthBloc()),
         BlocProvider(create: (context) => DailyMenuCubit()),
         BlocProvider(create: (context) => BookingBloc()),
+        BlocProvider(create: (context) => OrderCubit()),
+        BlocProvider(create: (context) => TimeSlotCubit()),
       ],
       child: MaterialApp(
         title: 'Bite&Seat',

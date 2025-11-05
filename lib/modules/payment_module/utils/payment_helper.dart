@@ -1,14 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/modules/payment_module/widgets/u_p_i_payment.dart';
 import 'package:flutter/material.dart';
 
-import 'package:bite_and_seat/core/models/time_slot_model.dart';
+import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 import 'package:bite_and_seat/modules/payment_module/widgets/card_payment.dart';
+import 'package:bite_and_seat/modules/payment_module/widgets/u_p_i_payment.dart';
 
 class PaymentHelper {
   final BuildContext context;
   final DateTime selectedDate;
-  final TimeSlotModel selectedTimeSlot;
+  final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
   final String selectedRoomId;
   final String selectedTableId;
@@ -31,7 +31,7 @@ class PaymentHelper {
       isScrollControlled: true,
       builder: (context) {
         switch (selectedMethod.value) {
-          case "UPI":
+          case 'UPI':
             return UPIPayment(
               amount: totalRate,
               selectedDate: selectedDate,

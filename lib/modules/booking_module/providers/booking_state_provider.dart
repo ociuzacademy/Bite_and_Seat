@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:bite_and_seat/core/models/time_slot_model.dart';
+
+import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 
 class BookingStateProvider with ChangeNotifier {
   int _currentStep = 0;
-  TimeSlotModel? _selectedTimeSlot;
+  CategoryTimeSlotModel? _selectedTimeSlot;
   int _numberOfPersons = 1;
 
   // Getters
   int get currentStep => _currentStep;
-  TimeSlotModel? get selectedTimeSlot => _selectedTimeSlot;
+  CategoryTimeSlotModel? get selectedTimeSlot => _selectedTimeSlot;
   int get numberOfPersons => _numberOfPersons;
 
   // Setters
@@ -17,7 +18,7 @@ class BookingStateProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setSelectedTimeSlot(TimeSlotModel? timeSlot) {
+  void setSelectedTimeSlot(CategoryTimeSlotModel? timeSlot) {
     _selectedTimeSlot = timeSlot;
     notifyListeners();
   }

@@ -56,7 +56,7 @@ class DateSelectionWidget extends StatelessWidget {
                     onTap: () {
                       // This will be handled by the parent through callbacks
                     },
-                    child: Text(
+                    child: const Text(
                       'Today',
                       style: TextStyle(
                         color: AppPalette.firstColor,
@@ -79,7 +79,7 @@ class DateSelectionWidget extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: onDateSelected,
-                    child: Text(
+                    child: const Text(
                       'Custom Date',
                       style: TextStyle(
                         color: AppPalette.firstColor,

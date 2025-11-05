@@ -16,8 +16,8 @@ class UserLoginService {
   }) async {
     try {
       Map<String, dynamic> params = {
-        "username": username,
-        "password": password,
+        'username': username,
+        'password': password,
       };
 
       final resp = await http
@@ -25,11 +25,11 @@ class UserLoginService {
             Uri.parse(AppUrls.loginUrl),
             body: jsonEncode(params),
             headers: <String, String>{
-              "Content-Type": "application/json; charset=utf-8",
+              'Content-Type': 'application/json; charset=utf-8',
             },
           )
           .timeout(
-            Duration(seconds: AppConstants.requestTimeoutSeconds),
+            const Duration(seconds: AppConstants.requestTimeoutSeconds),
             onTimeout: () {
               throw TimeoutException(
                 'Request timed out after ${AppConstants.requestTimeoutSeconds} seconds',

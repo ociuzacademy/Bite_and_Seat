@@ -26,7 +26,7 @@ class OverlayLoader {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CircularProgressIndicator(color: AppPalette.firstColor),
+                  const CircularProgressIndicator(color: AppPalette.firstColor),
                   if (message != null) ...[
                     const SizedBox(height: 16),
                     Flexible(

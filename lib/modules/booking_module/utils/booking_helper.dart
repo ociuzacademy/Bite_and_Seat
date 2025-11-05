@@ -1,30 +1,41 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:bite_and_seat/core/constants/app_constants.dart';
 import 'package:bite_and_seat/core/enums/food_time.dart';
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
+import 'package:bite_and_seat/modules/booking_module/classes/step2_booking_details.dart';
 import 'package:bite_and_seat/modules/booking_module/providers/booking_state_provider.dart';
 import 'package:bite_and_seat/modules/booking_module/widgets/cart_items_list_widget.dart';
-import 'package:bite_and_seat/modules/table_booking_module/view/table_booking_page.dart';
 import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class BookingHelper {
   final BuildContext context;
+  final int orderId;
+  final FoodTime foodTime;
   final List<CartItemModel> cartItems;
   final BookingStateProvider bookingStateProvider;
   final DateTime selectedDate;
 
-  BookingHelper({
+  const BookingHelper({
     required this.context,
+    required this.orderId,
+    required this.foodTime,
     required this.cartItems,
     required this.bookingStateProvider,
     required this.selectedDate,
   });
 
-  void openCart(List<CartItemModel> cartItems) {
+  void timeSlotsInit() {
+    final TimeSlotCubit timeSlotCubit = context.read<TimeSlotCubit>();
+    timeSlotCubit.getCategoryTimeSlots(foodTime);
+  }
+
+  void openCart() {
     // Open a bottom sheet with fixed height (60% of screen)
     showModalBottomSheet(
       context: context,
@@ -66,7 +77,7 @@ class BookingHelper {
           children: [
             Text('Date: ${formatDate(selectedDate)}'),
             Text(
-              'Time: ${formatTimeOfDay(bookingStateProvider.selectedTimeSlot!.startTime)} - ${formatTimeOfDay(bookingStateProvider.selectedTimeSlot!.endTime)}',
+              'Time: ${bookingStateProvider.selectedTimeSlot!.startTime} - ${bookingStateProvider.selectedTimeSlot!.endTime}',
             ),
             Text('Number of persons: ${bookingStateProvider.numberOfPersons}'),
           ],
@@ -78,20 +89,13 @@ class BookingHelper {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              final totalRate = cartItems.fold(
-                0.0,
-                (previousValue, element) => previousValue + element.rate,
+              final Step2BookingDetails bookingDetails = Step2BookingDetails(
+                selectedSlotId: bookingStateProvider.selectedTimeSlot!.id,
+                numberOfPersons: bookingStateProvider.numberOfPersons,
               );
-
-              Navigator.push(
-                context,
-                TableBookingPage.route(
-                  selectedDate: selectedDate,
-                  selectedTimeSlot: bookingStateProvider.selectedTimeSlot!,
-                  numberOfPeople: bookingStateProvider.numberOfPersons,
-                  totalRate: totalRate + 10,
-                ),
+              final BookingBloc bookingBloc = context.read<BookingBloc>();
+              bookingBloc.add(
+                BookingEvent.step2BookingStarted(orderId, bookingDetails),
               );
             },
             child: const Text(

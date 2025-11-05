@@ -66,7 +66,7 @@ class CartBottomBar extends StatelessWidget {
             Container(
               height: 50,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [AppPalette.firstColor, AppPalette.secondColor],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,

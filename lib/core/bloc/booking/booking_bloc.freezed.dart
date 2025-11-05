@@ -55,12 +55,13 @@ extension BookingEventPatterns on BookingEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _Step1BookingStarted value)?  step1BookingStarted,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _Step1BookingStarted value)?  step1BookingStarted,TResult Function( _Step2BookingStarted value)?  step2BookingStarted,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started(_that);case _Step1BookingStarted() when step1BookingStarted != null:
-return step1BookingStarted(_that);case _:
+return step1BookingStarted(_that);case _Step2BookingStarted() when step2BookingStarted != null:
+return step2BookingStarted(_that);case _:
   return orElse();
 
 }
@@ -78,12 +79,13 @@ return step1BookingStarted(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _Step1BookingStarted value)  step1BookingStarted,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _Step1BookingStarted value)  step1BookingStarted,required TResult Function( _Step2BookingStarted value)  step2BookingStarted,}){
 final _that = this;
 switch (_that) {
 case _Started():
 return started(_that);case _Step1BookingStarted():
-return step1BookingStarted(_that);}
+return step1BookingStarted(_that);case _Step2BookingStarted():
+return step2BookingStarted(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -97,12 +99,13 @@ return step1BookingStarted(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _Step1BookingStarted value)?  step1BookingStarted,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _Step1BookingStarted value)?  step1BookingStarted,TResult? Function( _Step2BookingStarted value)?  step2BookingStarted,}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started(_that);case _Step1BookingStarted() when step1BookingStarted != null:
-return step1BookingStarted(_that);case _:
+return step1BookingStarted(_that);case _Step2BookingStarted() when step2BookingStarted != null:
+return step2BookingStarted(_that);case _:
   return null;
 
 }
@@ -119,11 +122,12 @@ return step1BookingStarted(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( Step1BookingDetails bookingDetails)?  step1BookingStarted,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( Step1BookingDetails bookingDetails)?  step1BookingStarted,TResult Function( int orderId,  Step2BookingDetails bookingDetails)?  step2BookingStarted,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started();case _Step1BookingStarted() when step1BookingStarted != null:
-return step1BookingStarted(_that.bookingDetails);case _:
+return step1BookingStarted(_that.bookingDetails);case _Step2BookingStarted() when step2BookingStarted != null:
+return step2BookingStarted(_that.orderId,_that.bookingDetails);case _:
   return orElse();
 
 }
@@ -141,11 +145,12 @@ return step1BookingStarted(_that.bookingDetails);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( Step1BookingDetails bookingDetails)  step1BookingStarted,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( Step1BookingDetails bookingDetails)  step1BookingStarted,required TResult Function( int orderId,  Step2BookingDetails bookingDetails)  step2BookingStarted,}) {final _that = this;
 switch (_that) {
 case _Started():
 return started();case _Step1BookingStarted():
-return step1BookingStarted(_that.bookingDetails);}
+return step1BookingStarted(_that.bookingDetails);case _Step2BookingStarted():
+return step2BookingStarted(_that.orderId,_that.bookingDetails);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -159,11 +164,12 @@ return step1BookingStarted(_that.bookingDetails);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( Step1BookingDetails bookingDetails)?  step1BookingStarted,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( Step1BookingDetails bookingDetails)?  step1BookingStarted,TResult? Function( int orderId,  Step2BookingDetails bookingDetails)?  step2BookingStarted,}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started();case _Step1BookingStarted() when step1BookingStarted != null:
-return step1BookingStarted(_that.bookingDetails);case _:
+return step1BookingStarted(_that.bookingDetails);case _Step2BookingStarted() when step2BookingStarted != null:
+return step2BookingStarted(_that.orderId,_that.bookingDetails);case _:
   return null;
 
 }
@@ -270,6 +276,74 @@ as Step1BookingDetails,
 }
 
 /// @nodoc
+
+
+class _Step2BookingStarted implements BookingEvent {
+  const _Step2BookingStarted(this.orderId, this.bookingDetails);
+  
+
+ final  int orderId;
+ final  Step2BookingDetails bookingDetails;
+
+/// Create a copy of BookingEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$Step2BookingStartedCopyWith<_Step2BookingStarted> get copyWith => __$Step2BookingStartedCopyWithImpl<_Step2BookingStarted>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Step2BookingStarted&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.bookingDetails, bookingDetails) || other.bookingDetails == bookingDetails));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,orderId,bookingDetails);
+
+@override
+String toString() {
+  return 'BookingEvent.step2BookingStarted(orderId: $orderId, bookingDetails: $bookingDetails)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$Step2BookingStartedCopyWith<$Res> implements $BookingEventCopyWith<$Res> {
+  factory _$Step2BookingStartedCopyWith(_Step2BookingStarted value, $Res Function(_Step2BookingStarted) _then) = __$Step2BookingStartedCopyWithImpl;
+@useResult
+$Res call({
+ int orderId, Step2BookingDetails bookingDetails
+});
+
+
+
+
+}
+/// @nodoc
+class __$Step2BookingStartedCopyWithImpl<$Res>
+    implements _$Step2BookingStartedCopyWith<$Res> {
+  __$Step2BookingStartedCopyWithImpl(this._self, this._then);
+
+  final _Step2BookingStarted _self;
+  final $Res Function(_Step2BookingStarted) _then;
+
+/// Create a copy of BookingEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? orderId = null,Object? bookingDetails = null,}) {
+  return _then(_Step2BookingStarted(
+null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
+as int,null == bookingDetails ? _self.bookingDetails : bookingDetails // ignore: cast_nullable_to_non_nullable
+as Step2BookingDetails,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$BookingState {
 
 
@@ -313,14 +387,15 @@ extension BookingStatePatterns on BookingState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BookingInitial value)?  initial,TResult Function( BookingLoading value)?  bookingLoading,TResult Function( BookingError value)?  bookingError,TResult Function( Step1Completed value)?  step1Completed,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BookingInitial value)?  initial,TResult Function( BookingLoading value)?  bookingLoading,TResult Function( BookingError value)?  bookingError,TResult Function( Step1Completed value)?  step1Completed,TResult Function( Step2Completed value)?  step2Completed,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case BookingInitial() when initial != null:
 return initial(_that);case BookingLoading() when bookingLoading != null:
 return bookingLoading(_that);case BookingError() when bookingError != null:
 return bookingError(_that);case Step1Completed() when step1Completed != null:
-return step1Completed(_that);case _:
+return step1Completed(_that);case Step2Completed() when step2Completed != null:
+return step2Completed(_that);case _:
   return orElse();
 
 }
@@ -338,14 +413,15 @@ return step1Completed(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BookingInitial value)  initial,required TResult Function( BookingLoading value)  bookingLoading,required TResult Function( BookingError value)  bookingError,required TResult Function( Step1Completed value)  step1Completed,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BookingInitial value)  initial,required TResult Function( BookingLoading value)  bookingLoading,required TResult Function( BookingError value)  bookingError,required TResult Function( Step1Completed value)  step1Completed,required TResult Function( Step2Completed value)  step2Completed,}){
 final _that = this;
 switch (_that) {
 case BookingInitial():
 return initial(_that);case BookingLoading():
 return bookingLoading(_that);case BookingError():
 return bookingError(_that);case Step1Completed():
-return step1Completed(_that);}
+return step1Completed(_that);case Step2Completed():
+return step2Completed(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -359,14 +435,15 @@ return step1Completed(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BookingInitial value)?  initial,TResult? Function( BookingLoading value)?  bookingLoading,TResult? Function( BookingError value)?  bookingError,TResult? Function( Step1Completed value)?  step1Completed,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BookingInitial value)?  initial,TResult? Function( BookingLoading value)?  bookingLoading,TResult? Function( BookingError value)?  bookingError,TResult? Function( Step1Completed value)?  step1Completed,TResult? Function( Step2Completed value)?  step2Completed,}){
 final _that = this;
 switch (_that) {
 case BookingInitial() when initial != null:
 return initial(_that);case BookingLoading() when bookingLoading != null:
 return bookingLoading(_that);case BookingError() when bookingError != null:
 return bookingError(_that);case Step1Completed() when step1Completed != null:
-return step1Completed(_that);case _:
+return step1Completed(_that);case Step2Completed() when step2Completed != null:
+return step2Completed(_that);case _:
   return null;
 
 }
@@ -383,13 +460,14 @@ return step1Completed(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  bookingLoading,TResult Function( String errorMessage)?  bookingError,TResult Function( BookingResponseModel response)?  step1Completed,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  bookingLoading,TResult Function( String errorMessage)?  bookingError,TResult Function( BookingResponseModel response)?  step1Completed,TResult Function( BookingResponseModel response)?  step2Completed,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case BookingInitial() when initial != null:
 return initial();case BookingLoading() when bookingLoading != null:
 return bookingLoading();case BookingError() when bookingError != null:
 return bookingError(_that.errorMessage);case Step1Completed() when step1Completed != null:
-return step1Completed(_that.response);case _:
+return step1Completed(_that.response);case Step2Completed() when step2Completed != null:
+return step2Completed(_that.response);case _:
   return orElse();
 
 }
@@ -407,13 +485,14 @@ return step1Completed(_that.response);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  bookingLoading,required TResult Function( String errorMessage)  bookingError,required TResult Function( BookingResponseModel response)  step1Completed,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  bookingLoading,required TResult Function( String errorMessage)  bookingError,required TResult Function( BookingResponseModel response)  step1Completed,required TResult Function( BookingResponseModel response)  step2Completed,}) {final _that = this;
 switch (_that) {
 case BookingInitial():
 return initial();case BookingLoading():
 return bookingLoading();case BookingError():
 return bookingError(_that.errorMessage);case Step1Completed():
-return step1Completed(_that.response);}
+return step1Completed(_that.response);case Step2Completed():
+return step2Completed(_that.response);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -427,13 +506,14 @@ return step1Completed(_that.response);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  bookingLoading,TResult? Function( String errorMessage)?  bookingError,TResult? Function( BookingResponseModel response)?  step1Completed,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  bookingLoading,TResult? Function( String errorMessage)?  bookingError,TResult? Function( BookingResponseModel response)?  step1Completed,TResult? Function( BookingResponseModel response)?  step2Completed,}) {final _that = this;
 switch (_that) {
 case BookingInitial() when initial != null:
 return initial();case BookingLoading() when bookingLoading != null:
 return bookingLoading();case BookingError() when bookingError != null:
 return bookingError(_that.errorMessage);case Step1Completed() when step1Completed != null:
-return step1Completed(_that.response);case _:
+return step1Completed(_that.response);case Step2Completed() when step2Completed != null:
+return step2Completed(_that.response);case _:
   return null;
 
 }
@@ -629,6 +709,72 @@ class _$Step1CompletedCopyWithImpl<$Res>
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? response = null,}) {
   return _then(Step1Completed(
+null == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
+as BookingResponseModel,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class Step2Completed implements BookingState {
+  const Step2Completed(this.response);
+  
+
+ final  BookingResponseModel response;
+
+/// Create a copy of BookingState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$Step2CompletedCopyWith<Step2Completed> get copyWith => _$Step2CompletedCopyWithImpl<Step2Completed>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Step2Completed&&(identical(other.response, response) || other.response == response));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,response);
+
+@override
+String toString() {
+  return 'BookingState.step2Completed(response: $response)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $Step2CompletedCopyWith<$Res> implements $BookingStateCopyWith<$Res> {
+  factory $Step2CompletedCopyWith(Step2Completed value, $Res Function(Step2Completed) _then) = _$Step2CompletedCopyWithImpl;
+@useResult
+$Res call({
+ BookingResponseModel response
+});
+
+
+
+
+}
+/// @nodoc
+class _$Step2CompletedCopyWithImpl<$Res>
+    implements $Step2CompletedCopyWith<$Res> {
+  _$Step2CompletedCopyWithImpl(this._self, this._then);
+
+  final Step2Completed _self;
+  final $Res Function(Step2Completed) _then;
+
+/// Create a copy of BookingState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? response = null,}) {
+  return _then(Step2Completed(
 null == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
 as BookingResponseModel,
   ));

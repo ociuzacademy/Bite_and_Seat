@@ -10,7 +10,6 @@ class QRCodePage extends StatelessWidget {
   final DateTime selectedDate;
   final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
-  final String selectedRoomId;
   final String selectedTableId;
   final double totalRate;
 
@@ -19,7 +18,6 @@ class QRCodePage extends StatelessWidget {
     required this.selectedDate,
     required this.selectedTimeSlot,
     required this.numberOfPersons,
-    required this.selectedRoomId,
     required this.selectedTableId,
     required this.totalRate,
   });
@@ -28,7 +26,6 @@ class QRCodePage extends StatelessWidget {
     required DateTime selectedDate,
     required CategoryTimeSlotModel selectedTimeSlot,
     required int numberOfPersons,
-    required String selectedRoomId,
     required String selectedTableId,
     required double totalRate,
   }) => MaterialPageRoute(
@@ -36,7 +33,6 @@ class QRCodePage extends StatelessWidget {
       selectedDate: selectedDate,
       selectedTimeSlot: selectedTimeSlot,
       numberOfPersons: numberOfPersons,
-      selectedRoomId: selectedRoomId,
       selectedTableId: selectedTableId,
       totalRate: totalRate,
     ),
@@ -50,7 +46,6 @@ class QRCodePage extends StatelessWidget {
       'startTime': selectedTimeSlot.startTime,
       'endTime': selectedTimeSlot.endTime,
       'persons': numberOfPersons,
-      'roomId': selectedRoomId,
       'tableId': selectedTableId,
       'totalRate': totalRate,
     };

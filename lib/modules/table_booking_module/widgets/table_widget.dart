@@ -1,5 +1,7 @@
 // table_widget.dart
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/table_booking_module/models/table_model.dart';
@@ -40,7 +42,7 @@ class TableWidget extends StatelessWidget {
             Column(
               children: [
                 Text(
-                  table.tableId.split('_')[1],
+                  table.tableId,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -94,15 +96,15 @@ class TableWidget extends StatelessWidget {
 
   Widget _buildTableWithChairs() {
     return SizedBox(
-      width: 80,
-      height: 80,
+      width: 100,
+      height: 100,
       child: Stack(
         alignment: Alignment.center,
         children: [
           // Table
           Container(
-            width: 50,
-            height: 50,
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
               color: _getTableColor(),
               borderRadius: BorderRadius.circular(8),
@@ -128,7 +130,6 @@ class TableWidget extends StatelessWidget {
   }
 
   Color _getTableColor() {
-    // Table color based on availability of chairs
     if (_getAvailableChairCount() > 0) {
       return AppPalette.whiteColor;
     } else {
@@ -169,14 +170,14 @@ class TableWidget extends StatelessWidget {
               }
             },
             child: Container(
-              width: 12,
-              height: 12,
+              width: 16,
+              height: 16,
               decoration: BoxDecoration(
                 color: _getChairColor(chair.status),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: _getChairBorderColor(chair.status),
-                  width: 1,
+                  width: 1.5,
                 ),
               ),
             ),
@@ -211,96 +212,17 @@ class TableWidget extends StatelessWidget {
   }
 
   ({double left, double top}) _getChairPosition(int position, int totalSeats) {
-    const tableRadius = 25.0;
-    const chairRadius = 6.0;
+    const tableRadius = 30.0;
+    const chairRadius = 8.0;
+    const distanceFromTable = 12.0;
 
-    switch (totalSeats) {
-      case 2:
-        return _getPositionFor2Seats(position, tableRadius, chairRadius);
-      case 4:
-        return _getPositionFor4Seats(position, tableRadius, chairRadius);
-      case 6:
-        return _getPositionFor6Seats(position, tableRadius, chairRadius);
-      default:
-        return (left: 0.0, top: 0.0);
-    }
-  }
+    final angleStep = (2 * 3.14159) / totalSeats;
+    final angle = position * angleStep;
 
-  ({double left, double top}) _getPositionFor2Seats(
-    int position,
-    double tableRadius,
-    double chairRadius,
-  ) {
-    switch (position) {
-      case 0: // Top
-        return (left: tableRadius - chairRadius, top: -chairRadius * 2);
-      case 1: // Bottom
-        return (
-          left: tableRadius - chairRadius,
-          top: tableRadius * 2 - chairRadius,
-        );
-      default:
-        return (left: 0.0, top: 0.0);
-    }
-  }
+    // Calculate position based on angle
+    final x = tableRadius + (tableRadius + distanceFromTable) * cos(angle);
+    final y = tableRadius + (tableRadius + distanceFromTable) * sin(angle);
 
-  ({double left, double top}) _getPositionFor4Seats(
-    int position,
-    double tableRadius,
-    double chairRadius,
-  ) {
-    switch (position) {
-      case 0: // Top
-        return (left: tableRadius - chairRadius, top: -chairRadius * 2);
-      case 1: // Right
-        return (
-          left: tableRadius * 2 - chairRadius,
-          top: tableRadius - chairRadius,
-        );
-      case 2: // Bottom
-        return (
-          left: tableRadius - chairRadius,
-          top: tableRadius * 2 - chairRadius,
-        );
-      case 3: // Left
-        return (left: -chairRadius * 2, top: tableRadius - chairRadius);
-      default:
-        return (left: 0.0, top: 0.0);
-    }
-  }
-
-  ({double left, double top}) _getPositionFor6Seats(
-    int position,
-    double tableRadius,
-    double chairRadius,
-  ) {
-    switch (position) {
-      case 0: // Top Left
-        return (left: tableRadius / 2 - chairRadius, top: -chairRadius * 2);
-      case 1: // Top Right
-        return (left: tableRadius * 1.5 - chairRadius, top: -chairRadius * 2);
-      case 2: // Right Top
-        return (
-          left: tableRadius * 2 - chairRadius,
-          top: tableRadius / 2 - chairRadius,
-        );
-      case 3: // Right Bottom
-        return (
-          left: tableRadius * 2 - chairRadius,
-          top: tableRadius * 1.5 - chairRadius,
-        );
-      case 4: // Bottom Right
-        return (
-          left: tableRadius * 1.5 - chairRadius,
-          top: tableRadius * 2 - chairRadius,
-        );
-      case 5: // Bottom Left
-        return (
-          left: tableRadius / 2 - chairRadius,
-          top: tableRadius * 2 - chairRadius,
-        );
-      default:
-        return (left: 0.0, top: 0.0);
-    }
+    return (left: x - chairRadius, top: y - chairRadius);
   }
 }

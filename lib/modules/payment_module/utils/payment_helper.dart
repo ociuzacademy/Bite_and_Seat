@@ -10,7 +10,6 @@ class PaymentHelper {
   final DateTime selectedDate;
   final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
-  final String selectedRoomId;
   final String selectedTableId;
   final double totalRate;
   final ValueNotifier<String?> selectedMethod;
@@ -19,7 +18,6 @@ class PaymentHelper {
     required this.selectedDate,
     required this.selectedTimeSlot,
     required this.numberOfPersons,
-    required this.selectedRoomId,
     required this.selectedTableId,
     required this.totalRate,
     required this.selectedMethod,
@@ -37,7 +35,6 @@ class PaymentHelper {
               selectedDate: selectedDate,
               selectedTimeSlot: selectedTimeSlot,
               numberOfPersons: numberOfPersons,
-              selectedRoomId: selectedRoomId,
               selectedTableId: selectedTableId,
             );
           default:
@@ -46,7 +43,6 @@ class PaymentHelper {
               selectedDate: selectedDate,
               selectedTimeSlot: selectedTimeSlot,
               numberOfPersons: numberOfPersons,
-              selectedRoomId: selectedRoomId,
               selectedTableId: selectedTableId,
             );
         }

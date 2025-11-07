@@ -12,7 +12,6 @@ class UPIPayment extends StatefulWidget {
   final DateTime selectedDate;
   final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
-  final String selectedRoomId;
   final String selectedTableId;
   const UPIPayment({
     super.key,
@@ -20,7 +19,6 @@ class UPIPayment extends StatefulWidget {
     required this.selectedDate,
     required this.selectedTimeSlot,
     required this.numberOfPersons,
-    required this.selectedRoomId,
     required this.selectedTableId,
   });
 
@@ -43,7 +41,6 @@ class _UPIPaymentState extends State<UPIPayment> {
       selectedDate: widget.selectedDate,
       selectedTimeSlot: widget.selectedTimeSlot,
       numberOfPersons: widget.numberOfPersons,
-      selectedRoomId: widget.selectedRoomId,
       selectedTableId: widget.selectedTableId,
     );
   }

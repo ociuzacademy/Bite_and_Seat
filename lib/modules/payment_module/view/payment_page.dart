@@ -11,7 +11,6 @@ class PaymentPage extends StatefulWidget {
   final DateTime selectedDate;
   final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
-  final String selectedRoomId;
   final String selectedTableId;
   final double totalRate;
   const PaymentPage({
@@ -19,7 +18,6 @@ class PaymentPage extends StatefulWidget {
     required this.selectedDate,
     required this.selectedTimeSlot,
     required this.numberOfPersons,
-    required this.selectedRoomId,
     required this.selectedTableId,
     required this.totalRate,
   });
@@ -31,7 +29,6 @@ class PaymentPage extends StatefulWidget {
     required DateTime selectedDate,
     required CategoryTimeSlotModel selectedTimeSlot,
     required int numberOfPersons,
-    required String selectedRoomId,
     required String selectedTableId,
     required double totalRate,
   }) => MaterialPageRoute(
@@ -39,7 +36,6 @@ class PaymentPage extends StatefulWidget {
       selectedDate: selectedDate,
       selectedTimeSlot: selectedTimeSlot,
       numberOfPersons: numberOfPersons,
-      selectedRoomId: selectedRoomId,
       selectedTableId: selectedTableId,
       totalRate: totalRate,
     ),
@@ -72,7 +68,6 @@ class _PaymentPageState extends State<PaymentPage> {
       selectedDate: widget.selectedDate,
       selectedTimeSlot: widget.selectedTimeSlot,
       numberOfPersons: widget.numberOfPersons,
-      selectedRoomId: widget.selectedRoomId,
       selectedTableId: widget.selectedTableId,
       totalRate: widget.totalRate,
       selectedMethod: _selectedMethod,

@@ -103,10 +103,7 @@ class _TableBookingPageContentState extends State<_TableBookingPageContent> {
         selectedDate: provider.selectedDate,
         selectedTimeSlot: provider.selectedTimeSlot,
         numberOfPersons: provider.numberOfPeople,
-        selectedRoomId: provider.selectedRoom,
-        selectedTableId: selectedTableIds.join(
-          ', ',
-        ), // Multiple tables possible
+        selectedTableId: selectedTableIds.join(', '),
         totalRate: provider.totalBookingPrice,
       ),
     );
@@ -161,42 +158,7 @@ class _TableBookingPageContentState extends State<_TableBookingPageContent> {
             ),
           ),
 
-          // Room selection chips
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              height: 50,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: const ['room1', 'room2', 'room3'].length,
-                itemBuilder: (context, index) {
-                  final room = const ['room1', 'room2', 'room3'][index];
-                  final isSelected = provider.selectedRoom == room;
-
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: ChoiceChip(
-                      label: Text(room.toUpperCase()),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        if (selected) {
-                          provider.selectedRoom = room;
-                        }
-                      },
-                      selectedColor: AppPalette.firstColor,
-                      labelStyle: TextStyle(
-                        color: isSelected
-                            ? AppPalette.whiteColor
-                            : AppPalette.blackColor,
-                      ),
-                      backgroundColor: AppPalette.greyColor,
-                      checkmarkColor: AppPalette.whiteColor,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
+          // Removed room selection chips
 
           // Status indicators
           const Padding(
@@ -213,12 +175,12 @@ class _TableBookingPageContentState extends State<_TableBookingPageContent> {
 
           const SizedBox(height: 16),
 
-          // Room layout with tables that have available chairs
+          // All tables with available chairs (no room filtering)
           Expanded(
-            child: provider.availableTablesInRoom.isEmpty
+            child: provider.availableTables.isEmpty
                 ? const Center(
                     child: Text(
-                      'No available chairs in this room',
+                      'No available chairs',
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   )
@@ -231,9 +193,9 @@ class _TableBookingPageContentState extends State<_TableBookingPageContent> {
                           mainAxisSpacing: 16,
                           childAspectRatio: 0.9,
                         ),
-                    itemCount: provider.availableTablesInRoom.length,
+                    itemCount: provider.availableTables.length,
                     itemBuilder: (context, index) {
-                      final table = provider.availableTablesInRoom[index];
+                      final table = provider.availableTables[index];
                       return TableWidget(
                         table: table,
                         onSelectChair: (table, chair) {

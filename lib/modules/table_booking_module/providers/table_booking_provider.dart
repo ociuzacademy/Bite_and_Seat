@@ -6,7 +6,6 @@ import 'package:bite_and_seat/modules/table_booking_module/models/table_model.da
 
 class TableBookingProvider with ChangeNotifier {
   List<TableModel> _allTables = [];
-  String _selectedRoom = 'room1';
   final List<ChairModel> _selectedChairs = [];
   final DateTime selectedDate;
   final CategoryTimeSlotModel selectedTimeSlot;
@@ -22,26 +21,16 @@ class TableBookingProvider with ChangeNotifier {
 
   // Getters
   List<TableModel> get allTables => _allTables;
-  String get selectedRoom => _selectedRoom;
   List<ChairModel> get selectedChairs => _selectedChairs;
   int get selectedChairCount => _selectedChairs.length;
 
-  // Get tables in selected room that have available chairs
-  List<TableModel> get availableTablesInRoom => _allTables
-      .where(
-        (table) => table.roomId == _selectedRoom && table.hasAvailableChairs,
-      )
-      .toList();
+  // Get tables that have available chairs
+  List<TableModel> get availableTables =>
+      _allTables.where((table) => table.hasAvailableChairs).toList();
 
   // Setters
   set allTables(List<TableModel> value) {
     _allTables = value;
-    notifyListeners();
-  }
-
-  set selectedRoom(String value) {
-    _selectedRoom = value;
-    _selectedChairs.clear(); // Clear selection when changing rooms
     notifyListeners();
   }
 
@@ -120,7 +109,6 @@ class TableBookingProvider with ChangeNotifier {
       final table = _allTables.firstWhere(
         (t) => t.tableId.contains(tableId),
         orElse: () => TableModel(
-          roomId: '',
           tableId: '',
           numberOfSeats: 0,
           bookingPrice: 0,

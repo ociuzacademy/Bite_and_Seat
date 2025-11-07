@@ -14,7 +14,6 @@ class CardPayment extends StatefulWidget {
   final DateTime selectedDate;
   final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
-  final String selectedRoomId;
   final String selectedTableId;
   const CardPayment({
     super.key,
@@ -22,7 +21,6 @@ class CardPayment extends StatefulWidget {
     required this.selectedDate,
     required this.selectedTimeSlot,
     required this.numberOfPersons,
-    required this.selectedRoomId,
     required this.selectedTableId,
   });
 
@@ -49,7 +47,6 @@ class _CardPaymentState extends State<CardPayment> {
       selectedDate: widget.selectedDate,
       selectedTimeSlot: widget.selectedTimeSlot,
       numberOfPersons: widget.numberOfPersons,
-      selectedRoomId: widget.selectedRoomId,
       selectedTableId: widget.selectedTableId,
     );
   }

@@ -12,7 +12,6 @@ class UPIPaymentHelper {
   final DateTime selectedDate;
   final CategoryTimeSlotModel selectedTimeSlot;
   final int numberOfPersons;
-  final String selectedRoomId;
   final String selectedTableId;
   UPIPaymentHelper({
     required this.context,
@@ -21,7 +20,6 @@ class UPIPaymentHelper {
     required this.selectedDate,
     required this.selectedTimeSlot,
     required this.numberOfPersons,
-    required this.selectedRoomId,
     required this.selectedTableId,
   });
 
@@ -37,7 +35,6 @@ class UPIPaymentHelper {
           selectedDate: selectedDate,
           selectedTimeSlot: selectedTimeSlot,
           numberOfPersons: numberOfPersons,
-          selectedRoomId: selectedRoomId,
           selectedTableId: selectedTableId,
           totalRate: amount,
         ),

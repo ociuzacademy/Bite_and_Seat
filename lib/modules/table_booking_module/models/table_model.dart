@@ -3,14 +3,12 @@
 enum ChairStatus { available, selected, occupied }
 
 class TableModel {
-  final String roomId;
   final String tableId;
   final int numberOfSeats;
   final double bookingPrice;
   final List<ChairModel> chairs;
 
   TableModel({
-    required this.roomId,
     required this.tableId,
     required this.numberOfSeats,
     required this.bookingPrice,
@@ -22,14 +20,12 @@ class TableModel {
       chairs.any((chair) => chair.status == ChairStatus.available);
 
   TableModel copyWith({
-    String? roomId,
     String? tableId,
     int? numberOfSeats,
     double? bookingPrice,
     List<ChairModel>? chairs,
   }) {
     return TableModel(
-      roomId: roomId ?? this.roomId,
       tableId: tableId ?? this.tableId,
       numberOfSeats: numberOfSeats ?? this.numberOfSeats,
       bookingPrice: bookingPrice ?? this.bookingPrice,

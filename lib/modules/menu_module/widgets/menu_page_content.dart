@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+
 import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
 import 'package:bite_and_seat/core/bloc/booking/booking_bloc.dart';
 import 'package:bite_and_seat/core/enums/food_time.dart';
-import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
-import 'package:bite_and_seat/core/utils/app_utils.dart';
 import 'package:bite_and_seat/modules/booking_module/view/booking_page.dart';
 import 'package:bite_and_seat/modules/complaints_module/view/complaints_page.dart';
 import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu/daily_menu_cubit.dart';
@@ -16,9 +18,6 @@ import 'package:bite_and_seat/modules/orders_module/view/orders_page.dart';
 import 'package:bite_and_seat/modules/profile_module/view/profile_page.dart';
 import 'package:bite_and_seat/widgets/loaders/overlay_loader.dart';
 import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 class MenuPageContent extends StatefulWidget {
   final TabController tabController;
@@ -30,44 +29,41 @@ class MenuPageContent extends StatefulWidget {
 }
 
 class _MenuPageContentState extends State<MenuPageContent> {
-  MenuHelper? _helper;
+  late final MenuHelper _helper;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
-    // Initialize helper when dependencies change (provider becomes available)
-    if (_helper == null) {
-      _initializeHelper();
-    }
-  }
-
-  void _initializeHelper() {
     final menuStateProvider = Provider.of<MenuStateProvider>(
       context,
       listen: false,
     );
-    setState(() {
-      _helper = MenuHelper(
-        context: context,
-        menuStateProvider: menuStateProvider,
-      );
-    });
+    _helper = MenuHelper(
+      context: context,
+      menuStateProvider: menuStateProvider,
+      tabController: widget.tabController,
+    );
 
+    // Add listener to handle tab changes from both tap and swipe
+    widget.tabController.addListener(_helper.handleTabChange);
     // Load initial menu data after helper is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _helper?.loadMenuForSelectedDate();
+      _helper.loadMenuForSelectedDate();
     });
+  }
+
+  @override
+  void dispose() {
+    // Remove the listener to prevent memory leaks
+    widget.tabController.removeListener(_helper.handleTabChange);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     // Show loading if helper is not initialized
-    if (_helper == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    final helper = _helper!;
+    final helper = _helper;
 
     return Consumer<MenuStateProvider>(
       builder: (context, menuStateProvider, child) {
@@ -82,18 +78,8 @@ class _MenuPageContentState extends State<MenuPageContent> {
             bottom: TabBar(
               controller: widget.tabController,
               onTap: (value) {
-                switch (value) {
-                  case 0:
-                    menuStateProvider.setFoodTime(FoodTime.breakfast);
-                    break;
-                  case 1:
-                    menuStateProvider.setFoodTime(FoodTime.lunch);
-                    break;
-                  case 2:
-                    menuStateProvider.setFoodTime(FoodTime.eveningSnacks);
-                    break;
-                }
-                menuStateProvider.clearCart();
+                // This handles tap changes - cart clearing is now handled in _handleTabChange
+                // No need to duplicate the logic here
               },
               indicatorColor: AppPalette.secondColor,
               labelColor: AppPalette.secondColor,
@@ -198,22 +184,7 @@ class _MenuPageContentState extends State<MenuPageContent> {
                       );
                       Navigator.push(
                         context,
-                        BookingPage.route(
-                          orderId: response.order.id,
-                          cartItems: response.order.items.map((item) {
-                            return CartItemModel(
-                              itemId: item.foodItem,
-                              name: item.foodItemName,
-                              ratePerItem: double.parse(item.price),
-                              count: item.quantity,
-                              rate: double.parse(item.totalPrice),
-                            );
-                          }).toList(),
-                          foodTime: AppUtils.getFoodTimeFromCategory(
-                            response.order.category,
-                          ),
-                          selectedDate: response.order.date,
-                        ),
+                        BookingPage.route(orderId: response.order.id),
                       );
                       break;
                     default:

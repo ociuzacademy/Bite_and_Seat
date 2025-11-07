@@ -79,7 +79,7 @@ class MenuWidget extends StatelessWidget {
                   PrimaryButton(
                     text: 'BOOK NOW',
                     onPressed: onSkippingAddToCart,
-                    width: 120,
+                    width: 130,
                   ),
                 ],
               ),

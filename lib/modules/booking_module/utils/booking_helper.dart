@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/core/models/api_models/order_details_model.dart';
+import 'package:bite_and_seat/modules/booking_module/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,26 +18,25 @@ import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 class BookingHelper {
   final BuildContext context;
   final int orderId;
-  final FoodTime foodTime;
-  final List<CartItemModel> cartItems;
   final BookingStateProvider bookingStateProvider;
-  final DateTime selectedDate;
 
   const BookingHelper({
     required this.context,
     required this.orderId,
-    required this.foodTime,
-    required this.cartItems,
     required this.bookingStateProvider,
-    required this.selectedDate,
   });
 
-  void timeSlotsInit() {
+  void orderDetailsInit() {
+    final OrderCubit orderCubit = context.read<OrderCubit>();
+    orderCubit.getOrderDetails(orderId);
+  }
+
+  void timeSlotsInit(FoodTime foodTime) {
     final TimeSlotCubit timeSlotCubit = context.read<TimeSlotCubit>();
     timeSlotCubit.getCategoryTimeSlots(foodTime);
   }
 
-  void openCart() {
+  void openCart(List<CartItemModel> cartItems) {
     // Open a bottom sheet with fixed height (60% of screen)
     showModalBottomSheet(
       context: context,
@@ -58,13 +59,24 @@ class BookingHelper {
     );
   }
 
-  void submitBooking() {
+  void submitBooking(OrderDetailsModel orderDetails) {
     // Handle booking submission
     if (bookingStateProvider.selectedTimeSlot == null) {
       CustomSnackbar.showError(context, message: 'Please select a time slot');
       bookingStateProvider.setCurrentStep(0); // Go back to time slot selection
       return;
     }
+
+    final String startTime = TimeUtils.formatTimeOfDay(
+      TimeUtils.stringToTimeOfDay(
+        bookingStateProvider.selectedTimeSlot!.startTime,
+      ),
+    );
+    final String endTime = TimeUtils.formatTimeOfDay(
+      TimeUtils.stringToTimeOfDay(
+        bookingStateProvider.selectedTimeSlot!.endTime,
+      ),
+    );
 
     // Show confirmation dialog
     showDialog(
@@ -75,10 +87,8 @@ class BookingHelper {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Date: ${formatDate(selectedDate)}'),
-            Text(
-              'Time: ${bookingStateProvider.selectedTimeSlot!.startTime} - ${bookingStateProvider.selectedTimeSlot!.endTime}',
-            ),
+            Text('Date: ${formatDate(orderDetails.date)}'),
+            Text('Time: $startTime - $endTime'),
             Text('Number of persons: ${bookingStateProvider.numberOfPersons}'),
           ],
         ),
@@ -89,6 +99,7 @@ class BookingHelper {
           ),
           TextButton(
             onPressed: () {
+              Navigator.pop(context);
               final Step2BookingDetails bookingDetails = Step2BookingDetails(
                 selectedSlotId: bookingStateProvider.selectedTimeSlot!.id,
                 numberOfPersons: bookingStateProvider.numberOfPersons,
@@ -109,13 +120,13 @@ class BookingHelper {
   }
 
   // Helper methods
-  bool isSameDay(DateTime date1, DateTime date2) {
+  static bool isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
   }
 
-  String getDayName(int weekday) {
+  static String getDayName(int weekday) {
     switch (weekday) {
       case 1:
         return 'Mon';
@@ -136,7 +147,7 @@ class BookingHelper {
     }
   }
 
-  String getMonthName(int month) {
+  static String getMonthName(int month) {
     switch (month) {
       case 1:
         return 'Jan';
@@ -167,18 +178,18 @@ class BookingHelper {
     }
   }
 
-  String formatTimeOfDay(TimeOfDay time) {
+  static String formatTimeOfDay(TimeOfDay time) {
     final hour = time.hourOfPeriod;
     final minute = time.minute.toString().padLeft(2, '0');
     final period = time.period == DayPeriod.am ? 'AM' : 'PM';
     return '$hour:$minute $period';
   }
 
-  String formatDate(DateTime date) {
+  static String formatDate(DateTime date) {
     return '${getDayName(date.weekday)}, ${date.day} ${getMonthName(date.month)} ${date.year}';
   }
 
-  List<TimeSlotModel> getTimeSlots(FoodTime foodTime) {
+  static List<TimeSlotModel> getTimeSlots(FoodTime foodTime) {
     switch (foodTime) {
       case FoodTime.breakfast:
         return AppConstants.morningSlots;
@@ -186,6 +197,17 @@ class BookingHelper {
         return AppConstants.afternoonSlots;
       case FoodTime.eveningSnacks:
         return AppConstants.eveningSlots;
+    }
+  }
+
+  static FoodTime getFoodTime(int categoryId) {
+    switch (categoryId) {
+      case 1:
+        return FoodTime.breakfast;
+      case 2:
+        return FoodTime.lunch;
+      default:
+        return FoodTime.eveningSnacks;
     }
   }
 }

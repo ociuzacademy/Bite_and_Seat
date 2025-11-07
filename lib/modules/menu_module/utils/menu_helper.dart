@@ -1,12 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
 import 'package:bite_and_seat/core/bloc/booking/booking_bloc.dart';
 import 'package:bite_and_seat/core/constants/app_urls.dart';
+import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:bite_and_seat/core/enums/food_time.dart';
 import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/models/food_item.dart';
@@ -21,8 +20,52 @@ import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 class MenuHelper {
   final BuildContext context;
   final MenuStateProvider menuStateProvider;
+  final TabController tabController;
+  const MenuHelper({
+    required this.context,
+    required this.menuStateProvider,
+    required this.tabController,
+  });
 
-  const MenuHelper({required this.context, required this.menuStateProvider});
+  void handleTabChange() {
+    debugPrint(
+      'Tab change detected - indexIsChanging: ${tabController.indexIsChanging}, index: ${tabController.index}',
+    );
+
+    // Handle when the tab change animation completes
+    if (!tabController.indexIsChanging) {
+      debugPrint(
+        'Tab change completed - updating state for index: ${tabController.index}',
+      );
+
+      final menuStateProvider = Provider.of<MenuStateProvider>(
+        context,
+        listen: false,
+      );
+
+      // Update food time based on current tab index
+      FoodTime newFoodTime;
+      switch (tabController.index) {
+        case 0:
+          newFoodTime = FoodTime.breakfast;
+          break;
+        case 1:
+          newFoodTime = FoodTime.lunch;
+          break;
+        case 2:
+          newFoodTime = FoodTime.eveningSnacks;
+          break;
+        default:
+          newFoodTime = FoodTime.breakfast;
+      }
+
+      debugPrint('Setting food time to: $newFoodTime');
+      menuStateProvider.setFoodTime(newFoodTime);
+
+      debugPrint('Clearing cart');
+      menuStateProvider.clearCart();
+    }
+  }
 
   // Function to add a new item to the cart
   void addItemToCart(FoodItem foodItem) {
@@ -113,7 +156,7 @@ class MenuHelper {
     }
 
     final Step1BookingDetails bookingDetails = Step1BookingDetails(
-      bookingType: BookingType.tableOnly,
+      bookingType: BookingType.prebooked,
       categoryId: _getCategoryId(menuStateProvider.foodTime),
       bookingDate: menuStateProvider.selectedDate,
       items: menuStateProvider.cartItems.map((item) {

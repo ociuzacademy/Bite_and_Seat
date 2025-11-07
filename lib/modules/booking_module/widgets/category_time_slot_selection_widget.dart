@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/modules/booking_module/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bite_and_seat/core/theme/app_palette.dart';
@@ -58,10 +59,10 @@ class CategoryTimeSlotSelectionWidget extends StatelessWidget {
                     width: 2,
                   ),
                 ),
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 child: Center(
                   child: Text(
-                    '${slot.startTime} - ${slot.endTime}',
+                    '${TimeUtils.formatTimeOfDay(TimeUtils.stringToTimeOfDay(slot.startTime))} - ${TimeUtils.formatTimeOfDay(TimeUtils.stringToTimeOfDay(slot.endTime))}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: isSelected ? Colors.white : Colors.black,
@@ -75,7 +76,7 @@ class CategoryTimeSlotSelectionWidget extends StatelessWidget {
         if (selectedTimeSlot != null) ...[
           const SizedBox(height: 16),
           Text(
-            'Selected: ${selectedTimeSlot!.startTime} - ${selectedTimeSlot!.endTime}',
+            'Selected: ${TimeUtils.formatTimeOfDay(TimeUtils.stringToTimeOfDay(selectedTimeSlot!.startTime))} - ${TimeUtils.formatTimeOfDay(TimeUtils.stringToTimeOfDay(selectedTimeSlot!.endTime))}',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

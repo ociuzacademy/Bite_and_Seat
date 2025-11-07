@@ -8,8 +8,8 @@ class AppUrls {
 
   static const String step1Url = '$userappUrl/create-step1/';
 
-  static const String orderDetailsUrl = '$userappUrl/view-order/';
-  static const String categoryTimeSlotsrl = '$userappUrl/user-time-slots/';
+  static const String orderDetailsUrl = '$userappUrl/view-order';
+  static const String categoryTimeSlotsUrl = '$userappUrl/user-time-slots/';
 
   static const String step2Url = '$userappUrl/update-step2';
 }

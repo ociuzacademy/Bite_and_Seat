@@ -4,9 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:bite_and_seat/modules/booking_module/utils/time_utils.dart';
-import 'package:flutter/material.dart';
-
 List<CategoryTimeSlotModel> categoryTimeSlotModelFromJson(String str) =>
     List<CategoryTimeSlotModel>.from(
       json.decode(str).map((x) => CategoryTimeSlotModel.fromJson(x)),
@@ -22,17 +19,13 @@ class CategoryTimeSlotModel {
   final String startTime;
   final String endTime;
 
-  CategoryTimeSlotModel({
+  const CategoryTimeSlotModel({
     required this.id,
     required this.categoryName,
     required this.categoryId,
     required this.startTime,
     required this.endTime,
   });
-
-  /// ✅ Convert "HH:mm:ss" → TimeOfDay
-  TimeOfDay get startTimeOfDay => TimeUtils.stringToTimeOfDay(startTime);
-  TimeOfDay get endTimeOfDay => TimeUtils.stringToTimeOfDay(endTime);
 
   CategoryTimeSlotModel copyWith({
     int? id,

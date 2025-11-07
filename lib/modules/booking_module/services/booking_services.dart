@@ -16,9 +16,11 @@ class BookingServices {
     required FoodTime foodTime,
   }) async {
     try {
-      Map<String, dynamic> params = {'category_id': _getCategoryId(foodTime)};
+      Map<String, dynamic> params = {
+        'category_id': _getCategoryId(foodTime).toString(),
+      };
       final url = Uri.parse(
-        AppUrls.categoryTimeSlotsrl,
+        AppUrls.categoryTimeSlotsUrl,
       ).replace(queryParameters: params);
 
       // Create a timeout duration
@@ -44,6 +46,7 @@ class BookingServices {
           );
 
       if (resp.statusCode == 200) {
+        debugPrint(resp.body);
         final List<dynamic> decoded = jsonDecode(resp.body);
         final response = decoded
             .map((item) => CategoryTimeSlotModel.fromJson(item))

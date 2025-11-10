@@ -1,36 +1,44 @@
 // table_booking_provider.dart
 import 'package:flutter/material.dart';
 
-import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 import 'package:bite_and_seat/modules/table_booking_module/models/table_model.dart';
 
 class TableBookingProvider with ChangeNotifier {
   List<TableModel> _allTables = [];
   final List<ChairModel> _selectedChairs = [];
-  final DateTime selectedDate;
-  final CategoryTimeSlotModel selectedTimeSlot;
-  final int numberOfPeople;
-  final double totalRate;
 
-  TableBookingProvider({
-    required this.selectedDate,
-    required this.selectedTimeSlot,
-    required this.numberOfPeople,
-    required this.totalRate,
-  });
+  int? _numberOfPeople;
+  double? _totalRate;
 
-  // Getters
+  // Getters with null safety
   List<TableModel> get allTables => _allTables;
   List<ChairModel> get selectedChairs => _selectedChairs;
   int get selectedChairCount => _selectedChairs.length;
+  int? get numberOfPeople => _numberOfPeople;
+  double? get totalRate => _totalRate;
 
-  // Get tables that have available chairs
-  List<TableModel> get availableTables =>
-      _allTables.where((table) => table.hasAvailableChairs).toList();
+  // Get tables that have available chairs OR selected chairs
+  List<TableModel> get availableTables => _allTables
+      .where(
+        (table) =>
+            table.hasAvailableChairs ||
+            table.chairs.any((chair) => chair.status == ChairStatus.selected),
+      )
+      .toList();
 
   // Setters
   set allTables(List<TableModel> value) {
     _allTables = value;
+    notifyListeners();
+  }
+
+  set numberOfPeople(int? people) {
+    _numberOfPeople = people;
+    notifyListeners();
+  }
+
+  set totalRate(double? rate) {
+    _totalRate = rate;
     notifyListeners();
   }
 
@@ -43,6 +51,9 @@ class TableBookingProvider with ChangeNotifier {
   void toggleChairSelection(TableModel table, ChairModel chair) {
     // If chair is occupied, cannot select
     if (chair.status == ChairStatus.occupied) return;
+
+    // If numberOfPeople is not set, cannot proceed with selection
+    if (_numberOfPeople == null) return;
 
     final tableIndex = _allTables.indexWhere((t) => t.tableId == table.tableId);
     if (tableIndex == -1) return;
@@ -61,7 +72,7 @@ class TableBookingProvider with ChangeNotifier {
       _selectedChairs.removeWhere((c) => c.chairId == chair.chairId);
     } else {
       // Check if we can select more chairs
-      if (_selectedChairs.length >= numberOfPeople) {
+      if (_selectedChairs.length >= _numberOfPeople!) {
         // Cannot select more than needed
         return;
       }
@@ -93,21 +104,20 @@ class TableBookingProvider with ChangeNotifier {
   }
 
   bool get canProceedToPayment {
-    return _selectedChairs.length == numberOfPeople;
+    return _numberOfPeople != null &&
+        _selectedChairs.length == _numberOfPeople!;
   }
 
   double get totalBookingPrice {
-    if (_selectedChairs.isEmpty) return totalRate;
+    if (_selectedChairs.isEmpty) return _totalRate ?? 0;
 
     // Calculate price based on tables used (group chairs by table)
-    final tableIds = _selectedChairs.map((chair) {
-      return chair.chairId.split('_table')[1].split('_chair')[0];
-    }).toSet();
+    final tableIds = _getSelectedTableIds();
 
     double tableCost = 0;
     for (final tableId in tableIds) {
       final table = _allTables.firstWhere(
-        (t) => t.tableId.contains(tableId),
+        (t) => t.tableId == tableId,
         orElse: () => TableModel(
           tableId: '',
           numberOfSeats: 0,
@@ -118,18 +128,33 @@ class TableBookingProvider with ChangeNotifier {
       tableCost += table.bookingPrice;
     }
 
-    return totalRate + tableCost;
+    return (_totalRate ?? 0) + tableCost;
   }
 
   // Get selected tables (tables that have selected chairs)
   List<TableModel> get selectedTables {
-    final selectedTableIds = _selectedChairs.map((chair) {
-      return chair.chairId.split('_table')[1].split('_chair')[0];
-    }).toSet();
+    if (_selectedChairs.isEmpty) return [];
+
+    final selectedTableIds = _getSelectedTableIds();
 
     return _allTables.where((table) {
-      final tableIdPart = table.tableId.split('_table')[1];
-      return selectedTableIds.contains(tableIdPart);
+      return selectedTableIds.contains(table.tableId);
     }).toList();
+  }
+
+  // Helper method to get table IDs from selected chairs
+  Set<String> _getSelectedTableIds() {
+    final tableIds = <String>{};
+
+    for (final chair in _selectedChairs) {
+      // Extract table ID from chair ID (format: "table1_chair0")
+      final parts = chair.chairId.split('_');
+      if (parts.length >= 2) {
+        // The table ID is the first part (e.g., "table1")
+        tableIds.add(parts[0]);
+      }
+    }
+
+    return tableIds;
   }
 }

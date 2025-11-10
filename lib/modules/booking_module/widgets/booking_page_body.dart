@@ -80,20 +80,19 @@ class _BookingPageBodyState extends State<BookingPageBody> {
                   CustomSnackbar.showError(context, message: errorMessage);
                   break;
                 case Step2Completed(:final response):
+                  final bookingStateProvider =
+                      Provider.of<BookingStateProvider>(context, listen: false);
                   OverlayLoader.hide();
                   CustomSnackbar.showSuccess(
                     context,
                     message: response.message,
                   );
-                  final bookingStateProvider =
-                      Provider.of<BookingStateProvider>(context, listen: false);
+
                   Navigator.push(
                     context,
                     TableBookingPage.route(
-                      selectedDate: response.order.date,
-                      selectedTimeSlot: bookingStateProvider.selectedTimeSlot!,
-                      numberOfPeople: bookingStateProvider.numberOfPersons,
-                      totalRate: double.parse(response.order.totalAmount),
+                      orderId: widget.orderId,
+                      slotId: bookingStateProvider.selectedTimeSlot!.id,
                     ),
                   );
                   break;

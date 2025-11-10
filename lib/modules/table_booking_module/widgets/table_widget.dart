@@ -20,70 +20,68 @@ class TableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.2),
-              spreadRadius: 1,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Table info
-            Column(
-              children: [
-                Text(
-                  table.tableId,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.2),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Table info
+          Column(
+            children: [
+              Text(
+                table.tableId,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '${table.numberOfSeats} Seats - \u{20B9}${table.bookingPrice.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 12),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${table.numberOfSeats} Seats - \u{20B9}${table.bookingPrice.toStringAsFixed(2)}',
+                style: const TextStyle(fontSize: 12),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${_getAvailableChairCount()} available',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: _getAvailableChairCount() > 0
+                      ? Colors.green
+                      : Colors.red,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '${_getAvailableChairCount()} available',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: _getAvailableChairCount() > 0
-                        ? Colors.green
-                        : Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
+          ),
 
-            const SizedBox(height: 8),
+          const SizedBox(height: 8),
 
-            // Table visualization with chairs
-            _buildTableWithChairs(),
+          // Table visualization with chairs
+          _buildTableWithChairs(),
 
-            const SizedBox(height: 8),
+          const SizedBox(height: 8),
 
-            // Available chairs info
-            Text(
-              '${_getAvailableChairCount()}/${table.numberOfSeats} available',
-              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
+          // Available chairs info
+          Text(
+            '${_getAvailableChairCount()}/${table.numberOfSeats} available',
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }
@@ -96,15 +94,15 @@ class TableWidget extends StatelessWidget {
 
   Widget _buildTableWithChairs() {
     return SizedBox(
-      width: 100,
-      height: 100,
+      width: 110, // Slightly reduced for better fit
+      height: 110, // Slightly reduced for better fit
       child: Stack(
         alignment: Alignment.center,
         children: [
           // Table
           Container(
-            width: 60,
-            height: 60,
+            width: 50, // Reduced table size
+            height: 50, // Reduced table size
             decoration: BoxDecoration(
               color: _getTableColor(),
               borderRadius: BorderRadius.circular(8),
@@ -114,7 +112,7 @@ class TableWidget extends StatelessWidget {
               child: Text(
                 table.numberOfSeats.toString(),
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 12, // Reduced font size
                   fontWeight: FontWeight.bold,
                   color: _getTableTextColor(),
                 ),
@@ -170,8 +168,8 @@ class TableWidget extends StatelessWidget {
               }
             },
             child: Container(
-              width: 16,
-              height: 16,
+              width: 14, // Slightly smaller chairs
+              height: 14, // Slightly smaller chairs
               decoration: BoxDecoration(
                 color: _getChairColor(chair.status),
                 shape: BoxShape.circle,
@@ -212,17 +210,26 @@ class TableWidget extends StatelessWidget {
   }
 
   ({double left, double top}) _getChairPosition(int position, int totalSeats) {
-    const tableRadius = 30.0;
-    const chairRadius = 8.0;
-    const distanceFromTable = 12.0;
+    const containerSize = 110.0;
+    const tableSize = 50.0;
+    const chairSize = 14.0;
+    const distanceFromTable = 10.0;
 
-    final angleStep = (2 * 3.14159) / totalSeats;
-    final angle = position * angleStep;
+    // Calculate the radius of the circle for chairs
+    const circleRadius = (tableSize / 2) + distanceFromTable;
 
-    // Calculate position based on angle
-    final x = tableRadius + (tableRadius + distanceFromTable) * cos(angle);
-    final y = tableRadius + (tableRadius + distanceFromTable) * sin(angle);
+    // Calculate angle for each chair
+    final angleStep = (2 * pi) / totalSeats;
+    // Start from top (270 degrees or -90 degrees) and go clockwise
+    final angle = (position * angleStep) - (pi / 2);
 
-    return (left: x - chairRadius, top: y - chairRadius);
+    // Calculate position
+    const centerX = containerSize / 2;
+    const centerY = containerSize / 2;
+
+    final x = centerX + circleRadius * cos(angle);
+    final y = centerY + circleRadius * sin(angle);
+
+    return (left: x - (chairSize / 2), top: y - (chairSize / 2));
   }
 }

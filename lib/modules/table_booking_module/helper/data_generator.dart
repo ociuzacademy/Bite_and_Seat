@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:bite_and_seat/modules/table_booking_module/models/table_model.dart';
 
 class DataGenerator {
-  List<TableModel> generateRandomTableData() {
+  static List<TableModel> generateRandomTableData() {
     final random = Random();
     final seatOptions = [2, 4, 6]; // Only 2, 4, or 6 seats
 

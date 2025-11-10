@@ -12,4 +12,5 @@ class AppUrls {
   static const String categoryTimeSlotsUrl = '$userappUrl/user-time-slots/';
 
   static const String step2Url = '$userappUrl/update-step2';
+  static const String allTableSeatsUrl = '$userappUrl/all-tables-seats/';
 }

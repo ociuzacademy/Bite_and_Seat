@@ -2,104 +2,29 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bite_and_seat/modules/payment_module/classes/card_data.dart';
+import 'package:bite_and_seat/modules/payment_module/classes/u_p_i_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
 import 'package:bite_and_seat/core/constants/app_constants.dart';
 import 'package:bite_and_seat/core/constants/app_urls.dart';
-import 'package:bite_and_seat/core/models/api_models/booking_response_model.dart';
-import 'package:bite_and_seat/modules/table_booking_module/models/all_table_seats_model.dart';
-import 'package:bite_and_seat/modules/table_booking_module/models/selected_tables_model.dart';
+import 'package:bite_and_seat/modules/payment_module/models/payment_response_model.dart';
 
-class TableBookingServices {
-  static Future<AllTableSeatsModel> getAllTableSeats({
-    required DateTime orderDate,
-    required int slotId,
-  }) async {
-    try {
-      final DateFormat formatter = DateFormat('yyyy-MM-dd');
-      final String formattedDate = formatter.format(orderDate);
-      final Map<String, dynamic> params = {
-        'date': formattedDate,
-        'time_slot': slotId.toString(),
-      };
-      final url = Uri.parse(
-        AppUrls.allTableSeatsUrl,
-      ).replace(queryParameters: params);
-
-      // Create a timeout duration
-      const Duration timeoutDuration = Duration(
-        seconds: AppConstants.requestTimeoutSeconds,
-      );
-
-      // Make the HTTP request with timeout
-      final resp = await http
-          .get(
-            url,
-            headers: <String, String>{
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-          )
-          .timeout(
-            timeoutDuration,
-            onTimeout: () {
-              throw TimeoutException(
-                'Request timed out after ${AppConstants.requestTimeoutSeconds} seconds',
-              );
-            },
-          );
-
-      if (resp.statusCode == 200) {
-        final dynamic decoded = jsonDecode(resp.body);
-        final AllTableSeatsModel response = AllTableSeatsModel.fromJson(
-          decoded,
-        );
-        debugPrint(response.toString());
-        return response;
-      } else {
-        final Map<String, dynamic> errorResponse = jsonDecode(resp.body);
-
-        throw Exception('${errorResponse['error'] ?? 'Unknown error'}');
-      }
-    } on TimeoutException catch (e) {
-      debugPrint('MenuServices: Request timeout - $e');
-      throw Exception(
-        'Request timeout. Please check your internet connection and try again.',
-      );
-    } on SocketException {
-      throw Exception(
-        'No internet connection. Please check your network settings.',
-      );
-    } on HttpException {
-      throw Exception('Server error. Please try again later.');
-    } on FormatException {
-      throw Exception('Invalid response format. Please try again.');
-    } catch (e) {
-      debugPrint('MenuServices: Unexpected error - $e');
-      throw Exception('Something went wrong. Please try again.');
-    }
-  }
-
-  static Future<BookingResponseModel> bookingStep3({
-    required int orderId,
-    required SelectedTablesModel selectedTables,
+class PaymentServices {
+  static Future<PaymentResponseModel> submitUpiPayment({
+    required UPIData upiData,
   }) async {
     try {
       Map<String, dynamic> params = {
-        'tables': selectedTables.tables.map((table) {
-          return {
-            'table_id': table.selectedTableId.toString(),
-            'seat_ids': table.selectedSeats
-                .map((seat) => seat.toString())
-                .toList(),
-          };
-        }).toList(),
+        'order': upiData.paymentData.orderId,
+        'payment_method': upiData.paymentData.paymentMethod.toString(),
+        'upi_id': upiData.upiId,
       };
 
       final resp = await http
-          .put(
-            Uri.parse('${AppUrls.step3Url}/$orderId/'),
+          .post(
+            Uri.parse(AppUrls.paymentUrl),
             body: jsonEncode(params),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=utf-8',
@@ -114,17 +39,74 @@ class TableBookingServices {
             },
           );
 
-      if (resp.statusCode == 200) {
+      if (resp.statusCode == 201) {
         final dynamic decoded = jsonDecode(resp.body);
-        final BookingResponseModel response = BookingResponseModel.fromJson(
+        final PaymentResponseModel response = PaymentResponseModel.fromJson(
           decoded,
         );
         return response;
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(resp.body);
-        debugPrint(errorResponse.toString());
         throw Exception(
-          'Failed to booking: ${errorResponse['error'] ?? 'Unknown error'}',
+          'Failed to login: ${errorResponse['message'] ?? 'Unknown error'}',
+        );
+      }
+    } on TimeoutException catch (e) {
+      debugPrint('MenuServices: Request timeout - $e');
+      throw Exception(
+        'Request timeout. Please check your internet connection and try again.',
+      );
+    } on SocketException {
+      throw Exception('No Internet connection');
+    } on HttpException {
+      throw Exception('Server error');
+    } on FormatException {
+      throw Exception('Bad response format');
+    } catch (e) {
+      throw Exception('Unexpected error: ${e.toString()}');
+    }
+  }
+
+  static Future<PaymentResponseModel> submitCardPayment({
+    required CardData cardData,
+  }) async {
+    try {
+      Map<String, dynamic> params = {
+        'order': cardData.paymentData.orderId,
+        'payment_method': cardData.paymentData.paymentMethod.toString(),
+        'cardholder_name': cardData.cardholderName,
+        'card_number': cardData.cardNumber,
+        'expiry_date': cardData.expiryDate,
+        'cvv_number': cardData.cvvNumber,
+      };
+
+      final resp = await http
+          .post(
+            Uri.parse(AppUrls.paymentUrl),
+            body: jsonEncode(params),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+          )
+          .timeout(
+            const Duration(seconds: AppConstants.requestTimeoutSeconds),
+            onTimeout: () {
+              throw TimeoutException(
+                'Request timed out after ${AppConstants.requestTimeoutSeconds} seconds',
+              );
+            },
+          );
+
+      if (resp.statusCode == 201) {
+        final dynamic decoded = jsonDecode(resp.body);
+        final PaymentResponseModel response = PaymentResponseModel.fromJson(
+          decoded,
+        );
+        return response;
+      } else {
+        final Map<String, dynamic> errorResponse = jsonDecode(resp.body);
+        throw Exception(
+          'Failed to login: ${errorResponse['message'] ?? 'Unknown error'}',
         );
       }
     } on TimeoutException catch (e) {

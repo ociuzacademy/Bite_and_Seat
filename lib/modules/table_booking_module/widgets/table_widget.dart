@@ -41,7 +41,7 @@ class TableWidget extends StatelessWidget {
           Column(
             children: [
               Text(
-                table.tableId,
+                table.tableName,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,

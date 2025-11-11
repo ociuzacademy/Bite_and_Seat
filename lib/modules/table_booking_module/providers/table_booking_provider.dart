@@ -1,7 +1,8 @@
 // table_booking_provider.dart
 import 'package:flutter/material.dart';
-
 import 'package:bite_and_seat/modules/table_booking_module/models/table_model.dart';
+import 'package:bite_and_seat/modules/table_booking_module/models/selected_table_seat_model.dart';
+import 'package:bite_and_seat/modules/table_booking_module/models/selected_tables_model.dart';
 
 class TableBookingProvider with ChangeNotifier {
   List<TableModel> _allTables = [];
@@ -109,26 +110,8 @@ class TableBookingProvider with ChangeNotifier {
   }
 
   double get totalBookingPrice {
-    if (_selectedChairs.isEmpty) return _totalRate ?? 0;
-
-    // Calculate price based on tables used (group chairs by table)
-    final tableIds = _getSelectedTableIds();
-
-    double tableCost = 0;
-    for (final tableId in tableIds) {
-      final table = _allTables.firstWhere(
-        (t) => t.tableId == tableId,
-        orElse: () => TableModel(
-          tableId: '',
-          numberOfSeats: 0,
-          bookingPrice: 0,
-          chairs: [],
-        ),
-      );
-      tableCost += table.bookingPrice;
-    }
-
-    return (_totalRate ?? 0) + tableCost;
+    // Return only the base rate from the order (no additional seat charges)
+    return _totalRate ?? 0;
   }
 
   // Get selected tables (tables that have selected chairs)
@@ -142,16 +125,72 @@ class TableBookingProvider with ChangeNotifier {
     }).toList();
   }
 
+  // Get individual table-seat combinations
+  List<SelectedTableSeatModel> getSelectedTablesSeats() {
+    final Map<int, List<int>> tableSeatMap = {};
+
+    // Group selected chairs by table
+    for (final chair in _selectedChairs) {
+      // Find which table this chair belongs to
+      final table = _findTableForChair(chair.chairId);
+      if (table != null) {
+        final tableId = table.tableId;
+        if (!tableSeatMap.containsKey(tableId)) {
+          tableSeatMap[tableId] = [];
+        }
+        tableSeatMap[tableId]!.add(chair.chairId);
+      }
+    }
+
+    // Convert to SelectedTableSeatModel list
+    return tableSeatMap.entries.map((entry) {
+      return SelectedTableSeatModel(
+        selectedTableId: entry.key,
+        selectedSeats: entry.value,
+      );
+    }).toList();
+  }
+
+  // Get the complete selected tables model
+  SelectedTablesModel get selectedTablesModel {
+    return SelectedTablesModel(tables: getSelectedTablesSeats());
+  }
+
+  // Get booking data in the required API format using SelectedTablesModel
+  Map<String, dynamic> getBookingData() {
+    final selectedTablesModel = this.selectedTablesModel;
+
+    return {
+      'tables': selectedTablesModel.tables
+          .map(
+            (tableSeat) => {
+              'table_id': tableSeat.selectedTableId,
+              'seat_ids': tableSeat.selectedSeats,
+            },
+          )
+          .toList(),
+    };
+  }
+
+  // Helper method to find which table a chair belongs to
+  TableModel? _findTableForChair(int chairId) {
+    for (final table in _allTables) {
+      final chairExists = table.chairs.any((chair) => chair.chairId == chairId);
+      if (chairExists) {
+        return table;
+      }
+    }
+    return null;
+  }
+
   // Helper method to get table IDs from selected chairs
-  Set<String> _getSelectedTableIds() {
-    final tableIds = <String>{};
+  Set<int> _getSelectedTableIds() {
+    final tableIds = <int>{};
 
     for (final chair in _selectedChairs) {
-      // Extract table ID from chair ID (format: "table1_chair0")
-      final parts = chair.chairId.split('_');
-      if (parts.length >= 2) {
-        // The table ID is the first part (e.g., "table1")
-        tableIds.add(parts[0]);
+      final table = _findTableForChair(chair.chairId);
+      if (table != null) {
+        tableIds.add(table.tableId);
       }
     }
 

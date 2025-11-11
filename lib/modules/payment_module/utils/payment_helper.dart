@@ -1,50 +1,40 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// payment_helper.dart
+import 'package:bite_and_seat/modules/payment_module/enums/payment_method.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
+import 'package:bite_and_seat/modules/payment_module/providers/payment_provider.dart';
 import 'package:bite_and_seat/modules/payment_module/widgets/card_payment.dart';
 import 'package:bite_and_seat/modules/payment_module/widgets/u_p_i_payment.dart';
 
 class PaymentHelper {
   final BuildContext context;
-  final DateTime selectedDate;
-  final CategoryTimeSlotModel selectedTimeSlot;
-  final int numberOfPersons;
-  final String selectedTableId;
+  final int orderId;
   final double totalRate;
-  final ValueNotifier<String?> selectedMethod;
-  PaymentHelper({
+
+  const PaymentHelper({
     required this.context,
-    required this.selectedDate,
-    required this.selectedTimeSlot,
-    required this.numberOfPersons,
-    required this.selectedTableId,
+    required this.orderId,
     required this.totalRate,
-    required this.selectedMethod,
   });
 
   void makePayment() {
+    final paymentProvider = Provider.of<PaymentProvider>(
+      context,
+      listen: false,
+    );
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        switch (selectedMethod.value) {
-          case 'UPI':
-            return UPIPayment(
-              amount: totalRate,
-              selectedDate: selectedDate,
-              selectedTimeSlot: selectedTimeSlot,
-              numberOfPersons: numberOfPersons,
-              selectedTableId: selectedTableId,
-            );
+        // The bottom sheet will automatically have access to the same PaymentProvider
+        // because it's a child of the PaymentPage
+        switch (paymentProvider.selectedPaymentMethod) {
+          case PaymentMethod.upi:
+            return UPIPayment(orderId: orderId, amount: totalRate);
           default:
-            return CardPayment(
-              amount: totalRate,
-              selectedDate: selectedDate,
-              selectedTimeSlot: selectedTimeSlot,
-              numberOfPersons: numberOfPersons,
-              selectedTableId: selectedTableId,
-            );
+            return CardPayment(orderId: orderId, amount: totalRate);
         }
       },
     );

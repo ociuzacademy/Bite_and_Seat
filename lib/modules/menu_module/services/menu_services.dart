@@ -145,7 +145,7 @@ class MenuServices {
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(resp.body);
         throw Exception(
-          'Failed to login: ${errorResponse['message'] ?? 'Unknown error'}',
+          'Failed to booking: ${errorResponse['message'] ?? 'Unknown error'}',
         );
       }
     } on TimeoutException catch (e) {

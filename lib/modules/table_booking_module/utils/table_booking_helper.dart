@@ -1,8 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/core/exports/bloc_exports.dart';
-import 'package:bite_and_seat/modules/table_booking_module/cubit/table_seats_list_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
+import 'package:bite_and_seat/modules/table_booking_module/providers/table_booking_provider.dart';
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class TableBookingHelper {
   final int orderId;
@@ -18,5 +20,21 @@ class TableBookingHelper {
     final TableSeatsListCubit tableSeatsListCubit = context
         .read<TableSeatsListCubit>();
     tableSeatsListCubit.getAllTableSeatsList(orderDate, slotId);
+  }
+
+  void submitBookingStep3() {
+    final provider = Provider.of<TableBookingProvider>(context, listen: false);
+
+    if (!provider.canProceedToPayment) {
+      CustomSnackbar.showError(
+        context,
+        message: 'Please select exactly ${provider.numberOfPeople} chairs',
+      );
+      return;
+    }
+    final BookingBloc bookingBloc = context.read<BookingBloc>();
+    bookingBloc.add(
+      BookingEvent.step3BookingStarted(orderId, provider.selectedTablesModel),
+    );
   }
 }

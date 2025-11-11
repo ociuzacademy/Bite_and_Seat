@@ -3,52 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 
 import 'package:bite_and_seat/core/theme/app_palette.dart';
-import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
 import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
 
 class QRCodePage extends StatelessWidget {
-  final DateTime selectedDate;
-  final CategoryTimeSlotModel selectedTimeSlot;
-  final int numberOfPersons;
-  final String selectedTableId;
-  final double totalRate;
+  final int orderId;
 
-  const QRCodePage({
-    super.key,
-    required this.selectedDate,
-    required this.selectedTimeSlot,
-    required this.numberOfPersons,
-    required this.selectedTableId,
-    required this.totalRate,
-  });
+  const QRCodePage({super.key, required this.orderId});
 
-  static route({
-    required DateTime selectedDate,
-    required CategoryTimeSlotModel selectedTimeSlot,
-    required int numberOfPersons,
-    required String selectedTableId,
-    required double totalRate,
-  }) => MaterialPageRoute(
-    builder: (context) => QRCodePage(
-      selectedDate: selectedDate,
-      selectedTimeSlot: selectedTimeSlot,
-      numberOfPersons: numberOfPersons,
-      selectedTableId: selectedTableId,
-      totalRate: totalRate,
-    ),
-  );
+  static route({required int orderId}) =>
+      MaterialPageRoute(builder: (context) => QRCodePage(orderId: orderId));
 
   @override
   Widget build(BuildContext context) {
     // Data to encode in QR
-    final qrData = {
-      'date': selectedDate.toIso8601String(),
-      'startTime': selectedTimeSlot.startTime,
-      'endTime': selectedTimeSlot.endTime,
-      'persons': numberOfPersons,
-      'tableId': selectedTableId,
-      'totalRate': totalRate,
-    };
+    final qrData = {'order_id': orderId};
 
     final qrCode = QrCode.fromData(
       data: qrData.toString(),

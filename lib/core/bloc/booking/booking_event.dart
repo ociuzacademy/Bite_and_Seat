@@ -10,4 +10,8 @@ sealed class BookingEvent with _$BookingEvent {
     int orderId,
     Step2BookingDetails bookingDetails,
   ) = _Step2BookingStarted;
+  const factory BookingEvent.step3BookingStarted(
+    int orderId,
+    SelectedTablesModel selectedTables,
+  ) = _Step3BookingStarted;
 }

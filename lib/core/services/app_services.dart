@@ -40,6 +40,7 @@ class AppServices {
       if (resp.statusCode == 200) {
         final dynamic decoded = jsonDecode(resp.body);
         final OrderDetailsModel response = OrderDetailsModel.fromJson(decoded);
+        debugPrint(resp.body);
         return response;
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(resp.body);

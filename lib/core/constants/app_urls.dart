@@ -13,4 +13,8 @@ class AppUrls {
 
   static const String step2Url = '$userappUrl/update-step2';
   static const String allTableSeatsUrl = '$userappUrl/all-tables-seats/';
+
+  static const String step3Url = '$userappUrl/update-step3';
+
+  static const String paymentUrl = '$userappUrl/make-payment/';
 }

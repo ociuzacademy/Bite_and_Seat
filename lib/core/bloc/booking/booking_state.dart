@@ -9,4 +9,6 @@ sealed class BookingState with _$BookingState {
       Step1Completed;
   const factory BookingState.step2Completed(BookingResponseModel response) =
       Step2Completed;
+  const factory BookingState.step3Completed(BookingResponseModel response) =
+      Step3Completed;
 }

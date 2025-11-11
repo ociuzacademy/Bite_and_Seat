@@ -1,21 +1,22 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // table_booking_page_content.dart
 
-import 'package:bite_and_seat/modules/table_booking_module/models/table_model.dart';
+import 'package:bite_and_seat/modules/payment_module/view/payment_page.dart';
+import 'package:bite_and_seat/widgets/loaders/overlay_loader.dart';
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
-import 'package:bite_and_seat/modules/table_booking_module/cubit/table_seats_list_cubit.dart';
+import 'package:bite_and_seat/modules/table_booking_module/models/table_model.dart';
 import 'package:bite_and_seat/modules/table_booking_module/providers/table_booking_provider.dart';
 import 'package:bite_and_seat/modules/table_booking_module/utils/table_booking_helper.dart';
 import 'package:bite_and_seat/modules/table_booking_module/widgets/status_indicator.dart';
 import 'package:bite_and_seat/modules/table_booking_module/widgets/table_widget.dart';
 import 'package:bite_and_seat/widgets/custom_error_widget.dart';
 import 'package:bite_and_seat/widgets/loaders/custom_loading_widget.dart';
-import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class TableBookingPageContent extends StatefulWidget {
   final int orderId;
@@ -43,34 +44,6 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _tableBookingHelper.orderDetailsInit();
     });
-  }
-
-  void _proceedToPayment() {
-    final provider = Provider.of<TableBookingProvider>(context, listen: false);
-
-    if (!provider.canProceedToPayment) {
-      CustomSnackbar.showError(
-        context,
-        message: 'Please select exactly ${provider.numberOfPeople} chairs',
-      );
-      return;
-    }
-
-    // Get table IDs from selected tables
-    // final selectedTableIds = provider.selectedTables
-    //     .map((table) => table.tableId)
-    //     .toSet();
-
-    // Navigator.push(
-    //   context,
-    //   PaymentPage.route(
-    //     selectedDate: provider.selectedDate,
-    //     selectedTimeSlot: provider.selectedTimeSlot,
-    //     numberOfPersons: provider.numberOfPeople,
-    //     selectedTableId: selectedTableIds.join(', '),
-    //     totalRate: provider.totalBookingPrice,
-    //   ),
-    // );
   }
 
   @override
@@ -117,13 +90,14 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                   final List<TableModel> tables = tableSeatsList.data
                       .map(
                         (table) => TableModel(
-                          tableId: '${table.id}',
+                          tableId: table.id,
+                          tableName: table.tableName,
                           numberOfSeats: table.numberOfSeats,
                           bookingPrice: table.numberOfSeats * 5,
                           chairs: table.seats
                               .map(
                                 (seat) => ChairModel(
-                                  chairId: '${seat.id}',
+                                  chairId: seat.id,
                                   status: seat.isBooked
                                       ? ChairStatus.occupied
                                       : ChairStatus.available,
@@ -139,6 +113,39 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                 default:
               }
             },
+          ),
+          BlocListener<BookingBloc, BookingState>(
+            listener: (context, state) {
+              switch (state) {
+                case BookingInitial _:
+                case BookingLoading _:
+                  OverlayLoader.show(
+                    context,
+                    message: 'Booking tables and chairs...',
+                  );
+                  break;
+                case BookingError(:final errorMessage):
+                  OverlayLoader.hide();
+                  CustomSnackbar.showError(context, message: errorMessage);
+                  break;
+                case Step3Completed(:final response):
+                  OverlayLoader.hide();
+                  CustomSnackbar.showSuccess(
+                    context,
+                    message: response.message,
+                  );
+                  Navigator.push(
+                    context,
+                    PaymentPage.route(
+                      orderId: widget.orderId,
+                      totalRate: double.parse(response.order.totalAmount),
+                    ),
+                  );
+                  break;
+                default:
+              }
+            },
+            child: Container(),
           ),
         ],
         child: BlocBuilder<OrderCubit, OrderState>(
@@ -195,7 +202,7 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Selected: //${provider.selectedChairCount}/${provider.numberOfPeople} chairs',
+                                        'Selected: ${provider.selectedChairCount}/${provider.numberOfPeople} chairs',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
@@ -291,7 +298,7 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: provider.canProceedToPayment
-                                      ? _proceedToPayment
+                                      ? _tableBookingHelper.submitBookingStep3
                                       : null,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:

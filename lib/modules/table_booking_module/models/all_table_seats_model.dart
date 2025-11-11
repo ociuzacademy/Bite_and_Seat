@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 // To parse this JSON data, do
 //
 //     final allTableSeatsModel = allTableSeatsModelFromJson(jsonString);
@@ -49,6 +50,11 @@ class AllTableSeatsModel {
     'filters': filters.toJson(),
     'data': List<dynamic>.from(data.map((x) => x.toJson())),
   };
+
+  @override
+  String toString() {
+    return 'AllTableSeatsModel(status: $status, totalTables: $totalTables, filters: $filters, data: $data)';
+  }
 }
 
 class Datum {
@@ -89,6 +95,11 @@ class Datum {
     'number_of_seats': numberOfSeats,
     'seats': List<dynamic>.from(seats.map((x) => x.toJson())),
   };
+
+  @override
+  String toString() {
+    return 'Datum(id: $id, tableName: $tableName, numberOfSeats: $numberOfSeats, seats: $seats)';
+  }
 }
 
 class Seat {
@@ -119,6 +130,10 @@ class Seat {
     'seat_number': seatNumber,
     'is_booked': isBooked,
   };
+
+  @override
+  String toString() =>
+      'Seat(id: $id, seatNumber: $seatNumber, isBooked: $isBooked)';
 }
 
 class Filters {
@@ -147,4 +162,8 @@ class Filters {
     'category': category,
     'time_slot_id': timeSlotId,
   };
+
+  @override
+  String toString() =>
+      'Filters(date: $date, category: $category, timeSlotId: $timeSlotId)';
 }

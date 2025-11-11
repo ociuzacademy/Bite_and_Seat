@@ -1,28 +1,20 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// card_payment.dart
+import 'package:bite_and_seat/modules/payment_module/utils/card_payment_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:bite_and_seat/core/theme/app_palette.dart';
-import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
-import 'package:bite_and_seat/modules/payment_module/utils/card_payment_helper.dart';
+import 'package:bite_and_seat/modules/payment_module/providers/payment_provider.dart';
 import 'package:bite_and_seat/modules/payment_module/widgets/expiry_date_field.dart';
 import 'package:bite_and_seat/modules/payment_module/widgets/payment_container.dart';
 import 'package:bite_and_seat/widgets/buttons/custom_button.dart';
 import 'package:bite_and_seat/widgets/text_fields/normal_text_field.dart';
 
 class CardPayment extends StatefulWidget {
+  final int orderId;
   final double amount;
-  final DateTime selectedDate;
-  final CategoryTimeSlotModel selectedTimeSlot;
-  final int numberOfPersons;
-  final String selectedTableId;
-  const CardPayment({
-    super.key,
-    required this.amount,
-    required this.selectedDate,
-    required this.selectedTimeSlot,
-    required this.numberOfPersons,
-    required this.selectedTableId,
-  });
+
+  const CardPayment({super.key, required this.orderId, required this.amount});
 
   @override
   State<CardPayment> createState() => _CardPaymentState();
@@ -31,40 +23,23 @@ class CardPayment extends StatefulWidget {
 class _CardPaymentState extends State<CardPayment> {
   late final CardPaymentHelper _cardPaymentHelper;
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _cardNameController = TextEditingController();
-  final TextEditingController _cardNumberController = TextEditingController();
-  final TextEditingController _expiryDateController = TextEditingController();
-  final TextEditingController _cvvController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     _cardPaymentHelper = CardPaymentHelper(
       context: context,
-      formKey: _formKey,
+      orderId: widget.orderId,
       amount: widget.amount,
-      selectedDate: widget.selectedDate,
-      selectedTimeSlot: widget.selectedTimeSlot,
-      numberOfPersons: widget.numberOfPersons,
-      selectedTableId: widget.selectedTableId,
     );
   }
 
   @override
-  void dispose() {
-    _cardNameController.dispose();
-    _cardNumberController.dispose();
-    _expiryDateController.dispose();
-    _cvvController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final paymentProvider = Provider.of<PaymentProvider>(context);
+
     return PaymentContainer(
       paymentForm: Form(
-        key: _formKey,
+        key: paymentProvider.cardFormKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +50,7 @@ class _CardPaymentState extends State<CardPayment> {
             ),
             const SizedBox(height: 16),
             NormalTextField(
-              textEditingController: _cardNameController,
+              textEditingController: paymentProvider.cardNameController,
               validatorFunction: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter the cardholder name';
@@ -85,26 +60,25 @@ class _CardPaymentState extends State<CardPayment> {
               labelText: 'Cardholder Name',
               hintText: "Enter cardholder's name",
               onChange: (value) {
-                _cardNameController.value = _cardNameController.value.copyWith(
-                  text: value?.toUpperCase(), // Convert to uppercase
-                  selection: TextSelection.collapsed(
-                    offset: value!.length, // Keep cursor at the end
-                  ),
-                );
+                paymentProvider.cardNameController.value = paymentProvider
+                    .cardNameController
+                    .value
+                    .copyWith(
+                      text: value?.toUpperCase(),
+                      selection: TextSelection.collapsed(offset: value!.length),
+                    );
               },
             ),
             const SizedBox(height: 16),
             NormalTextField(
-              textEditingController: _cardNumberController,
+              textEditingController: paymentProvider.cardNumberController,
               validatorFunction: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter the card number';
                 }
-
                 if (value.length != 16) {
                   return 'Card number must have only 16 digits';
                 }
-
                 return null;
               },
               labelText: 'Card Number',
@@ -115,12 +89,14 @@ class _CardPaymentState extends State<CardPayment> {
             Row(
               children: [
                 Expanded(
-                  child: ExpiryDateField(controller: _expiryDateController),
+                  child: ExpiryDateField(
+                    controller: paymentProvider.expiryDateController,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: TextFormField(
-                    controller: _cvvController,
+                    controller: paymentProvider.cvvController,
                     decoration: const InputDecoration(
                       labelText: 'CVV',
                       border: OutlineInputBorder(),
@@ -131,11 +107,9 @@ class _CardPaymentState extends State<CardPayment> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter the CVV';
                       }
-
                       if (value.length != 3) {
                         return 'CVV must have only 3 digits';
                       }
-
                       return null;
                     },
                   ),

@@ -1,26 +1,18 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
+// u_p_i_payment.dart
+import 'package:bite_and_seat/modules/payment_module/utils/u_p_i_payment_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:bite_and_seat/core/theme/app_palette.dart';
-import 'package:bite_and_seat/modules/payment_module/utils/u_p_i_payment_helper.dart';
+import 'package:bite_and_seat/modules/payment_module/providers/payment_provider.dart';
 import 'package:bite_and_seat/modules/payment_module/widgets/payment_container.dart';
 import 'package:bite_and_seat/widgets/buttons/custom_button.dart';
 
 class UPIPayment extends StatefulWidget {
+  final int orderId;
   final double amount;
-  final DateTime selectedDate;
-  final CategoryTimeSlotModel selectedTimeSlot;
-  final int numberOfPersons;
-  final String selectedTableId;
-  const UPIPayment({
-    super.key,
-    required this.amount,
-    required this.selectedDate,
-    required this.selectedTimeSlot,
-    required this.numberOfPersons,
-    required this.selectedTableId,
-  });
+
+  const UPIPayment({super.key, required this.orderId, required this.amount});
 
   @override
   State<UPIPayment> createState() => _UPIPaymentState();
@@ -28,31 +20,21 @@ class UPIPayment extends StatefulWidget {
 
 class _UPIPaymentState extends State<UPIPayment> {
   late final UPIPaymentHelper _upiPaymentHelper;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _upiController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _upiPaymentHelper = UPIPaymentHelper(
       context: context,
-      formKey: _formKey,
+      orderId: widget.orderId,
       amount: widget.amount,
-      selectedDate: widget.selectedDate,
-      selectedTimeSlot: widget.selectedTimeSlot,
-      numberOfPersons: widget.numberOfPersons,
-      selectedTableId: widget.selectedTableId,
     );
   }
 
   @override
-  void dispose() {
-    _upiController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final paymentProvider = Provider.of<PaymentProvider>(context);
+
     return PaymentContainer(
       paymentForm: Column(
         mainAxisSize: MainAxisSize.min,
@@ -64,9 +46,9 @@ class _UPIPaymentState extends State<UPIPayment> {
           ),
           const SizedBox(height: 16),
           Form(
-            key: _formKey,
+            key: paymentProvider.upiFormKey,
             child: TextFormField(
-              controller: _upiController,
+              controller: paymentProvider.upiController,
               decoration: const InputDecoration(
                 labelText: 'UPI ID',
                 border: OutlineInputBorder(),
@@ -75,7 +57,6 @@ class _UPIPaymentState extends State<UPIPayment> {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your UPI ID';
                 }
-
                 final RegExp regex = RegExp(
                   r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$',
                 );

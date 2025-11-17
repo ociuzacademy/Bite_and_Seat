@@ -38,9 +38,12 @@ class Order {
   final int id;
   final List<Item> items;
   final List<OrderSeat> orderSeats;
+  final int? timeSlotId;
+  final String? slotStartTime;
+  final String? slotEndTime;
+  final String? slotCategoryName;
   final String bookingType;
   final DateTime date;
-  final String? timeSlot;
   final int? numberOfPersons;
   final List<Table> tables;
   final String tableCharge;
@@ -49,14 +52,18 @@ class Order {
   final DateTime createdAt;
   final int user;
   final int category;
+  final int? timeSlot;
 
   const Order({
     required this.id,
     required this.items,
     required this.orderSeats,
+    this.timeSlotId,
+    this.slotStartTime,
+    this.slotEndTime,
+    this.slotCategoryName,
     required this.bookingType,
     required this.date,
-    this.timeSlot,
     this.numberOfPersons,
     required this.tables,
     required this.tableCharge,
@@ -65,15 +72,19 @@ class Order {
     required this.createdAt,
     required this.user,
     required this.category,
+    this.timeSlot,
   });
 
   Order copyWith({
     int? id,
     List<Item>? items,
     List<OrderSeat>? orderSeats,
+    int? timeSlotId,
+    String? slotStartTime,
+    String? slotEndTime,
+    String? slotCategoryName,
     String? bookingType,
     DateTime? date,
-    String? timeSlot,
     int? numberOfPersons,
     List<Table>? tables,
     String? tableCharge,
@@ -82,13 +93,17 @@ class Order {
     DateTime? createdAt,
     int? user,
     int? category,
+    int? timeSlot,
   }) => Order(
     id: id ?? this.id,
     items: items ?? this.items,
     orderSeats: orderSeats ?? this.orderSeats,
+    timeSlotId: timeSlotId ?? this.timeSlotId,
+    slotStartTime: slotStartTime ?? this.slotStartTime,
+    slotEndTime: slotEndTime ?? this.slotEndTime,
+    slotCategoryName: slotCategoryName ?? this.slotCategoryName,
     bookingType: bookingType ?? this.bookingType,
     date: date ?? this.date,
-    timeSlot: timeSlot ?? this.timeSlot,
     numberOfPersons: numberOfPersons ?? this.numberOfPersons,
     tables: tables ?? this.tables,
     tableCharge: tableCharge ?? this.tableCharge,
@@ -97,6 +112,7 @@ class Order {
     createdAt: createdAt ?? this.createdAt,
     user: user ?? this.user,
     category: category ?? this.category,
+    timeSlot: timeSlot ?? this.timeSlot,
   );
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
@@ -105,9 +121,12 @@ class Order {
     orderSeats: List<OrderSeat>.from(
       json['order_seats'].map((x) => OrderSeat.fromJson(x)),
     ),
+    timeSlotId: json['time_slot_id'],
+    slotStartTime: json['slot_start_time'],
+    slotEndTime: json['slot_end_time'],
+    slotCategoryName: json['slot_category_name'],
     bookingType: json['booking_type'],
     date: DateTime.parse(json['date']),
-    timeSlot: json['time_slot'],
     numberOfPersons: json['number_of_persons'],
     tables: List<Table>.from(json['tables'].map((x) => Table.fromJson(x))),
     tableCharge: json['table_charge'],
@@ -116,16 +135,20 @@ class Order {
     createdAt: DateTime.parse(json['created_at']),
     user: json['user'],
     category: json['category'],
+    timeSlot: json['time_slot'],
   );
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'items': List<dynamic>.from(items.map((x) => x.toJson())),
     'order_seats': List<dynamic>.from(orderSeats.map((x) => x.toJson())),
+    'time_slot_id': timeSlotId,
+    'slot_start_time': slotStartTime,
+    'slot_end_time': slotEndTime,
+    'slot_category_name': slotCategoryName,
     'booking_type': bookingType,
     'date':
         "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-    'time_slot': timeSlot,
     'number_of_persons': numberOfPersons,
     'tables': List<dynamic>.from(tables.map((x) => x.toJson())),
     'table_charge': tableCharge,
@@ -134,6 +157,7 @@ class Order {
     'created_at': createdAt.toIso8601String(),
     'user': user,
     'category': category,
+    'time_slot': timeSlot,
   };
 }
 
@@ -251,21 +275,21 @@ class Seat {
 }
 
 class Table {
-  final List<int> seatIds;
-  final int tableId;
+  final String tableId;
+  final List<String> seatIds;
 
-  const Table({required this.seatIds, required this.tableId});
+  const Table({required this.tableId, required this.seatIds});
 
-  Table copyWith({List<int>? seatIds, int? tableId}) =>
-      Table(seatIds: seatIds ?? this.seatIds, tableId: tableId ?? this.tableId);
+  Table copyWith({String? tableId, List<String>? seatIds}) =>
+      Table(tableId: tableId ?? this.tableId, seatIds: seatIds ?? this.seatIds);
 
   factory Table.fromJson(Map<String, dynamic> json) => Table(
-    seatIds: List<int>.from(json['seat_ids'].map((x) => x)),
     tableId: json['table_id'],
+    seatIds: List<String>.from(json['seat_ids'].map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
-    'seat_ids': List<dynamic>.from(seatIds.map((x) => x)),
     'table_id': tableId,
+    'seat_ids': List<dynamic>.from(seatIds.map((x) => x)),
   };
 }

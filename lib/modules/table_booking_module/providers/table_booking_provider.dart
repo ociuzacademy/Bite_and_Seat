@@ -10,6 +10,7 @@ class TableBookingProvider with ChangeNotifier {
 
   int? _numberOfPeople;
   double? _totalRate;
+  int? _slotId;
 
   // Getters with null safety
   List<TableModel> get allTables => _allTables;
@@ -17,6 +18,7 @@ class TableBookingProvider with ChangeNotifier {
   int get selectedChairCount => _selectedChairs.length;
   int? get numberOfPeople => _numberOfPeople;
   double? get totalRate => _totalRate;
+  int? get slotId => _slotId;
 
   // Get tables that have available chairs OR selected chairs
   List<TableModel> get availableTables => _allTables
@@ -40,6 +42,11 @@ class TableBookingProvider with ChangeNotifier {
 
   set totalRate(double? rate) {
     _totalRate = rate;
+    notifyListeners();
+  }
+
+  set slotId(int? slot) {
+    _slotId = slot;
     notifyListeners();
   }
 

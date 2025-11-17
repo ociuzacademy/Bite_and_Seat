@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/modules/menu_module/widgets/disabled_tab_content.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -20,6 +21,8 @@ class DailyMenuTabContent extends StatelessWidget {
   final CartItemFunction onRemovingQuantity;
   final CartItemFunction onAddingQuantity;
   final VoidCallback onSkippingAddToCart;
+  final bool isTabEnabled; // Add this
+
   const DailyMenuTabContent({
     super.key,
     required this.menuState,
@@ -30,10 +33,15 @@ class DailyMenuTabContent extends StatelessWidget {
     required this.onRemovingQuantity,
     required this.onAddingQuantity,
     required this.onSkippingAddToCart,
+    required this.isTabEnabled, // Add this parameter
   });
 
   @override
   Widget build(BuildContext context) {
+    if (!isTabEnabled) {
+      return DisabledTabContent(foodTime: foodTime);
+    }
+
     switch (menuState) {
       case DailyMenuInitial():
       case DailyMenuLoading():
@@ -51,7 +59,7 @@ class DailyMenuTabContent extends StatelessWidget {
           message: message,
           formatedDate: formattedDate,
           onBookTable: onSkippingAddToCart,
-          onRetry: loadMenuForSelectedDate, // Optional retry button
+          onRetry: loadMenuForSelectedDate,
         );
       case DailyMenuSuccess(:final dailyMenu):
         final foodItems = MenuHelper.getFoodItemsForTime(dailyMenu, foodTime);

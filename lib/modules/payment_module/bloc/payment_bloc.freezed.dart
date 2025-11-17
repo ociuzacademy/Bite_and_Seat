@@ -662,12 +662,12 @@ $PaymentSuccessCopyWith<PaymentSuccess> get copyWith => _$PaymentSuccessCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentSuccess&&const DeepCollectionEquality().equals(other.response, response));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentSuccess&&(identical(other.response, response) || other.response == response));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(response));
+int get hashCode => Object.hash(runtimeType,response);
 
 @override
 String toString() {
@@ -699,9 +699,9 @@ class _$PaymentSuccessCopyWithImpl<$Res>
 
 /// Create a copy of PaymentState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? response = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? response = null,}) {
   return _then(PaymentSuccess(
-freezed == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
+null == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
 as PaymentResponseModel,
   ));
 }

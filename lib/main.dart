@@ -30,10 +30,13 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => AuthBloc()),
         BlocProvider(create: (context) => DailyMenuCubit()),
-        BlocProvider(create: (context) => BookingBloc()),
         BlocProvider(create: (context) => OrderCubit()),
         BlocProvider(create: (context) => TimeSlotCubit()),
         BlocProvider(create: (context) => TableSeatsListCubit()),
+        BlocProvider(create: (context) => MenuBookingBloc()),
+        BlocProvider(create: (context) => TimeSlotBookingBloc()),
+        BlocProvider(create: (context) => TableSeatsBookingBloc()),
+        BlocProvider(create: (context) => PaymentBloc()),
       ],
       child: MaterialApp(
         title: 'Bite&Seat',

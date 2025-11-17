@@ -8,22 +8,15 @@ import 'package:bite_and_seat/modules/table_booking_module/widgets/table_booking
 
 class TableBookingPage extends StatefulWidget {
   final int orderId;
-  final int slotId;
 
-  const TableBookingPage({
-    super.key,
-    required this.orderId,
-    required this.slotId,
-  });
+  const TableBookingPage({super.key, required this.orderId});
 
   @override
   State<TableBookingPage> createState() => _TableBookingPageState();
 
-  static route({required int orderId, required int slotId}) =>
-      MaterialPageRoute(
-        builder: (context) =>
-            TableBookingPage(orderId: orderId, slotId: slotId),
-      );
+  static route({required int orderId}) => MaterialPageRoute(
+    builder: (context) => TableBookingPage(orderId: orderId),
+  );
 }
 
 class _TableBookingPageState extends State<TableBookingPage> {
@@ -31,10 +24,7 @@ class _TableBookingPageState extends State<TableBookingPage> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => TableBookingProvider(),
-      child: TableBookingPageContent(
-        orderId: widget.orderId,
-        slotId: widget.slotId,
-      ),
+      child: TableBookingPageContent(orderId: widget.orderId),
     );
   }
 }

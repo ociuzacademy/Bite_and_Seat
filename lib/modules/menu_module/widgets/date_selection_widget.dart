@@ -5,12 +5,14 @@ class DateSelectionWidget extends StatelessWidget {
   final DateTime selectedDate;
   final String dateSelectionType;
   final Future<void> Function() onDateSelected;
+  final VoidCallback onTodaySelected;
 
   const DateSelectionWidget({
     super.key,
     required this.selectedDate,
     required this.dateSelectionType,
     required this.onDateSelected,
+    required this.onTodaySelected,
   });
 
   @override
@@ -21,7 +23,7 @@ class DateSelectionWidget extends StatelessWidget {
         color: AppPalette.whiteColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.2),
+            color: Colors.grey.withValues(alpha: 0.2), // FIXED: Use withOpacity
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -48,14 +50,12 @@ class DateSelectionWidget extends StatelessWidget {
                     value: 'Today',
                     groupValue: dateSelectionType,
                     onChanged: (value) {
-                      // This will be handled by the parent through callbacks
+                      onTodaySelected();
                     },
                     activeColor: AppPalette.firstColor,
                   ),
                   GestureDetector(
-                    onTap: () {
-                      // This will be handled by the parent through callbacks
-                    },
+                    onTap: onTodaySelected,
                     child: const Text(
                       'Today',
                       style: TextStyle(
@@ -73,7 +73,7 @@ class DateSelectionWidget extends StatelessWidget {
                     value: 'Custom Date',
                     groupValue: dateSelectionType,
                     onChanged: (value) {
-                      // This will be handled by the parent through callbacks
+                      onDateSelected();
                     },
                     activeColor: AppPalette.firstColor,
                   ),

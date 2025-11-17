@@ -16,7 +16,7 @@ class OrderDetailsModel {
   final String bookingType;
   final int category;
   final DateTime date;
-  final String? timeSlot;
+  final int? timeSlot;
   final int? numberOfPersons;
   final List<Table> tables;
   final String tableCharge;
@@ -49,7 +49,7 @@ class OrderDetailsModel {
     String? bookingType,
     int? category,
     DateTime? date,
-    String? timeSlot,
+    int? timeSlot,
     int? numberOfPersons,
     List<Table>? tables,
     String? tableCharge,

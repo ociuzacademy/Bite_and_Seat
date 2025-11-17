@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
-import 'package:bite_and_seat/core/bloc/booking/booking_bloc.dart';
 import 'package:bite_and_seat/core/enums/food_time.dart';
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/booking_module/view/booking_page.dart';
 import 'package:bite_and_seat/modules/complaints_module/view/complaints_page.dart';
-import 'package:bite_and_seat/modules/menu_module/cubit/daily_menu/daily_menu_cubit.dart';
 import 'package:bite_and_seat/modules/menu_module/providers/menu_state_provider.dart';
 import 'package:bite_and_seat/modules/menu_module/utils/menu_helper.dart';
 import 'package:bite_and_seat/modules/menu_module/widgets/cart_bottom_bar.dart';
@@ -50,6 +48,7 @@ class _MenuPageContentState extends State<MenuPageContent> {
     // Load initial menu data after helper is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _helper.loadMenuForSelectedDate();
+      _helper.autoSwitchToAvailableTab();
     });
   }
 
@@ -77,22 +76,23 @@ class _MenuPageContentState extends State<MenuPageContent> {
             iconTheme: const IconThemeData(color: AppPalette.whiteColor),
             bottom: TabBar(
               controller: widget.tabController,
-              onTap: (value) {
-                // This handles tap changes - cart clearing is now handled in _handleTabChange
-                // No need to duplicate the logic here
+              onTap: (index) {
+                // Check if tab should be enabled based on time restrictions
+                if (_helper.isTabEnabled(
+                  index,
+                  menuStateProvider.selectedDate,
+                )) {
+                  widget.tabController.animateTo(index);
+                } else {
+                  // Show error message if tab is disabled
+                  _helper.showTabDisabledMessage(index);
+                }
               },
               indicatorColor: AppPalette.secondColor,
               labelColor: AppPalette.secondColor,
               unselectedLabelColor: AppPalette.greyColor,
               labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              tabs: const <Widget>[
-                Tab(
-                  icon: Icon(Icons.breakfast_dining, size: 24),
-                  text: 'Breakfast',
-                ),
-                Tab(icon: Icon(Icons.lunch_dining, size: 24), text: 'Lunch'),
-                Tab(icon: Icon(Icons.coffee, size: 24), text: 'Snacks'),
-              ],
+              tabs: _buildTabs(menuStateProvider.selectedDate),
             ),
           ),
           drawer: Drawer(
@@ -166,17 +166,17 @@ class _MenuPageContentState extends State<MenuPageContent> {
                   }
                 },
               ),
-              BlocListener<BookingBloc, BookingState>(
+              BlocListener<MenuBookingBloc, MenuBookingState>(
                 listener: (context, state) {
                   switch (state) {
-                    case BookingLoading _:
+                    case MenuBookingLoading():
                       OverlayLoader.show(context, message: 'Step 1...');
                       break;
-                    case BookingError(:final errorMessage):
+                    case MenuBookingError(:final errorMessage):
                       OverlayLoader.hide();
                       CustomSnackbar.showError(context, message: errorMessage);
                       break;
-                    case Step1Completed(:final response):
+                    case MenuBookingSuccess(:final response):
                       OverlayLoader.hide();
                       CustomSnackbar.showSuccess(
                         context,
@@ -188,6 +188,9 @@ class _MenuPageContentState extends State<MenuPageContent> {
                       );
                       break;
                     default:
+                      OverlayLoader.hide();
+
+                      break;
                   }
                 },
               ),
@@ -199,9 +202,12 @@ class _MenuPageContentState extends State<MenuPageContent> {
                   selectedDate: menuStateProvider.selectedDate,
                   dateSelectionType: menuStateProvider.dateSelectionType,
                   onDateSelected: () async {
-                    await helper.selectCustomDate();
-                    // Reload menu after date selection
-                    helper.loadMenuForSelectedDate();
+                    await _helper.selectCustomDate();
+                    _helper.loadMenuForSelectedDate();
+                  },
+                  onTodaySelected: () {
+                    _helper.selectToday();
+                    _helper.loadMenuForSelectedDate();
                   },
                 ),
 
@@ -217,33 +223,45 @@ class _MenuPageContentState extends State<MenuPageContent> {
                             foodTime: FoodTime.breakfast,
                             cartItems: menuStateProvider.cartItems,
                             loadMenuForSelectedDate:
-                                helper.loadMenuForSelectedDate,
-                            onAddingItem: helper.addItemToCart,
-                            onRemovingQuantity: helper.decreaseQuantity,
-                            onAddingQuantity: helper.increaseQuantity,
-                            onSkippingAddToCart: helper.skipAddToCartProcess,
+                                _helper.loadMenuForSelectedDate,
+                            onAddingItem: _helper.addItemToCart,
+                            onRemovingQuantity: _helper.decreaseQuantity,
+                            onAddingQuantity: _helper.increaseQuantity,
+                            onSkippingAddToCart: _helper.skipAddToCartProcess,
+                            isTabEnabled: _isTabEnabled(
+                              0,
+                              menuStateProvider.selectedDate,
+                            ), // Add this
                           ),
                           DailyMenuTabContent(
                             menuState: menuState,
                             foodTime: FoodTime.lunch,
                             cartItems: menuStateProvider.cartItems,
                             loadMenuForSelectedDate:
-                                helper.loadMenuForSelectedDate,
-                            onAddingItem: helper.addItemToCart,
-                            onRemovingQuantity: helper.decreaseQuantity,
-                            onAddingQuantity: helper.increaseQuantity,
-                            onSkippingAddToCart: helper.skipAddToCartProcess,
+                                _helper.loadMenuForSelectedDate,
+                            onAddingItem: _helper.addItemToCart,
+                            onRemovingQuantity: _helper.decreaseQuantity,
+                            onAddingQuantity: _helper.increaseQuantity,
+                            onSkippingAddToCart: _helper.skipAddToCartProcess,
+                            isTabEnabled: _isTabEnabled(
+                              1,
+                              menuStateProvider.selectedDate,
+                            ), // Add this
                           ),
                           DailyMenuTabContent(
                             menuState: menuState,
                             foodTime: FoodTime.eveningSnacks,
                             cartItems: menuStateProvider.cartItems,
                             loadMenuForSelectedDate:
-                                helper.loadMenuForSelectedDate,
-                            onAddingItem: helper.addItemToCart,
-                            onRemovingQuantity: helper.decreaseQuantity,
-                            onAddingQuantity: helper.increaseQuantity,
-                            onSkippingAddToCart: helper.skipAddToCartProcess,
+                                _helper.loadMenuForSelectedDate,
+                            onAddingItem: _helper.addItemToCart,
+                            onRemovingQuantity: _helper.decreaseQuantity,
+                            onAddingQuantity: _helper.increaseQuantity,
+                            onSkippingAddToCart: _helper.skipAddToCartProcess,
+                            isTabEnabled: _isTabEnabled(
+                              2,
+                              menuStateProvider.selectedDate,
+                            ), // Add this
                           ),
                         ],
                       );
@@ -262,5 +280,70 @@ class _MenuPageContentState extends State<MenuPageContent> {
         );
       },
     );
+  }
+
+  List<Widget> _buildTabs(DateTime selectedDate) {
+    return <Widget>[
+      Tab(
+        icon: Icon(
+          Icons.breakfast_dining,
+          size: 24,
+          color: _helper.isTabEnabled(0, selectedDate)
+              ? AppPalette.secondColor
+              : Colors.grey,
+        ),
+        text: 'Breakfast',
+      ),
+      Tab(
+        icon: Icon(
+          Icons.lunch_dining,
+          size: 24,
+          color: _helper.isTabEnabled(1, selectedDate)
+              ? AppPalette.secondColor
+              : Colors.grey,
+        ),
+        text: 'Lunch',
+      ),
+      Tab(
+        icon: Icon(
+          Icons.coffee,
+          size: 24,
+          color: _helper.isTabEnabled(2, selectedDate)
+              ? AppPalette.secondColor
+              : Colors.grey,
+        ),
+        text: 'Snacks',
+      ),
+    ];
+  }
+
+  bool _isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
+  }
+
+  bool _isTabEnabled(int tabIndex, DateTime selectedDate) {
+    if (!_isToday(selectedDate)) {
+      return true; // All tabs enabled for future dates
+    }
+
+    final now = DateTime.now();
+    final currentTime = TimeOfDay.fromDateTime(now);
+
+    switch (tabIndex) {
+      case 0: // Breakfast
+        return currentTime.hour < 11 ||
+            (currentTime.hour == 11 && currentTime.minute == 0);
+      case 1: // Lunch
+        return currentTime.hour < 15 ||
+            (currentTime.hour == 15 && currentTime.minute == 0);
+      case 2: // Evening Snacks
+        return currentTime.hour < 18 ||
+            (currentTime.hour == 18 && currentTime.minute == 0);
+      default:
+        return true;
+    }
   }
 }

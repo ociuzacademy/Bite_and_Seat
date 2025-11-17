@@ -35,6 +35,22 @@ class MenuStateProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Update the food time based on tab index
+  void setFoodTimeFromTabIndex(int tabIndex) {
+    switch (tabIndex) {
+      case 0:
+        _foodTime = FoodTime.breakfast;
+        break;
+      case 1:
+        _foodTime = FoodTime.lunch;
+        break;
+      case 2:
+        _foodTime = FoodTime.eveningSnacks;
+        break;
+    }
+    notifyListeners();
+  }
+
   // Cart operations
   void clearCart() {
     _cartItems = [];

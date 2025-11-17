@@ -20,12 +20,7 @@ import 'package:bite_and_seat/widgets/loaders/custom_loading_widget.dart';
 
 class TableBookingPageContent extends StatefulWidget {
   final int orderId;
-  final int slotId;
-  const TableBookingPageContent({
-    super.key,
-    required this.orderId,
-    required this.slotId,
-  });
+  const TableBookingPageContent({super.key, required this.orderId});
 
   @override
   State<TableBookingPageContent> createState() =>
@@ -71,12 +66,12 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                     listen: false,
                   );
                   provider.numberOfPeople = orderDetails.numberOfPersons;
-                  provider.totalRate = double.tryParse(
-                    orderDetails.totalAmount,
-                  );
+                  provider.totalRate =
+                      double.parse(orderDetails.totalAmount) +
+                      orderDetails.numberOfPersons! * 5.0;
                   _tableBookingHelper.tableSeatsListInit(
                     orderDetails.date,
-                    widget.slotId,
+                    orderDetails.timeSlot!,
                   );
                   break;
                 default:
@@ -114,21 +109,20 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
               }
             },
           ),
-          BlocListener<BookingBloc, BookingState>(
+          BlocListener<TableSeatsBookingBloc, TableSeatsBookingState>(
             listener: (context, state) {
               switch (state) {
-                case BookingInitial _:
-                case BookingLoading _:
+                case TableSeatsBookingLoading _:
                   OverlayLoader.show(
                     context,
                     message: 'Booking tables and chairs...',
                   );
                   break;
-                case BookingError(:final errorMessage):
+                case TableSeatsBookingError(:final errorMessage):
                   OverlayLoader.hide();
                   CustomSnackbar.showError(context, message: errorMessage);
                   break;
-                case Step3Completed(:final response):
+                case TableSeatsBookingSuccess(:final response):
                   OverlayLoader.hide();
                   CustomSnackbar.showSuccess(
                     context,
@@ -143,9 +137,10 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                   );
                   break;
                 default:
+                  OverlayLoader.hide();
+                  break;
               }
             },
-            child: Container(),
           ),
         ],
         child: BlocBuilder<OrderCubit, OrderState>(
@@ -182,7 +177,7 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                         return CustomErrorWidget(
                           onRetry: () => _tableBookingHelper.tableSeatsListInit(
                             orderDetails.date,
-                            widget.slotId,
+                            orderDetails.timeSlot!,
                           ),
                           errorMessage: errorMessage,
                         );
@@ -298,7 +293,10 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: provider.canProceedToPayment
-                                      ? _tableBookingHelper.submitBookingStep3
+                                      ? () => _tableBookingHelper
+                                            .submitBookingStep3(
+                                              provider.selectedTablesModel,
+                                            )
                                       : null,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:

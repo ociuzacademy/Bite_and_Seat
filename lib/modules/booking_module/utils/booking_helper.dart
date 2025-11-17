@@ -104,9 +104,10 @@ class BookingHelper {
                 selectedSlotId: bookingStateProvider.selectedTimeSlot!.id,
                 numberOfPersons: bookingStateProvider.numberOfPersons,
               );
-              final BookingBloc bookingBloc = context.read<BookingBloc>();
-              bookingBloc.add(
-                BookingEvent.step2BookingStarted(orderId, bookingDetails),
+              final TimeSlotBookingBloc timeSlotBookingBloc = context
+                  .read<TimeSlotBookingBloc>();
+              timeSlotBookingBloc.add(
+                TimeSlotBookingEvent.bookingTimeSlot(orderId, bookingDetails),
               );
             },
             child: const Text(

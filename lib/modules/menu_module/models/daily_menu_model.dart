@@ -49,7 +49,7 @@ class Item {
   final String image;
   final String category;
 
-  Item({
+  const Item({
     required this.id,
     required this.name,
     required this.rate,

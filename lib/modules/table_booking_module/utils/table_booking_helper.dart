@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:bite_and_seat/core/exports/bloc_exports.dart';
-import 'package:bite_and_seat/modules/table_booking_module/providers/table_booking_provider.dart';
-import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
+import 'package:bite_and_seat/modules/table_booking_module/models/selected_tables_model.dart';
 
 class TableBookingHelper {
   final int orderId;
@@ -22,19 +21,11 @@ class TableBookingHelper {
     tableSeatsListCubit.getAllTableSeatsList(orderDate, slotId);
   }
 
-  void submitBookingStep3() {
-    final provider = Provider.of<TableBookingProvider>(context, listen: false);
-
-    if (!provider.canProceedToPayment) {
-      CustomSnackbar.showError(
-        context,
-        message: 'Please select exactly ${provider.numberOfPeople} chairs',
-      );
-      return;
-    }
-    final BookingBloc bookingBloc = context.read<BookingBloc>();
-    bookingBloc.add(
-      BookingEvent.step3BookingStarted(orderId, provider.selectedTablesModel),
+  void submitBookingStep3(SelectedTablesModel selectedTablesModel) {
+    final TableSeatsBookingBloc tableSeatsBookingBloc = context
+        .read<TableSeatsBookingBloc>();
+    tableSeatsBookingBloc.add(
+      TableSeatsBookingEvent.bookingTableSeats(orderId, selectedTablesModel),
     );
   }
 }

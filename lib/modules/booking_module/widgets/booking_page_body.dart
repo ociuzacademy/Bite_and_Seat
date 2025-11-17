@@ -69,19 +69,17 @@ class _BookingPageBodyState extends State<BookingPageBody> {
               }
             },
           ),
-          BlocListener<BookingBloc, BookingState>(
+          BlocListener<TimeSlotBookingBloc, TimeSlotBookingState>(
             listener: (context, state) {
               switch (state) {
-                case BookingLoading _:
+                case TimeSlotBookingLoading():
                   OverlayLoader.show(context, message: 'Step 2...');
                   break;
-                case BookingError(:final errorMessage):
+                case TimeSlotBookingError(:final errorMessage):
                   OverlayLoader.hide();
                   CustomSnackbar.showError(context, message: errorMessage);
                   break;
-                case Step2Completed(:final response):
-                  final bookingStateProvider =
-                      Provider.of<BookingStateProvider>(context, listen: false);
+                case TimeSlotBookingSuccess(:final response):
                   OverlayLoader.hide();
                   CustomSnackbar.showSuccess(
                     context,
@@ -90,13 +88,12 @@ class _BookingPageBodyState extends State<BookingPageBody> {
 
                   Navigator.push(
                     context,
-                    TableBookingPage.route(
-                      orderId: widget.orderId,
-                      slotId: bookingStateProvider.selectedTimeSlot!.id,
-                    ),
+                    TableBookingPage.route(orderId: widget.orderId),
                   );
                   break;
                 default:
+                  OverlayLoader.hide();
+                  break;
               }
             },
           ),

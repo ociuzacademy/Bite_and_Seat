@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/modules/payment_module/bloc/payment/payment_bloc.dart';
+import 'package:bite_and_seat/modules/payment_module/bloc/payment_bloc.dart';
 import 'package:bite_and_seat/modules/payment_module/classes/u_p_i_data.dart';
 import 'package:bite_and_seat/modules/payment_module/providers/payment_provider.dart';
 import 'package:flutter/material.dart';

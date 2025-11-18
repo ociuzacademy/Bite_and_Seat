@@ -1,27 +1,19 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// complaints_helper.dart
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:bite_and_seat/modules/complaints_module/providers/complaints_provider.dart';
 import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
 import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class ComplaintsHelper {
   final BuildContext context;
   final GlobalKey<FormState> formKey;
-  final TextEditingController descriptionController;
-  final ValueNotifier<String?> selectedCategory;
-  final ValueNotifier<List<File>> selectedImages;
-  ComplaintsHelper({
-    required this.context,
-    required this.formKey,
-    required this.descriptionController,
-    required this.selectedCategory,
-    required this.selectedImages,
-  });
 
-  Future<void> pickImages() async {
+  ComplaintsHelper({required this.context, required this.formKey});
+
+  Future<void> pickImages(ComplaintsProvider provider) async {
     try {
       final ImagePicker imagePicker = ImagePicker();
       final List<XFile> pickedFiles = await imagePicker.pickMultiImage(
@@ -31,11 +23,17 @@ class ComplaintsHelper {
       );
 
       if (pickedFiles.isNotEmpty) {
-        // Create a new list and update the ValueNotifier
-        final newList = List<File>.from(selectedImages.value);
-        newList.addAll(pickedFiles.map((xFile) => File(xFile.path)));
-        selectedImages.value =
-            newList; // This triggers the ValueListenableBuilder
+        if (provider.selectedImagesCount + pickedFiles.length <= 5) {
+          provider.addImages(
+            pickedFiles.map((xFile) => File(xFile.path)).toList(),
+          );
+        } else {
+          if (!context.mounted) return;
+          CustomSnackbar.showError(
+            context,
+            message: 'You can only select up to 5 images',
+          );
+        }
       }
     } catch (e) {
       if (!context.mounted) return;
@@ -43,19 +41,17 @@ class ComplaintsHelper {
     }
   }
 
-  void removeImage(int index) {
-    final newList = List<File>.from(selectedImages.value);
-    newList.removeAt(index);
-    selectedImages.value = newList; // This triggers the ValueListenableBuilder
+  void removeImage(ComplaintsProvider provider, int index) {
+    provider.removeImage(index);
   }
 
-  void submitComplaint() {
+  void submitComplaint(ComplaintsProvider provider) {
     if (formKey.currentState!.validate()) {
       // Here you would typically send the complaint to your backend
       debugPrint('Complaint submitted:');
-      debugPrint('Category: ${selectedCategory.value}');
-      debugPrint('Description: ${descriptionController.text}');
-      debugPrint('Number of images: ${selectedImages.value.length}');
+      debugPrint('Category: ${provider.selectedCategory}');
+      debugPrint('Description: ${provider.descriptionController.text}');
+      debugPrint('Number of images: ${provider.selectedImagesCount}');
 
       // Show success message
       CustomSnackbar.showSuccess(
@@ -64,17 +60,15 @@ class ComplaintsHelper {
       );
 
       // Clear the form
-      resetForm();
+      resetForm(provider);
 
       // Navigate to Menu page
       Navigator.of(context).push(MenuPage.route());
     }
   }
 
-  void resetForm() {
-    descriptionController.clear();
-    selectedCategory.value = null;
+  void resetForm(ComplaintsProvider provider) {
+    provider.clearAll();
     formKey.currentState?.reset();
-    selectedImages.value = []; // This triggers the ValueListenableBuilder
   }
 }

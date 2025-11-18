@@ -1,7 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
+// complaint_category_dropdown.dart
 import 'package:flutter/material.dart';
-
 import 'package:bite_and_seat/modules/complaints_module/typedefs/select_category.dart';
 
 class ComplaintCategoryDropdown extends StatelessWidget {
@@ -13,13 +11,13 @@ class ComplaintCategoryDropdown extends StatelessWidget {
   });
 
   final List<String> categories;
-  final String? selectedCategory; // Change to nullable String
+  final String? selectedCategory;
   final SelectCategory onSelectingCategory;
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: selectedCategory, // This can be null now
+      value: selectedCategory,
       decoration: const InputDecoration(
         labelText: 'Complaint Category',
         border: OutlineInputBorder(),
@@ -35,9 +33,7 @@ class ComplaintCategoryDropdown extends StatelessWidget {
         }
         return null;
       },
-      hint: const Text(
-        'Select a category',
-      ), // Add a hint for when value is null
+      hint: const Text('Select a category'),
     );
   }
 }

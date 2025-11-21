@@ -15,7 +15,7 @@ class ComplaintsPage extends StatefulWidget {
   @override
   State<ComplaintsPage> createState() => _ComplaintsPageState();
 
-  static route() =>
+  static MaterialPageRoute route() =>
       MaterialPageRoute(builder: (context) => const ComplaintsPage());
 }
 

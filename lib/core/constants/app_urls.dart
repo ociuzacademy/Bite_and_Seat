@@ -17,4 +17,6 @@ class AppUrls {
   static const String step3Url = '$userappUrl/update-step3';
 
   static const String paymentUrl = '$userappUrl/make-payment/';
+
+  static const String profileUrl = '$userappUrl/view_profile/';
 }

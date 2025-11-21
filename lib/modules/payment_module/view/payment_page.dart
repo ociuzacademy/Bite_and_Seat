@@ -26,7 +26,7 @@ class PaymentPage extends StatefulWidget {
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 
-  static route({required int orderId, required double totalRate}) =>
+  static MaterialPageRoute route({required int orderId, required double totalRate}) =>
       MaterialPageRoute(
         builder: (context) => ChangeNotifierProvider(
           create: (context) => PaymentProvider(orderId: orderId),

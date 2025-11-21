@@ -13,7 +13,7 @@ import 'package:bite_and_seat/modules/orders_module/widgets/order_card.dart';
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
 
-  static route() => MaterialPageRoute(builder: (context) => const OrdersPage());
+  static MaterialPageRoute route() => MaterialPageRoute(builder: (context) => const OrdersPage());
 
   @override
   State<OrdersPage> createState() => _OrdersPageState();

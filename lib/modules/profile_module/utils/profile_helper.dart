@@ -1,10 +1,17 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileHelper {
   final BuildContext context;
-  ProfileHelper({required this.context});
+  const ProfileHelper({required this.context});
+
+  void userProfileInit() {
+    final UserProfileCubit userProfileCubit = context.read<UserProfileCubit>();
+    userProfileCubit.getUserProfile();
+  }
 
   void showLogoutConfirmation() {
     showDialog(

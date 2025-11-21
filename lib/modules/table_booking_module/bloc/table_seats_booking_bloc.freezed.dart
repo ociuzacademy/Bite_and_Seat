@@ -223,12 +223,12 @@ _$BookingTableSeatsCopyWith<_BookingTableSeats> get copyWith => __$BookingTableS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BookingTableSeats&&(identical(other.orderId, orderId) || other.orderId == orderId)&&const DeepCollectionEquality().equals(other.selectedTables, selectedTables));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BookingTableSeats&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.selectedTables, selectedTables) || other.selectedTables == selectedTables));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,orderId,const DeepCollectionEquality().hash(selectedTables));
+int get hashCode => Object.hash(runtimeType,orderId,selectedTables);
 
 @override
 String toString() {
@@ -260,10 +260,10 @@ class __$BookingTableSeatsCopyWithImpl<$Res>
 
 /// Create a copy of TableSeatsBookingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? orderId = null,Object? selectedTables = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? orderId = null,Object? selectedTables = null,}) {
   return _then(_BookingTableSeats(
 null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
-as int,freezed == selectedTables ? _self.selectedTables : selectedTables // ignore: cast_nullable_to_non_nullable
+as int,null == selectedTables ? _self.selectedTables : selectedTables // ignore: cast_nullable_to_non_nullable
 as SelectedTablesModel,
   ));
 }
@@ -592,12 +592,12 @@ $TableSeatsBookingSuccessCopyWith<TableSeatsBookingSuccess> get copyWith => _$Ta
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TableSeatsBookingSuccess&&const DeepCollectionEquality().equals(other.response, response));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TableSeatsBookingSuccess&&(identical(other.response, response) || other.response == response));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(response));
+int get hashCode => Object.hash(runtimeType,response);
 
 @override
 String toString() {
@@ -629,9 +629,9 @@ class _$TableSeatsBookingSuccessCopyWithImpl<$Res>
 
 /// Create a copy of TableSeatsBookingState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? response = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? response = null,}) {
   return _then(TableSeatsBookingSuccess(
-freezed == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
+null == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
 as BookingResponseModel,
   ));
 }

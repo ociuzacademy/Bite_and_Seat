@@ -11,7 +11,7 @@ class OrderDetailsPage extends StatefulWidget {
   final OrderModel order;
   const OrderDetailsPage({super.key, required this.order});
 
-  static route({required OrderModel order}) =>
+  static MaterialPageRoute route({required OrderModel order}) =>
       MaterialPageRoute(builder: (context) => OrderDetailsPage(order: order));
 
   @override

@@ -14,7 +14,7 @@ class TableBookingPage extends StatefulWidget {
   @override
   State<TableBookingPage> createState() => _TableBookingPageState();
 
-  static route({required int orderId}) => MaterialPageRoute(
+  static MaterialPageRoute route({required int orderId}) => MaterialPageRoute(
     builder: (context) => TableBookingPage(orderId: orderId),
   );
 }

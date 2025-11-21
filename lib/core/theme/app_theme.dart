@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 
 class AppTheme {
-  static _border([Color color = AppPalette.blackColor]) => OutlineInputBorder(
+  static OutlineInputBorder _border([Color color = AppPalette.blackColor]) => OutlineInputBorder(
     borderSide: BorderSide(color: color, width: 2),
     borderRadius: BorderRadius.circular(10),
   );

@@ -17,6 +17,6 @@ class BookingPage extends StatelessWidget {
     );
   }
 
-  static route({required int orderId}) =>
+  static MaterialPageRoute route({required int orderId}) =>
       MaterialPageRoute(builder: (context) => BookingPage(orderId: orderId));
 }

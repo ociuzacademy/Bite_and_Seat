@@ -10,7 +10,7 @@ class MenuPage extends StatefulWidget {
   @override
   State<MenuPage> createState() => _MenuPageState();
 
-  static route() => MaterialPageRoute(builder: (context) => const MenuPage());
+  static MaterialPageRoute route() => MaterialPageRoute(builder: (context) => const MenuPage());
 }
 
 class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {

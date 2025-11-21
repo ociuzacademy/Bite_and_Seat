@@ -10,7 +10,7 @@ class QRCodePage extends StatelessWidget {
 
   const QRCodePage({super.key, required this.orderId});
 
-  static route({required int orderId}) =>
+  static MaterialPageRoute route({required int orderId}) =>
       MaterialPageRoute(builder: (context) => QRCodePage(orderId: orderId));
 
   @override

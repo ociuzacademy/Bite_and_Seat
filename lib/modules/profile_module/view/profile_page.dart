@@ -153,42 +153,14 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 24),
 
             // Additional Actions
-            Column(
-              children: [
-                ProfileActionButton(
-                  icon: Icons.history,
-                  text: 'Reservation History',
-                  onPressed: () {
-                    // Navigate to reservation history
-                  },
-                ),
-                const SizedBox(height: 12),
-                ProfileActionButton(
-                  icon: Icons.settings,
-                  text: 'App Settings',
-                  onPressed: () {
-                    // Navigate to settings
-                  },
-                ),
-                const SizedBox(height: 12),
-                ProfileActionButton(
-                  icon: Icons.help,
-                  text: 'Help & Support',
-                  onPressed: () {
-                    // Navigate to help
-                  },
-                ),
-                const SizedBox(height: 12),
-                ProfileActionButton(
-                  icon: Icons.logout,
-                  text: 'Logout',
-                  onPressed: () {
-                    // Handle logout
-                    _profileHelper.showLogoutConfirmation();
-                  },
-                  isLogout: true,
-                ),
-              ],
+            ProfileActionButton(
+              icon: Icons.logout,
+              text: 'Logout',
+              onPressed: () {
+                // Handle logout
+                _profileHelper.showLogoutConfirmation();
+              },
+              isLogout: true,
             ),
           ],
         ),

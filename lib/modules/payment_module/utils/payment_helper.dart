@@ -28,14 +28,20 @@ class PaymentHelper {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        // The bottom sheet will automatically have access to the same PaymentProvider
-        // because it's a child of the PaymentPage
-        switch (paymentProvider.selectedPaymentMethod) {
-          case PaymentMethod.upi:
-            return UPIPayment(orderId: orderId, amount: totalRate);
-          default:
-            return CardPayment(orderId: orderId, amount: totalRate);
-        }
+        // Use ChangeNotifierProvider.value instead of Provider.value
+        return ChangeNotifierProvider<PaymentProvider>.value(
+          value: paymentProvider,
+          child: Builder(
+            builder: (innerContext) {
+              switch (paymentProvider.selectedPaymentMethod) {
+                case PaymentMethod.upi:
+                  return UPIPayment(orderId: orderId, amount: totalRate);
+                default:
+                  return CardPayment(orderId: orderId, amount: totalRate);
+              }
+            },
+          ),
+        );
       },
     );
   }

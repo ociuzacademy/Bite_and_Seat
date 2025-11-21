@@ -17,12 +17,15 @@ class UPIPaymentHelper {
     required this.amount,
   });
 
+  // u_p_i_payment_helper.dart
   void upiPayement() {
     final PaymentProvider provider = Provider.of<PaymentProvider>(
       context,
       listen: false,
     );
-    if (provider.cardFormKey.currentState!.validate()) {
+
+    // Fix: Use upiFormKey instead of cardFormKey
+    if (provider.upiFormKey.currentState!.validate()) {
       final UPIData? upiData = provider.validateUpiData();
 
       if (upiData != null) {

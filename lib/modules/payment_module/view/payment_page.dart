@@ -13,6 +13,7 @@ import 'package:bite_and_seat/modules/qr_code_module/view/q_r_code_page.dart';
 import 'package:bite_and_seat/widgets/loaders/overlay_loader.dart';
 import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
+// payment_page.dart
 class PaymentPage extends StatefulWidget {
   final int orderId;
   final double totalRate;
@@ -27,8 +28,10 @@ class PaymentPage extends StatefulWidget {
 
   static route({required int orderId, required double totalRate}) =>
       MaterialPageRoute(
-        builder: (context) =>
-            PaymentPage(orderId: orderId, totalRate: totalRate),
+        builder: (context) => ChangeNotifierProvider(
+          create: (context) => PaymentProvider(orderId: orderId),
+          child: PaymentPage(orderId: orderId, totalRate: totalRate),
+        ),
       );
 }
 
@@ -63,53 +66,53 @@ class _PaymentPageState extends State<PaymentPage> {
       minTextAdapt: true,
     );
 
-    // Wrap the entire page with ChangeNotifierProvider
-    return ChangeNotifierProvider(
-      create: (context) => PaymentProvider(orderId: widget.orderId),
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Text(
-            'Payment Option',
-            style: TextStyle(fontSize: 18.sp, color: Colors.black),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: Icon(Icons.arrow_back, size: 20.sp, color: Colors.black),
-          ),
+        title: Text(
+          'Payment Option',
+          style: TextStyle(fontSize: 18.sp, color: Colors.black),
         ),
-        body: BlocListener<PaymentBloc, PaymentState>(
-          listener: (context, state) {
-            switch (state) {
-              case PaymentInitial _:
-              case PaymentLoading _:
-                OverlayLoader.show(context, message: 'Making payment...');
-                break;
-              case PaymentError(:final errorMessage):
-                OverlayLoader.hide();
-                CustomSnackbar.showError(context, message: errorMessage);
-                break;
-              case PaymentSuccess(:final response):
-                OverlayLoader.hide();
-                CustomSnackbar.showSuccess(context, message: response.message);
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  QRCodePage.route(orderId: response.orderId),
-                  (route) => false,
-                );
-                break;
-            }
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
           },
-          child: PaymentPageContent(
-            orderId: widget.orderId,
-            totalRate: widget.totalRate,
-            priceController: _pricecontroller,
-            onOpeningPaymentContainer: _paymentHelper.makePayment,
-          ),
+          icon: Icon(Icons.arrow_back, size: 20.sp, color: Colors.black),
+        ),
+      ),
+      body: BlocListener<PaymentBloc, PaymentState>(
+        listener: (context, state) {
+          switch (state) {
+            case PaymentInitial _:
+            case PaymentLoading _:
+              OverlayLoader.show(context, message: 'Making payment...');
+              break;
+            case PaymentError(:final errorMessage):
+              OverlayLoader.hide();
+              CustomSnackbar.showError(context, message: errorMessage);
+              break;
+            case PaymentSuccess(:final response):
+              OverlayLoader.hide();
+              CustomSnackbar.showSuccess(context, message: response.message);
+              Navigator.pushAndRemoveUntil(
+                context,
+                QRCodePage.route(orderId: response.orderId),
+                (route) => false,
+              );
+              break;
+          }
+        },
+        child: Consumer<PaymentProvider>(
+          builder: (context, paymentProvider, child) {
+            return PaymentPageContent(
+              orderId: widget.orderId,
+              totalRate: widget.totalRate,
+              priceController: _pricecontroller,
+              onOpeningPaymentContainer: _paymentHelper.makePayment,
+            );
+          },
         ),
       ),
     );

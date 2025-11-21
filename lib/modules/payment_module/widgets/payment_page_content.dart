@@ -27,11 +27,18 @@ class PaymentPageContent extends StatefulWidget {
   State<PaymentPageContent> createState() => _PaymentPageContentState();
 }
 
+// payment_page_content.dart
 class _PaymentPageContentState extends State<PaymentPageContent> {
   @override
   void initState() {
     super.initState();
-    // Initialize payment method directly
+    // Delay the initialization to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializePaymentMethod();
+    });
+  }
+
+  void _initializePaymentMethod() {
     final paymentProvider = Provider.of<PaymentProvider>(
       context,
       listen: false,

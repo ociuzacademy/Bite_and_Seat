@@ -21,4 +21,6 @@ class AppUrls {
   static const String profileUrl = '$userappUrl/view_profile/';
   static const String userOrdersUrl = '$userappUrl/orders-list/';
   static const String submitFeedbackUrl = '$userappUrl/feedback/create/';
+
+  static const String submitReportUrl = '$userappUrl/report/create/';
 }

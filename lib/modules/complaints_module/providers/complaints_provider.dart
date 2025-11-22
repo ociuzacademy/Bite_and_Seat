@@ -1,5 +1,6 @@
 // complaints_provider.dart
 import 'dart:io';
+import 'package:bite_and_seat/modules/complaints_module/classes/complaints_data.dart';
 import 'package:flutter/material.dart';
 
 class ComplaintsProvider with ChangeNotifier {
@@ -49,6 +50,22 @@ class ComplaintsProvider with ChangeNotifier {
 
   int get selectedImagesCount => _selectedImages.length;
   bool get canAddMoreImages => _selectedImages.length < 5;
+
+  ComplaintsData? validateComplaintsData() {
+    if (!isFormValid) {
+      return null;
+    }
+
+    if (canAddMoreImages) {
+      return null;
+    }
+
+    return ComplaintsData(
+      category: _selectedCategory!,
+      description: _descriptionController.text.trim(),
+      images: _selectedImages,
+    );
+  }
 
   @override
   void dispose() {

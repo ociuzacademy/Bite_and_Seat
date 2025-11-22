@@ -222,12 +222,12 @@ _$SubmittingFeedbackCopyWith<_SubmittingFeedback> get copyWith => __$SubmittingF
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubmittingFeedback&&const DeepCollectionEquality().equals(other.feedbackData, feedbackData));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubmittingFeedback&&(identical(other.feedbackData, feedbackData) || other.feedbackData == feedbackData));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(feedbackData));
+int get hashCode => Object.hash(runtimeType,feedbackData);
 
 @override
 String toString() {
@@ -259,9 +259,9 @@ class __$SubmittingFeedbackCopyWithImpl<$Res>
 
 /// Create a copy of SubmitFeedbackEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? feedbackData = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? feedbackData = null,}) {
   return _then(_SubmittingFeedback(
-freezed == feedbackData ? _self.feedbackData : feedbackData // ignore: cast_nullable_to_non_nullable
+null == feedbackData ? _self.feedbackData : feedbackData // ignore: cast_nullable_to_non_nullable
 as FeedbackData,
   ));
 }
@@ -590,12 +590,12 @@ $SubmitFeedbackSuccessCopyWith<SubmitFeedbackSuccess> get copyWith => _$SubmitFe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubmitFeedbackSuccess&&const DeepCollectionEquality().equals(other.response, response));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubmitFeedbackSuccess&&(identical(other.response, response) || other.response == response));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(response));
+int get hashCode => Object.hash(runtimeType,response);
 
 @override
 String toString() {
@@ -627,9 +627,9 @@ class _$SubmitFeedbackSuccessCopyWithImpl<$Res>
 
 /// Create a copy of SubmitFeedbackState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? response = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? response = null,}) {
   return _then(SubmitFeedbackSuccess(
-freezed == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
+null == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
 as SubmitFeedbackResponseModel,
   ));
 }

@@ -1,10 +1,12 @@
 // complaints_helper.dart
 import 'dart:io';
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
+import 'package:bite_and_seat/modules/complaints_module/classes/complaints_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:bite_and_seat/modules/complaints_module/providers/complaints_provider.dart';
-import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
 import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class ComplaintsHelper {
@@ -47,23 +49,25 @@ class ComplaintsHelper {
 
   void submitComplaint(ComplaintsProvider provider) {
     if (formKey.currentState!.validate()) {
-      // Here you would typically send the complaint to your backend
-      debugPrint('Complaint submitted:');
-      debugPrint('Category: ${provider.selectedCategory}');
-      debugPrint('Description: ${provider.descriptionController.text}');
-      debugPrint('Number of images: ${provider.selectedImagesCount}');
+      if (provider.selectedImages.isNotEmpty && !provider.canAddMoreImages) {
+        final ComplaintsData? complaintsData = provider
+            .validateComplaintsData();
 
-      // Show success message
-      CustomSnackbar.showSuccess(
+        if (complaintsData != null) {
+          final SubmitComplaintBloc submitComplaintBloc = context
+              .read<SubmitComplaintBloc>();
+          submitComplaintBloc.add(
+            SubmitComplaintEvent.submittingComplaint(complaintsData),
+          );
+        }
+      } else {
+        CustomSnackbar.showError(context, message: 'Please upload 5 images.');
+      }
+    } else {
+      CustomSnackbar.showError(
         context,
-        message: 'Complaint submitted successfully!',
+        message: 'Please fill all the required fields.',
       );
-
-      // Clear the form
-      resetForm(provider);
-
-      // Navigate to Menu page
-      Navigator.of(context).push(MenuPage.route());
     }
   }
 

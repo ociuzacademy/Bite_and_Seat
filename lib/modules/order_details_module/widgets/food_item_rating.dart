@@ -1,12 +1,13 @@
 // food_item_rating.dart
 import 'package:flutter/material.dart';
-import 'package:bite_and_seat/core/models/cart_item_model.dart';
+
+import 'package:bite_and_seat/core/models/api_models/order_details_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/order_details_module/typedefs/change_star_rating.dart';
 import 'package:bite_and_seat/modules/order_details_module/widgets/star_rating.dart';
 
 class FoodItemRating extends StatelessWidget {
-  final CartItemModel item;
+  final Item item;
   final int currentRating;
   final ChangeStarRating onRatingChanged;
 
@@ -31,7 +32,7 @@ class FoodItemRating extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              item.name,
+              item.foodItemName,
               style: const TextStyle(fontWeight: FontWeight.bold),
               overflow: TextOverflow.ellipsis,
             ),

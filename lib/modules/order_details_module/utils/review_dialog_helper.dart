@@ -1,7 +1,10 @@
 // review_dialog_helper.dart
+import 'package:bite_and_seat/modules/order_details_module/bloc/submit_feedback_bloc.dart';
+import 'package:bite_and_seat/modules/order_details_module/class/feedback_data.dart';
 import 'package:flutter/material.dart';
 import 'package:bite_and_seat/modules/order_details_module/providers/review_provider.dart';
 import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReviewDialogHelper {
   final BuildContext context;
@@ -28,15 +31,17 @@ class ReviewDialogHelper {
     }
 
     // Prepare review data
-    final reviewData = reviewProvider.reviewData;
+    debugPrint('submitting feedback...');
+    final FeedbackData? feedbackData = reviewProvider.validateFeedbackData();
 
-    // In a real app, you would send this data to your backend
-    debugPrint('Review data: $reviewData');
-
-    Navigator.of(context).pop();
-    CustomSnackbar.showSuccess(context, message: 'Thank you for your review!');
-
-    // Dispose the provider when done
-    reviewProvider.dispose();
+    if (feedbackData != null) {
+      debugPrint('feedback data generated...');
+      Navigator.of(context).pop();
+      final SubmitFeedbackBloc submitFeedbackBloc = context
+          .read<SubmitFeedbackBloc>();
+      submitFeedbackBloc.add(
+        SubmitFeedbackEvent.submittingFeedback(feedbackData),
+      );
+    }
   }
 }

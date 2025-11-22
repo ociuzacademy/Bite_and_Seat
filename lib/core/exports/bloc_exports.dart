@@ -8,3 +8,5 @@ export 'package:bite_and_seat/modules/booking_module/bloc/time_slot_booking_bloc
 export 'package:bite_and_seat/modules/table_booking_module/bloc/table_seats_booking_bloc.dart';
 export 'package:bite_and_seat/modules/payment_module/bloc/payment_bloc.dart';
 export 'package:bite_and_seat/modules/profile_module/cubit/user_profile_cubit.dart';
+export 'package:bite_and_seat/modules/orders_module/cubit/user_orders_cubit.dart';
+export 'package:bite_and_seat/modules/order_details_module/bloc/submit_feedback_bloc.dart';

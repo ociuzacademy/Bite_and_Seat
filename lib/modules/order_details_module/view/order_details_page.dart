@@ -1,18 +1,27 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bite_and_seat/widgets/buttons/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:bite_and_seat/core/enums/food_time.dart';
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
+import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
 import 'package:bite_and_seat/modules/order_details_module/utils/order_details_helper.dart';
 import 'package:bite_and_seat/modules/order_details_module/widgets/order_details_row.dart';
 import 'package:bite_and_seat/modules/orders_module/model/order_model.dart';
+import 'package:bite_and_seat/widgets/buttons/custom_button.dart';
+import 'package:bite_and_seat/widgets/custom_error_widget.dart';
+import 'package:bite_and_seat/widgets/loaders/custom_loading_widget.dart';
+import 'package:bite_and_seat/widgets/loaders/overlay_loader.dart';
+import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 
 class OrderDetailsPage extends StatefulWidget {
-  final OrderModel order;
-  const OrderDetailsPage({super.key, required this.order});
+  final int orderId;
+  const OrderDetailsPage({super.key, required this.orderId});
 
-  static MaterialPageRoute route({required OrderModel order}) =>
-      MaterialPageRoute(builder: (context) => OrderDetailsPage(order: order));
+  static MaterialPageRoute route({required int orderId}) => MaterialPageRoute(
+    builder: (context) => OrderDetailsPage(orderId: orderId),
+  );
 
   @override
   State<OrderDetailsPage> createState() => _OrderDetailsPageState();
@@ -26,13 +35,16 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     super.initState();
     _orderDetailsHelper = OrderDetailsHelper(
       context: context,
-      order: widget.order,
+      orderId: widget.orderId,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _orderDetailsHelper.orderDetailsInit();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final order = widget.order;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Order Details'),
@@ -43,212 +55,307 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Order Summary Card
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Order ID and Status
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Order #${order.orderId}',
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppPalette.firstColor.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            order.status == OrderStatus.completed
-                                ? 'Completed'
-                                : 'Upcoming',
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: AppPalette.firstColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Date and Time
-                    OrderDetailsRow(
-                      icon: Icons.calendar_today,
-                      label: 'Date & Time',
-                      value:
-                          '${_orderDetailsHelper.formatDate(order.date)} • ${_orderDetailsHelper.formatTimeSlot(order.timeSlot)}',
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Food Time
-                    OrderDetailsRow(
-                      icon: Icons.restaurant,
-                      label: 'Meal Type',
-                      value: _orderDetailsHelper.formatFoodTime(order.foodTime),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Number of Persons
-                    OrderDetailsRow(
-                      icon: Icons.people,
-                      label: 'Number of Persons',
-                      value: order.numberOfPersons.toString(),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Room and Table
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OrderDetailsRow(
-                            icon: Icons.meeting_room,
-                            label: 'Room',
-                            value: order.roomId,
-                          ),
-                        ),
-                        Expanded(
-                          child: OrderDetailsRow(
-                            icon: Icons.table_restaurant,
-                            label: 'Table',
-                            value: order.tableId,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Food Items Section
-            Text(
-              'Food Items',
-              style: Theme.of(
+      body: BlocListener<SubmitFeedbackBloc, SubmitFeedbackState>(
+        listener: (context, state) {
+          switch (state) {
+            case SubmitFeedbackLoading _:
+              OverlayLoader.show(context, message: 'Submitting feedback...');
+              break;
+            case SubmitFeedbackError(:final errorMessage):
+              OverlayLoader.hide();
+              CustomSnackbar.showError(context, message: errorMessage);
+              break;
+            case SubmitFeedbackSuccess(:final response):
+              OverlayLoader.hide();
+              CustomSnackbar.showSuccess(context, message: response.message);
+              Navigator.pushAndRemoveUntil(
                 context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-
-            // Food Items List
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  ...order.cartItems.map((item) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Text(
-                              item.name,
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              '${item.count} x \u{20B9}${item.ratePerItem.toStringAsFixed(2)}',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              '\u{20B9}${item.rate.toStringAsFixed(2)}',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.right,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-
-                  // Divider
-                  const Divider(height: 1),
-
-                  // Total Amount
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Total Amount',
-                          style: Theme.of(context).textTheme.bodyLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                MenuPage.route(),
+                (_) => false,
+              );
+              break;
+            default:
+              OverlayLoader.hide();
+              break;
+          }
+        },
+        child: BlocBuilder<OrderCubit, OrderState>(
+          builder: (context, state) {
+            switch (state) {
+              case OrderLoading _:
+                return const CustomLoadingWidget(
+                  message: 'Loading order details...',
+                );
+              case OrderError(:final errorMessage):
+                return CustomErrorWidget(
+                  onRetry: _orderDetailsHelper.orderDetailsInit,
+                  errorMessage: errorMessage,
+                );
+              case OrderDetailsSuccess(:final orderDetails):
+                final OrderStatus status =
+                    orderDetails.date.isAfter(DateTime.now())
+                    ? OrderStatus.upcoming
+                    : OrderStatus.completed;
+                final FoodTime foodTime = OrderDetailsHelper.getFoodTime(
+                  orderDetails.category,
+                );
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Order Summary Card
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        Text(
-                          '\u{20B9}${order.rate.toStringAsFixed(2)}',
-                          style: Theme.of(context).textTheme.bodyLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppPalette.firstColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Order ID and Status
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Order #${orderDetails.id}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppPalette.firstColor.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Text(
+                                      status == OrderStatus.completed
+                                          ? 'Completed'
+                                          : 'Upcoming',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: AppPalette.firstColor,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ),
+                                ],
                               ),
+                              const SizedBox(height: 16),
+
+                              // Date and Time
+                              OrderDetailsRow(
+                                icon: Icons.calendar_today,
+                                label: 'Date & Time',
+                                value:
+                                    '${OrderDetailsHelper.formatDate(orderDetails.date)} • ${orderDetails.timeSlot}',
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Food Time
+                              OrderDetailsRow(
+                                icon: Icons.restaurant,
+                                label: 'Meal Type',
+                                value: OrderDetailsHelper.formatFoodTime(
+                                  foodTime,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Number of Persons
+                              OrderDetailsRow(
+                                icon: Icons.people,
+                                label: 'Number of Persons',
+                                value: orderDetails.numberOfPersons.toString(),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Food Items Section
+                      Text(
+                        'Food Items',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Food Items List
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            ...orderDetails.items.map((item) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 3,
+                                      child: Text(
+                                        item.foodItemName,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        '${item.quantity} x \u{20B9}${item.price}',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        '\u{20B9}${item.totalPrice}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+
+                            // Divider
+                            if (orderDetails.items.isNotEmpty)
+                              const Divider(height: 1),
+
+                            // Seat Booking Amount
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      'Seat Booking Amount',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      '${orderDetails.numberOfPersons!} x \u{20B9}5.00',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      '\u{20B9}${(orderDetails.numberOfPersons! * 5.0).toStringAsFixed(2)}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Divider
+                            const Divider(height: 1),
+
+                            // Total Amount
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Total Amount',
+                                    style: Theme.of(context).textTheme.bodyLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    '\u{20B9}${orderDetails.totalAmount}',
+                                    style: Theme.of(context).textTheme.bodyLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppPalette.firstColor,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Review Button
+                      CustomButton(
+                        buttonWidth: double.infinity,
+                        backgroundColor: AppPalette.firstColor,
+                        textColor: AppPalette.secondColor,
+                        labelText: status == OrderStatus.completed
+                            ? 'Submit Review'
+                            : 'Check In',
+                        onClick: () {
+                          status == OrderStatus.completed
+                              ? _orderDetailsHelper.showReviewDialog(
+                                  orderDetails.id,
+                                  orderDetails.items,
+                                )
+                              : _orderDetailsHelper.checkIn();
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // Review Button
-            CustomButton(
-              buttonWidth: double.infinity,
-              backgroundColor: AppPalette.firstColor,
-              textColor: AppPalette.secondColor,
-              labelText: order.status == OrderStatus.completed
-                  ? 'Submit Review'
-                  : 'Check In',
-              onClick: () {
-                order.status == OrderStatus.completed
-                    ? _orderDetailsHelper.showReviewDialog(
-                        order.orderId,
-                        order.cartItems,
-                      )
-                    : _orderDetailsHelper.checkIn();
-              },
-            ),
-
-            const SizedBox(height: 20),
-          ],
+                );
+              default:
+                return const SizedBox.shrink();
+            }
+          },
         ),
       ),
     );

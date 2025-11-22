@@ -1,18 +1,20 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/modules/orders_module/cubit/user_orders_cubit.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OrdersHelper {
   final BuildContext context;
-  OrdersHelper({required this.context});
+  const OrdersHelper({required this.context});
 
-  String formatDate(DateTime date) {
+  static String formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  String formatTimeSlot(TimeSlotModel timeSlot) {
+  static String formatTimeSlot(TimeSlotModel timeSlot) {
     String formatTimeOfDay(TimeOfDay time) {
       final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
       final minute = time.minute.toString().padLeft(2, '0');
@@ -21,6 +23,11 @@ class OrdersHelper {
     }
 
     return '${formatTimeOfDay(timeSlot.startTime)} - ${formatTimeOfDay(timeSlot.endTime)}';
+  }
+
+  void userOrdersListInit() {
+    final UserOrdersCubit userOrdersCubit = context.read<UserOrdersCubit>();
+    userOrdersCubit.getUserOrders();
   }
 
   void showCancelDialog(String orderId) {

@@ -1,10 +1,12 @@
 // review_provider.dart
+import 'package:bite_and_seat/modules/order_details_module/class/feedback_data.dart';
 import 'package:flutter/material.dart';
-import 'package:bite_and_seat/core/models/cart_item_model.dart';
+
+import 'package:bite_and_seat/core/models/api_models/order_details_model.dart';
 
 class ReviewProvider with ChangeNotifier {
-  final String orderId;
-  final List<CartItemModel> foodItems;
+  final int orderId;
+  final List<Item> foodItems;
 
   final TextEditingController _commentController = TextEditingController();
   final Map<int, int> _itemRatings = {};
@@ -13,7 +15,7 @@ class ReviewProvider with ChangeNotifier {
   ReviewProvider({required this.orderId, required this.foodItems}) {
     // Initialize all items with 0 rating
     for (var item in foodItems) {
-      _itemRatings[item.itemId] = 0;
+      _itemRatings[item.foodItemId] = 0;
     }
   }
 
@@ -55,11 +57,37 @@ class ReviewProvider with ChangeNotifier {
     };
   }
 
+  FeedbackData? validateFeedbackData() {
+    // Validate overall rating
+    if (!isOverallRatingSet) {
+      return null;
+    }
+
+    // Validate that all items have ratings
+    if (hasUnratedItems) {
+      return null;
+    }
+
+    return FeedbackData(
+      orderId: orderId,
+      overallRating: _overallRating,
+      comments: _commentController.text.trim(),
+      itemRatings: foodItems
+          .map(
+            (foodItem) => ItemRating(
+              foodItem: foodItem.foodItemId,
+              rating: _itemRatings[foodItem.foodItemId]!,
+            ),
+          )
+          .toList(),
+    );
+  }
+
   // Reset all ratings
   void resetRatings() {
     _overallRating = 0;
     for (var item in foodItems) {
-      _itemRatings[item.itemId] = 0;
+      _itemRatings[item.foodItemId] = 0;
     }
     _commentController.clear();
     notifyListeners();

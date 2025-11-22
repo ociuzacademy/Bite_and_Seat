@@ -1,8 +1,8 @@
 // review_dialog.dart
+import 'package:bite_and_seat/core/models/api_models/order_details_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/order_details_module/providers/review_provider.dart';
 import 'package:bite_and_seat/modules/order_details_module/utils/review_dialog_helper.dart';
@@ -10,8 +10,8 @@ import 'package:bite_and_seat/modules/order_details_module/widgets/food_item_rat
 import 'package:bite_and_seat/modules/order_details_module/widgets/star_rating.dart';
 
 class ReviewDialog extends StatefulWidget {
-  final String orderId;
-  final List<CartItemModel> foodItems;
+  final int orderId;
+  final List<Item> foodItems;
 
   const ReviewDialog({
     super.key,
@@ -80,10 +80,13 @@ class _ReviewDialogState extends State<ReviewDialog> {
                         return FoodItemRating(
                           item: item,
                           currentRating: reviewProvider.getRatingForItem(
-                            item.itemId,
+                            item.foodItemId,
                           ),
                           onRatingChanged: (rating) {
-                            reviewProvider.setItemRating(item.itemId, rating);
+                            reviewProvider.setItemRating(
+                              item.foodItemId,
+                              rating,
+                            );
                           },
                         );
                       }),

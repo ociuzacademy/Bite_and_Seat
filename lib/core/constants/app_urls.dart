@@ -19,4 +19,6 @@ class AppUrls {
   static const String paymentUrl = '$userappUrl/make-payment/';
 
   static const String profileUrl = '$userappUrl/view_profile/';
+  static const String userOrdersUrl = '$userappUrl/orders-list/';
+  static const String submitFeedbackUrl = '$userappUrl/feedback/create/';
 }

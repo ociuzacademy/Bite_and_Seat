@@ -195,16 +195,16 @@ class Payment {
 }
 
 class Table {
-  final List<int> seatIds;
-  final int tableId;
+  final List<String> seatIds;
+  final String tableId;
 
   const Table({required this.seatIds, required this.tableId});
 
-  Table copyWith({List<int>? seatIds, int? tableId}) =>
+  Table copyWith({List<String>? seatIds, String? tableId}) =>
       Table(seatIds: seatIds ?? this.seatIds, tableId: tableId ?? this.tableId);
 
   factory Table.fromJson(Map<String, dynamic> json) => Table(
-    seatIds: List<int>.from(json['seat_ids'].map((x) => x)),
+    seatIds: List<String>.from(json['seat_ids'].map((x) => x)),
     tableId: json['table_id'],
   );
 

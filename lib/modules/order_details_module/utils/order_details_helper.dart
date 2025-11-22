@@ -1,23 +1,25 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:bite_and_seat/core/enums/food_time.dart';
-import 'package:bite_and_seat/core/models/cart_item_model.dart';
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
+import 'package:bite_and_seat/core/models/api_models/order_details_model.dart';
 import 'package:bite_and_seat/core/models/time_slot_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/order_details_module/widgets/review_dialog.dart';
-import 'package:bite_and_seat/modules/orders_module/model/order_model.dart';
+import 'package:bite_and_seat/modules/qr_code_module/view/q_r_code_page.dart';
 
 class OrderDetailsHelper {
   final BuildContext context;
-  final OrderModel order;
-  OrderDetailsHelper({required this.context, required this.order});
+  final int orderId;
+  OrderDetailsHelper({required this.context, required this.orderId});
 
-  String formatDate(DateTime date) {
+  static String formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  String formatTimeSlot(TimeSlotModel timeSlot) {
+  static String formatTimeSlot(TimeSlotModel timeSlot) {
     String formatTimeOfDay(TimeOfDay time) {
       final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
       final minute = time.minute.toString().padLeft(2, '0');
@@ -28,7 +30,18 @@ class OrderDetailsHelper {
     return '${formatTimeOfDay(timeSlot.startTime)} - ${formatTimeOfDay(timeSlot.endTime)}';
   }
 
-  String formatFoodTime(FoodTime foodTime) {
+  static FoodTime getFoodTime(int categoryId) {
+    switch (categoryId) {
+      case 1:
+        return FoodTime.breakfast;
+      case 2:
+        return FoodTime.lunch;
+      default:
+        return FoodTime.eveningSnacks;
+    }
+  }
+
+  static String formatFoodTime(FoodTime foodTime) {
     switch (foodTime) {
       case FoodTime.breakfast:
         return 'Breakfast';
@@ -39,13 +52,18 @@ class OrderDetailsHelper {
     }
   }
 
-  void showReviewDialog(String orderId, List<CartItemModel> foodItems) {
+  void showReviewDialog(int orderId, List<Item> foodItems) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return ReviewDialog(orderId: orderId, foodItems: foodItems);
       },
     );
+  }
+
+  void orderDetailsInit() {
+    final OrderCubit orderCubit = context.read<OrderCubit>();
+    orderCubit.getOrderDetails(orderId);
   }
 
   void checkIn() {
@@ -66,19 +84,10 @@ class OrderDetailsHelper {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(); // close bottom sheet
-              // Navigator.of(context).pushAndRemoveUntil(
-              //   MaterialPageRoute(
-              //     builder: (_) => QRCodePage(
-              //       selectedDate: order.date,
-              //       selectedTimeSlot: order.timeSlot,
-              //       numberOfPersons: order.numberOfPersons,
-              //       selectedRoomId: order.roomId,
-              //       selectedTableId: order.tableId,
-              //       totalRate: order.rate,
-              //     ),
-              //   ),
-              //   (route) => false,
-              // );
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => QRCodePage(orderId: orderId)),
+                (route) => false,
+              );
             },
             child: const Text(
               'Confirm',

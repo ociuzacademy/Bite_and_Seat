@@ -38,6 +38,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => TableSeatsBookingBloc()),
         BlocProvider(create: (context) => PaymentBloc()),
         BlocProvider(create: (context) => UserProfileCubit()),
+        BlocProvider(create: (context) => UserOrdersCubit()),
+        BlocProvider(create: (context) => SubmitFeedbackBloc()),
       ],
       child: MaterialApp(
         title: 'Bite&Seat',

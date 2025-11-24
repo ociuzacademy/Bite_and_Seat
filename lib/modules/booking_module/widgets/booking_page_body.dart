@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/core/utils/app_utils.dart';
 import 'package:bite_and_seat/modules/table_booking_module/view/table_booking_page.dart';
 import 'package:bite_and_seat/widgets/loaders/overlay_loader.dart';
 import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
@@ -62,7 +63,7 @@ class _BookingPageBodyState extends State<BookingPageBody> {
               switch (state) {
                 case OrderDetailsSuccess(:final orderDetails):
                   _bookingHelper.timeSlotsInit(
-                    BookingHelper.getFoodTime(orderDetails.category),
+                    AppUtils.getFoodTimeFromCategory(orderDetails.category),
                   );
                   break;
                 default:
@@ -135,7 +136,7 @@ class _BookingPageBodyState extends State<BookingPageBody> {
                       ),
                     )
                     .toList();
-                final FoodTime foodTime = BookingHelper.getFoodTime(
+                final FoodTime foodTime = AppUtils.getFoodTimeFromCategory(
                   orderDetails.category,
                 );
                 return Consumer<BookingStateProvider>(

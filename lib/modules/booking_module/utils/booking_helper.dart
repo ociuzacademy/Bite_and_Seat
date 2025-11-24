@@ -200,15 +200,4 @@ class BookingHelper {
         return AppConstants.eveningSlots;
     }
   }
-
-  static FoodTime getFoodTime(int categoryId) {
-    switch (categoryId) {
-      case 1:
-        return FoodTime.breakfast;
-      case 2:
-        return FoodTime.lunch;
-      default:
-        return FoodTime.eveningSnacks;
-    }
-  }
 }

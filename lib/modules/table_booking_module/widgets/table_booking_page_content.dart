@@ -71,6 +71,7 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                       orderDetails.numberOfPersons! * 5.0;
                   _tableBookingHelper.tableSeatsListInit(
                     orderDetails.date,
+                    orderDetails.category,
                     orderDetails.timeSlot!,
                   );
                   break;
@@ -177,6 +178,7 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                         return CustomErrorWidget(
                           onRetry: () => _tableBookingHelper.tableSeatsListInit(
                             orderDetails.date,
+                            orderDetails.category,
                             orderDetails.timeSlot!,
                           ),
                           errorMessage: errorMessage,

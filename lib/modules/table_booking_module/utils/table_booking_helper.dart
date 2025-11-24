@@ -15,10 +15,10 @@ class TableBookingHelper {
     orderCubit.getOrderDetails(orderId);
   }
 
-  void tableSeatsListInit(DateTime orderDate, int slotId) {
+  void tableSeatsListInit(DateTime orderDate, int categoryDate, int slotId) {
     final TableSeatsListCubit tableSeatsListCubit = context
         .read<TableSeatsListCubit>();
-    tableSeatsListCubit.getAllTableSeatsList(orderDate, slotId);
+    tableSeatsListCubit.getAllTableSeatsList(orderDate, categoryDate, slotId);
   }
 
   void submitBookingStep3(SelectedTablesModel selectedTablesModel) {

@@ -19,6 +19,33 @@ class ChatbotPage extends StatefulWidget {
 }
 
 class _ChatbotPageState extends State<ChatbotPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Add a small delay to ensure the widget is built before scrolling
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(
@@ -42,6 +69,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   icon: const Icon(Icons.refresh),
                   onPressed: () {
                     chatbotProvider.resetChat();
+                    // Scroll to bottom after reset
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _scrollToBottom();
+                    });
                   },
                 );
               },
@@ -50,6 +81,11 @@ class _ChatbotPageState extends State<ChatbotPage> {
         ),
         body: Consumer<ChatbotProvider>(
           builder: (context, chatbotProvider, child) {
+            // Listen to message changes and scroll to bottom
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollToBottom();
+            });
+
             return MultiBlocListener(
               listeners: [
                 BlocListener<DailyMenuCubit, DailyMenuState>(
@@ -63,6 +99,47 @@ class _ChatbotPageState extends State<ChatbotPage> {
                         break;
                       case DailyMenuUnavailable(:final message):
                         chatbotProvider.displayMenuError(message);
+                        break;
+                      default:
+                    }
+                  },
+                ),
+                BlocListener<CategoriesCubit, CategoriesState>(
+                  listener: (context, state) {
+                    switch (state) {
+                      case CategoriesSuccess(:final categories):
+                        chatbotProvider.displayCategories(categories);
+                        break;
+                      case CategoriesError(:final errorMessage):
+                        chatbotProvider.displayCategoryError(errorMessage);
+                        break;
+                      default:
+                    }
+                  },
+                ),
+                BlocListener<TimeSlotCubit, TimeSlotState>(
+                  listener: (context, state) {
+                    switch (state) {
+                      case CategoryTimeSlotsSuccess(:final timeSlots):
+                        chatbotProvider.displayTimeSlots(timeSlots, context);
+                        break;
+                      case TimeSlotError(:final errorMessage):
+                        chatbotProvider.displayTimeSlotError(errorMessage);
+                        break;
+                      default:
+                    }
+                  },
+                ),
+                BlocListener<TableSeatsListCubit, TableSeatsListState>(
+                  listener: (context, state) {
+                    switch (state) {
+                      case TableSeatsListSuccess(:final tableSeatsList):
+                        chatbotProvider.displaySeatAllocation(tableSeatsList);
+                        break;
+                      case TableSeatsListError(:final errorMessage):
+                        chatbotProvider.displaySeatAllocationError(
+                          errorMessage,
+                        );
                         break;
                       default:
                     }
@@ -86,6 +163,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
                       child: chatbotProvider.messages.isEmpty
                           ? const Center(child: CircularProgressIndicator())
                           : ListView.builder(
+                              controller:
+                                  _scrollController, // Add scroll controller
                               padding: EdgeInsets.all(16.w),
                               reverse: false,
                               itemCount: chatbotProvider.messages.length,

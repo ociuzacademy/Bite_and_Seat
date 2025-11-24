@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
+import 'package:bite_and_seat/core/models/api_models/category_time_slot_model.dart';
 
 class BookingStateProvider with ChangeNotifier {
   int _currentStep = 0;

@@ -3,7 +3,7 @@ import 'package:bite_and_seat/modules/booking_module/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bite_and_seat/core/theme/app_palette.dart';
-import 'package:bite_and_seat/modules/booking_module/models/category_time_slot_model.dart';
+import 'package:bite_and_seat/core/models/api_models/category_time_slot_model.dart';
 import 'package:bite_and_seat/modules/booking_module/typedefs/format_time.dart';
 import 'package:bite_and_seat/modules/booking_module/typedefs/select_category_time_slot.dart';
 

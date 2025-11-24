@@ -1,3 +1,4 @@
+import 'package:bite_and_seat/modules/chatbot_module/view/chatbot_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -131,6 +132,14 @@ class _MenuPageContentState extends State<MenuPageContent> {
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context, ComplaintsPage.route());
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.smart_toy),
+                  title: const Text('Chatbot'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, ChatbotPage.route());
                   },
                 ),
                 ListTile(

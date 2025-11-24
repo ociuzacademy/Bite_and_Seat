@@ -23,4 +23,6 @@ class AppUrls {
   static const String submitFeedbackUrl = '$userappUrl/feedback/create/';
 
   static const String submitReportUrl = '$userappUrl/report/create/';
+
+  static const String getCategoriesUrl = '$userappUrl/categories/';
 }

@@ -7,17 +7,12 @@ import 'package:http/http.dart' as http;
 
 import 'package:bite_and_seat/core/constants/app_constants.dart';
 import 'package:bite_and_seat/core/constants/app_urls.dart';
-import 'package:bite_and_seat/modules/orders_module/model/user_order_model.dart';
+import 'package:bite_and_seat/modules/chatbot_module/models/api_models/category_model.dart';
 
-class OrdersServices {
-  static Future<List<UserOrderModel>> getUserOrders({
-    required int userId,
-  }) async {
+class ChatbotServices {
+  static Future<List<CategoryModel>> getCategories() async {
     try {
-      Map<String, dynamic> params = {'user_id': userId.toString()};
-      final url = Uri.parse(
-        AppUrls.userOrdersUrl,
-      ).replace(queryParameters: params);
+      final url = Uri.parse(AppUrls.getCategoriesUrl);
 
       // Create a timeout duration
       const Duration timeoutDuration = Duration(
@@ -43,8 +38,8 @@ class OrdersServices {
 
       if (resp.statusCode == 200) {
         final List<dynamic> decoded = jsonDecode(resp.body);
-        final List<UserOrderModel> response = decoded
-            .map((item) => UserOrderModel.fromJson(item))
+        final List<CategoryModel> response = decoded
+            .map((item) => CategoryModel.fromJson(item))
             .toList();
         return response;
       } else {

@@ -10,7 +10,7 @@ import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/models/food_item.dart';
 import 'package:bite_and_seat/modules/login_module/view/login_page.dart';
 import 'package:bite_and_seat/modules/menu_module/classes/step1_booking_details.dart';
-import 'package:bite_and_seat/modules/menu_module/models/daily_menu_model.dart'
+import 'package:bite_and_seat/core/models/api_models/daily_menu_model.dart'
     hide Item;
 import 'package:bite_and_seat/modules/menu_module/providers/menu_state_provider.dart';
 import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';

@@ -1,11 +1,12 @@
-import 'package:bite_and_seat/modules/menu_module/errors/no_menu_exception.dart';
-import 'package:bite_and_seat/modules/menu_module/models/daily_menu_model.dart';
-import 'package:bite_and_seat/modules/menu_module/services/menu_services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'daily_menu_state.dart';
+import 'package:bite_and_seat/core/services/app_services.dart';
+import 'package:bite_and_seat/modules/menu_module/errors/no_menu_exception.dart';
+import 'package:bite_and_seat/core/models/api_models/daily_menu_model.dart';
+
 part 'daily_menu_cubit.freezed.dart';
+part 'daily_menu_state.dart';
 
 class DailyMenuCubit extends Cubit<DailyMenuState> {
   DailyMenuCubit() : super(const DailyMenuState.initial());
@@ -13,7 +14,7 @@ class DailyMenuCubit extends Cubit<DailyMenuState> {
   Future<void> getDailyMenu({required DateTime selectedDate}) async {
     emit(const DailyMenuState.dailyMenuLoading());
     try {
-      final DailyMenuModel dailyMenu = await MenuServices.getDailyMenu(
+      final DailyMenuModel dailyMenu = await AppServices.getDailyMenu(
         selectedDate: selectedDate,
       );
       emit(DailyMenuState.dailyMenuSuccess(dailyMenu));

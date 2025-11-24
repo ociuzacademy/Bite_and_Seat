@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => UserOrdersCubit()),
         BlocProvider(create: (context) => SubmitFeedbackBloc()),
         BlocProvider(create: (context) => SubmitComplaintBloc()),
+        BlocProvider(create: (context) => CategoriesCubit()),
       ],
       child: MaterialApp(
         title: 'Bite&Seat',

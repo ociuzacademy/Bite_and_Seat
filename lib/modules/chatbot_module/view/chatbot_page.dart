@@ -1,9 +1,11 @@
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/chatbot_module/providers/chatbot_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 import 'package:bite_and_seat/modules/chatbot_module/widgets/chat_bubble.dart';
 
 class ChatbotPage extends StatefulWidget {
@@ -48,89 +50,113 @@ class _ChatbotPageState extends State<ChatbotPage> {
         ),
         body: Consumer<ChatbotProvider>(
           builder: (context, chatbotProvider, child) {
-            return Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          AppPalette.firstColor.withValues(alpha: 0.1),
-                          Colors.white,
+            return MultiBlocListener(
+              listeners: [
+                BlocListener<DailyMenuCubit, DailyMenuState>(
+                  listener: (context, state) {
+                    switch (state) {
+                      case DailyMenuSuccess(:final dailyMenu):
+                        chatbotProvider.displayMenuData(dailyMenu);
+                        break;
+                      case DailyMenuError(:final errorMessage):
+                        chatbotProvider.displayMenuError(errorMessage);
+                        break;
+                      case DailyMenuUnavailable(:final message):
+                        chatbotProvider.displayMenuError(message);
+                        break;
+                      default:
+                    }
+                  },
+                ),
+              ],
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            AppPalette.firstColor.withValues(alpha: 0.1),
+                            Colors.white,
+                          ],
+                        ),
+                      ),
+                      child: chatbotProvider.messages.isEmpty
+                          ? const Center(child: CircularProgressIndicator())
+                          : ListView.builder(
+                              padding: EdgeInsets.all(16.w),
+                              reverse: false,
+                              itemCount: chatbotProvider.messages.length,
+                              itemBuilder: (context, index) {
+                                return ChatBubble(
+                                  message: chatbotProvider.messages[index],
+                                  onOptionSelected: (option) {
+                                    chatbotProvider.handleOptionSelection(
+                                      option,
+                                      context,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                    ),
+                  ),
+                  if (chatbotProvider.isLoading)
+                    Container(
+                      padding: EdgeInsets.all(16.w),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20.w,
+                            backgroundColor: AppPalette.firstColor.withValues(
+                              alpha: 0.1,
+                            ),
+                            child: Icon(
+                              Icons.smart_toy,
+                              size: 20.w,
+                              color: AppPalette.firstColor,
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.all(12.w),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    width: 20.w,
+                                    height: 20.w,
+                                    child: const CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        AppPalette.firstColor,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Text(
+                                    'Thinking...',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    child: chatbotProvider.messages.isEmpty
-                        ? const Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                            padding: EdgeInsets.all(16.w),
-                            reverse: false,
-                            itemCount: chatbotProvider.messages.length,
-                            itemBuilder: (context, index) {
-                              return ChatBubble(
-                                message: chatbotProvider.messages[index],
-                                onOptionSelected:
-                                    chatbotProvider.handleOptionSelection,
-                              );
-                            },
-                          ),
-                  ),
-                ),
-                if (chatbotProvider.isLoading)
-                  Container(
-                    padding: EdgeInsets.all(16.w),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20.w,
-                          backgroundColor: AppPalette.firstColor.withValues(
-                            alpha: 0.1,
-                          ),
-                          child: Icon(
-                            Icons.smart_toy,
-                            size: 20.w,
-                            color: AppPalette.firstColor,
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(12.w),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  width: 20.w,
-                                  height: 20.w,
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      AppPalette.firstColor,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 12.w),
-                                Text(
-                                  'Thinking...',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
+                ],
+              ),
             );
           },
         ),

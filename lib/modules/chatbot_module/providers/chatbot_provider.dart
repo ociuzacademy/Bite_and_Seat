@@ -2,13 +2,27 @@ import 'package:flutter/material.dart';
 
 import 'package:bite_and_seat/modules/chatbot_module/models/chat_message.dart';
 import 'package:bite_and_seat/modules/chatbot_module/models/chat_option.dart';
+import 'package:bite_and_seat/modules/chatbot_module/utils/chatbot_helper.dart';
+import 'package:bite_and_seat/core/models/api_models/daily_menu_model.dart';
 
 class ChatbotProvider with ChangeNotifier {
   final List<ChatMessage> _messages = [];
   bool _isLoading = false;
+  DateTime _menuDate = DateTime.now();
 
   List<ChatMessage> get messages => _messages;
   bool get isLoading => _isLoading;
+  DateTime get menuDate => _menuDate;
+
+  void setLoadingStatus(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void setMenuDate(DateTime value) {
+    _menuDate = value;
+    notifyListeners();
+  }
 
   ChatbotProvider() {
     // Add initial bot message
@@ -49,11 +63,6 @@ class ChatbotProvider with ChangeNotifier {
         action: 'menu_enquiry',
         icon: Icons.menu_book,
       ),
-      const ChatOption(
-        text: 'Seat Vacancy Enquiry',
-        action: 'seat_vacancy_enquiry',
-        icon: Icons.event_seat,
-      ),
     ];
   }
 
@@ -73,18 +82,8 @@ class ChatbotProvider with ChangeNotifier {
     ];
   }
 
-  List<ChatOption> _getDateSelectionOptions() {
+  List<ChatOption> _getBackOptions() {
     return [
-      const ChatOption(
-        text: 'Today',
-        action: 'seat_vacancy_today',
-        icon: Icons.today,
-      ),
-      const ChatOption(
-        text: 'Custom Day',
-        action: 'seat_vacancy_custom',
-        icon: Icons.calendar_today,
-      ),
       const ChatOption(
         text: 'Back to Main',
         action: 'back_main',
@@ -93,40 +92,37 @@ class ChatbotProvider with ChangeNotifier {
     ];
   }
 
-  List<ChatOption> _getTimeSlotOptions() {
-    return [
-      const ChatOption(
-        text: '11:00 AM - 11:30 AM',
-        action: 'slot_1',
-        icon: Icons.access_time,
-      ),
-      const ChatOption(
-        text: '11:30 AM - 12:00 PM',
-        action: 'slot_2',
-        icon: Icons.access_time,
-      ),
-      const ChatOption(
-        text: '12:00 PM - 12:30 PM',
-        action: 'slot_3',
-        icon: Icons.access_time,
-      ),
-      const ChatOption(
-        text: '12:30 PM - 1:00 PM',
-        action: 'slot_4',
-        icon: Icons.access_time,
-      ),
-    ];
+  // Format DailyMenuModel into readable text
+  String _formatMenuData(DailyMenuModel menu) {
+    final buffer = StringBuffer();
+
+    final formattedDate =
+        '${menu.date.year}-${menu.date.month.toString().padLeft(2, '0')}-${menu.date.day.toString().padLeft(2, '0')}';
+
+    buffer.writeln('📅 Menu for $formattedDate');
+    buffer.writeln();
+
+    for (final item in menu.items) {
+      buffer.writeln('🍽️ ${item.name}');
+      buffer.writeln('   💰 Price: ₹${item.rate}');
+      buffer.writeln('   🍽️ ${item.itemPerPlate} per plate');
+      buffer.writeln('   📁 Category: ${item.category}');
+      buffer.writeln();
+    }
+
+    return buffer.toString();
   }
 
-  Future<void> handleOptionSelection(ChatOption option) async {
+  Future<void> handleOptionSelection(
+    ChatOption option,
+    BuildContext context,
+  ) async {
     _addUserMessage(option.text);
     _isLoading = true;
     notifyListeners();
 
     // Simulate API call delay
     await Future.delayed(const Duration(milliseconds: 500));
-
-    _isLoading = false;
 
     // Handle different actions
     switch (option.action) {
@@ -137,77 +133,23 @@ class ChatbotProvider with ChangeNotifier {
         );
         break;
 
-      case 'seat_vacancy_enquiry':
-        _addBotMessage(
-          'I can help you check seat availability. First, let\'s select a date.',
-          _getDateSelectionOptions(),
-        );
-        break;
-
       case 'menu_today':
-        _addBotMessage(
-          'Fetching today\'s menu... This would trigger DailyMenuCubit',
-          _getInitialOptions(),
-        );
-        // Here you would trigger the DailyMenuCubit for today's date
+        if (!context.mounted) return;
+        _handleTodayMenu(context);
         break;
 
       case 'menu_custom':
-        _addBotMessage('Please select a date to view the menu:', [
-          const ChatOption(
-            text: 'Select Date',
-            action: 'show_date_picker_menu',
-            icon: Icons.calendar_today,
-          ),
-          const ChatOption(
-            text: 'Back',
-            action: 'back_menu_enquiry',
-            icon: Icons.arrow_back,
-          ),
-        ]);
-        break;
-
-      case 'seat_vacancy_today':
-        _addBotMessage(
-          'Checking seat availability for today. Please select a time slot:',
-          _getTimeSlotOptions(),
-        );
-        break;
-
-      case 'seat_vacancy_custom':
-        _addBotMessage('Please select a date to check seat availability:', [
-          const ChatOption(
-            text: 'Select Date',
-            action: 'show_date_picker_seat',
-            icon: Icons.calendar_today,
-          ),
-          const ChatOption(
-            text: 'Back',
-            action: 'back_seat_enquiry',
-            icon: Icons.arrow_back,
-          ),
-        ]);
+        if (!context.mounted) return;
+        _handleCustomDateSelection(context);
         break;
 
       case 'show_date_picker_menu':
-        // This would trigger the date picker in the UI
-        _addBotMessage(
-          'Date picker would appear here. After selection, DailyMenuCubit would be called.',
-          _getInitialOptions(),
-        );
-        break;
-
-      case 'show_date_picker_seat':
-        // This would trigger the date picker in the UI
-        _addBotMessage(
-          'Date picker would appear here. After selection, seat availability API would be called.',
-          _getInitialOptions(),
-        );
+        if (!context.mounted) return;
+        _handleCustomDateSelection(context);
         break;
 
       case 'back_main':
       case 'back_menu_enquiry':
-      case 'back_seat_enquiry':
         _addBotMessage(
           "Hello! I'm your food assistant. How can I help you today?",
           _getInitialOptions(),
@@ -220,6 +162,33 @@ class ChatbotProvider with ChangeNotifier {
           _getInitialOptions(),
         );
     }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  void _handleTodayMenu(BuildContext context) {
+    final chatbotHelper = ChatbotHelper();
+    chatbotHelper.selectToday(context);
+  }
+
+  void _handleCustomDateSelection(BuildContext context) {
+    final chatbotHelper = ChatbotHelper();
+    chatbotHelper.selectCustomDate(context);
+  }
+
+  // Call this method when you have the menu data
+  void displayMenuData(DailyMenuModel menu) {
+    final formattedMenu = _formatMenuData(menu);
+    _addBotMessage(formattedMenu, _getBackOptions());
+  }
+
+  // Call this method when there's an error or no menu available
+  void displayMenuError(String errorMessage) {
+    _addBotMessage(
+      '❌ $errorMessage\n\nPlease try another date or check back later.',
+      _getBackOptions(),
+    );
   }
 
   void resetChat() {

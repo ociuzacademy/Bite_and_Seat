@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 
@@ -19,7 +21,7 @@ class QRCodePage extends StatelessWidget {
     final qrData = {'order_id': orderId};
 
     final qrCode = QrCode.fromData(
-      data: qrData.toString(),
+      data: jsonEncode(qrData),
       errorCorrectLevel: QrErrorCorrectLevel.H,
     );
 

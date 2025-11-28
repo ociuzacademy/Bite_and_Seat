@@ -13,6 +13,8 @@ import 'package:bite_and_seat/core/models/cart_item_model.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/booking_module/providers/booking_state_provider.dart';
 import 'package:bite_and_seat/modules/booking_module/utils/booking_helper.dart';
+import 'package:bite_and_seat/modules/booking_module/utils/time_utils.dart';
+import 'package:bite_and_seat/core/models/api_models/category_time_slot_model.dart';
 import 'package:bite_and_seat/modules/booking_module/widgets/category_time_slot_selection_widget.dart';
 import 'package:bite_and_seat/modules/booking_module/widgets/number_of_persons_widget.dart';
 
@@ -244,7 +246,32 @@ class _BookingPageBodyState extends State<BookingPageBody> {
                                       case CategoryTimeSlotsSuccess(
                                         :final timeSlots,
                                       ):
-                                        if (timeSlots.isEmpty) {
+                                        List<CategoryTimeSlotModel>
+                                        filteredTimeSlots = timeSlots;
+
+                                        if (BookingHelper.isSameDay(
+                                          orderDetails.date,
+                                          DateTime.now(),
+                                        )) {
+                                          final now = TimeOfDay.now();
+                                          final nowMinutes =
+                                              now.hour * 60 + now.minute;
+
+                                          filteredTimeSlots = timeSlots.where((
+                                            slot,
+                                          ) {
+                                            final slotTime =
+                                                TimeUtils.stringToTimeOfDay(
+                                                  slot.startTime,
+                                                );
+                                            final slotMinutes =
+                                                slotTime.hour * 60 +
+                                                slotTime.minute;
+                                            return slotMinutes > nowMinutes;
+                                          }).toList();
+                                        }
+
+                                        if (filteredTimeSlots.isEmpty) {
                                           return const Text(
                                             'No time slots available for this category',
                                             textAlign: TextAlign.center,
@@ -256,7 +283,7 @@ class _BookingPageBodyState extends State<BookingPageBody> {
                                         }
 
                                         return CategoryTimeSlotSelectionWidget(
-                                          timeSlots: timeSlots,
+                                          timeSlots: filteredTimeSlots,
                                           selectedTimeSlot: bookingStateProvider
                                               .selectedTimeSlot,
                                           onSelectingTimeSlot: (slot) {

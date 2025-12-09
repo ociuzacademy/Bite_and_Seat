@@ -92,10 +92,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                   errorMessage: errorMessage,
                 );
               case OrderDetailsSuccess(:final orderDetails):
-                final OrderStatus status =
-                    orderDetails.date.isAfter(DateTime.now())
-                    ? OrderStatus.upcoming
-                    : OrderStatus.completed;
+                final OrderStatus status = orderDetails.isCompleted
+                    ? OrderStatus.completed
+                    : OrderStatus.upcoming;
                 final FoodTime foodTime = OrderDetailsHelper.getFoodTime(
                   orderDetails.category,
                 );
@@ -160,7 +159,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                 icon: Icons.calendar_today,
                                 label: 'Date & Time',
                                 value:
-                                    '${OrderDetailsHelper.formatDate(orderDetails.date)} • ${orderDetails.timeSlot}',
+                                    '${OrderDetailsHelper.formatDate(orderDetails.date)} • ${orderDetails.slotStartTime} - ${orderDetails.slotEndTime}',
                               ),
                               const SizedBox(height: 12),
 

@@ -17,6 +17,8 @@ class OrderDetailsModel {
   final int category;
   final DateTime date;
   final int? timeSlot;
+  final String? slotStartTime;
+  final String? slotEndTime;
   final int? numberOfPersons;
   final List<Table> tables;
   final String tableCharge;
@@ -33,6 +35,8 @@ class OrderDetailsModel {
     required this.category,
     required this.date,
     this.timeSlot,
+    this.slotStartTime,
+    this.slotEndTime,
     this.numberOfPersons,
     required this.tables,
     required this.tableCharge,
@@ -50,6 +54,8 @@ class OrderDetailsModel {
     int? category,
     DateTime? date,
     int? timeSlot,
+    String? slotStartTime,
+    String? slotEndTime,
     int? numberOfPersons,
     List<Table>? tables,
     String? tableCharge,
@@ -65,6 +71,8 @@ class OrderDetailsModel {
     category: category ?? this.category,
     date: date ?? this.date,
     timeSlot: timeSlot ?? this.timeSlot,
+    slotStartTime: slotStartTime ?? this.slotStartTime,
+    slotEndTime: slotEndTime ?? this.slotEndTime,
     numberOfPersons: numberOfPersons ?? this.numberOfPersons,
     tables: tables ?? this.tables,
     tableCharge: tableCharge ?? this.tableCharge,
@@ -83,6 +91,8 @@ class OrderDetailsModel {
         category: json['category'],
         date: DateTime.parse(json['date']),
         timeSlot: json['time_slot'],
+        slotStartTime: json['slot_start_time'],
+        slotEndTime: json['slot_end_time'],
         numberOfPersons: json['number_of_persons'],
         tables: List<Table>.from(json['tables'].map((x) => Table.fromJson(x))),
         tableCharge: json['table_charge'],
@@ -103,6 +113,8 @@ class OrderDetailsModel {
     'date':
         "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
     'time_slot': timeSlot,
+    'slot_start_time': slotStartTime,
+    'slot_end_time': slotEndTime,
     'number_of_persons': numberOfPersons,
     'tables': List<dynamic>.from(tables.map((x) => x.toJson())),
     'table_charge': tableCharge,
@@ -112,6 +124,57 @@ class OrderDetailsModel {
     'payments': List<dynamic>.from(payments.map((x) => x.toJson())),
     'created_at': createdAt.toIso8601String(),
   };
+
+  /// Checks if the order is completed by comparing the date and time slot end time
+  /// with the current date and time.
+  /// Returns true if the order date is in the past, or if the order date is today
+  /// and the time slot end time has passed.
+  bool get isCompleted {
+    final now = DateTime.now();
+
+    // If the order date is before today, it's completed
+    if (date.isBefore(DateTime(now.year, now.month, now.day))) {
+      return true;
+    }
+
+    // If the order date is after today, it's upcoming
+    if (date.isAfter(DateTime(now.year, now.month, now.day))) {
+      return false;
+    }
+
+    // If the order date is today, check the time slot end time
+    if (slotEndTime == null) {
+      // If we don't have slot end time, fall back to date-only comparison
+      return false;
+    }
+
+    // Parse slot end time (format: "10:30" or "14:00")
+    final timeParts = slotEndTime!.split(':');
+    if (timeParts.length != 2) {
+      // Invalid format, fall back to date-only comparison
+      return false;
+    }
+
+    final endHour = int.tryParse(timeParts[0]);
+    final endMinute = int.tryParse(timeParts[1]);
+
+    if (endHour == null || endMinute == null) {
+      // Invalid time values, fall back to date-only comparison
+      return false;
+    }
+
+    // Create DateTime for the end of the time slot
+    final slotEndDateTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      endHour,
+      endMinute,
+    );
+
+    // Order is completed if current time is after the slot end time
+    return now.isAfter(slotEndDateTime);
+  }
 }
 
 class Item {

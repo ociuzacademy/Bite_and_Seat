@@ -27,9 +27,9 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeSlot = order.timeSlot;
-    final OrderStatus status = order.date.isAfter(DateTime.now())
-        ? OrderStatus.upcoming
-        : OrderStatus.completed;
+    final OrderStatus status = order.isCompleted
+        ? OrderStatus.completed
+        : OrderStatus.upcoming;
     final isUpcoming = status == OrderStatus.upcoming;
 
     return GestureDetector(
@@ -82,7 +82,12 @@ class OrderCard extends StatelessWidget {
               const SizedBox(height: 12),
 
               // Date and Time
-              OrderDetailsRow(icon: Icons.calendar_today, text: timeSlot),
+              OrderDetailsRow(
+                icon: Icons.calendar_today,
+                text: formatDate(order.date),
+              ),
+              const SizedBox(height: 12),
+              OrderDetailsRow(icon: Icons.access_time, text: timeSlot),
               const SizedBox(height: 8),
 
               // Rate

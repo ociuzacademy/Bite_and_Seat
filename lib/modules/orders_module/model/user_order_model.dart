@@ -105,6 +105,52 @@ class UserOrderModel {
     'items': List<dynamic>.from(items.map((x) => x.toJson())),
     'created_at': createdAt.toIso8601String(),
   };
+
+  /// Checks if the order is completed by comparing the date and time slot end time
+  /// with the current date and time.
+  /// Returns true if the order date is in the past, or if the order date is today
+  /// and the time slot end time has passed.
+  bool get isCompleted {
+    final now = DateTime.now();
+
+    // If the order date is before today, it's completed
+    if (date.isBefore(DateTime(now.year, now.month, now.day))) {
+      return true;
+    }
+
+    // If the order date is after today, it's upcoming
+    if (date.isAfter(DateTime(now.year, now.month, now.day))) {
+      return false;
+    }
+
+    // If the order date is today, check the time slot
+    // Parse time slot format: "Lunch (11:00 - 11:30)" or "Breakfast (10:30 - 11:00)"
+    final timeSlotRegex = RegExp(r'\((\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})\)');
+    final match = timeSlotRegex.firstMatch(timeSlot);
+
+    if (match == null) {
+      // If we can't parse the time slot, fall back to date-only comparison
+      return false;
+    }
+
+    // Extract end time (second time in the range)
+    final endTimeStr = match.group(2)!;
+    final endTimeParts = endTimeStr.split(':');
+    final endHour = int.parse(endTimeParts[0]);
+    final endMinute = int.parse(endTimeParts[1]);
+
+    // Create DateTime for the end of the time slot
+    final slotEndTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      endHour,
+      endMinute,
+    );
+
+    // Order is completed if current time is after the slot end time
+    return now.isAfter(slotEndTime);
+  }
 }
 
 class Item {

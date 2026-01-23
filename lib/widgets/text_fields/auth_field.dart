@@ -42,7 +42,7 @@ class _AuthFieldState extends State<AuthField> {
     return ValueListenableBuilder(
       valueListenable: _isVisible,
       builder: (context, isVisible, child) {
-        debugPrint('Hint: ${widget.hintText} isVisible: $isVisible');
+        // debugPrint('Hint: ${widget.hintText} isVisible: $isVisible');
         return TextFormField(
           controller: widget.controller,
           decoration: InputDecoration(

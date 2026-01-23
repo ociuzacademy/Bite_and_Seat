@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:bite_and_seat/core/enums/user_type.dart';
+
 UserProfileModel userProfileModelFromJson(String str) =>
     UserProfileModel.fromJson(json.decode(str));
 
@@ -14,7 +16,7 @@ class UserProfileModel {
   final int id;
   final String username;
   final String password;
-  final String userType;
+  final UserType userType;
   final String? batchName;
   final String department;
   final String profilePhoto;
@@ -33,7 +35,7 @@ class UserProfileModel {
     int? id,
     String? username,
     String? password,
-    String? userType,
+    UserType? userType,
     String? batchName,
     String? department,
     String? profilePhoto,
@@ -52,7 +54,7 @@ class UserProfileModel {
         id: json['id'],
         username: json['username'],
         password: json['password'],
-        userType: json['user_type'],
+        userType: UserType.fromJson(json['user_type']),
         batchName: json['batch_name'],
         department: json['department'],
         profilePhoto: json['profile_photo'],
@@ -62,7 +64,7 @@ class UserProfileModel {
     'id': id,
     'username': username,
     'password': password,
-    'user_type': userType,
+    'user_type': userType.toJson(),
     'batch_name': batchName,
     'department': department,
     'profile_photo': profilePhoto,

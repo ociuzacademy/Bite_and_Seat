@@ -12,3 +12,4 @@ export 'package:bite_and_seat/modules/payment_module/bloc/payment_bloc.dart';
 export 'package:bite_and_seat/modules/profile_module/cubit/user_profile_cubit.dart';
 export 'package:bite_and_seat/modules/table_booking_module/bloc/table_seats_booking_bloc.dart';
 export 'package:bite_and_seat/core/cubit/table_seats_list/table_seats_list_cubit.dart';
+export 'package:bite_and_seat/modules/register_module/bloc/user_register_bloc.dart';

@@ -144,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        userProfile.userType.toUpperCase(),
+                        userProfile.userType.label.toUpperCase(),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppPalette.firstColor,
                           fontWeight: FontWeight.w600,

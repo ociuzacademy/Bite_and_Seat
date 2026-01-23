@@ -1,7 +1,7 @@
 import 'package:bite_and_seat/core/bloc/auth/auth_bloc.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/login_module/utils/login_helper.dart';
-import 'package:bite_and_seat/widgets/text_fields/auth_button.dart';
+import 'package:bite_and_seat/widgets/buttons/auth_button.dart';
 import 'package:bite_and_seat/widgets/text_fields/auth_field.dart';
 import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
 import 'package:bite_and_seat/widgets/loaders/overlay_loader.dart';
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
             // mainAxisAlignment: MainAxisAlignment.center, // Remove to avoid layout issues
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.35,
+                height: MediaQuery.of(context).size.height * 0.27,
               ), // Add spacing instead of Spacer
               Text(
                 'Login.',
@@ -93,7 +93,9 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: MediaQuery.of(context).size.height * 0.075),
               Container(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.425,
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height * 0.425,
+                ),
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
@@ -156,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                         AuthField(
                           hintText: 'Password',
                           controller: _passwordController,
-                          isObscure: true,
+                          isPassword: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Password is missing';
@@ -180,6 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                             }
                             return null;
                           },
+                          keyboardType: TextInputType.visiblePassword,
                         ),
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.025,

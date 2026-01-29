@@ -4,6 +4,10 @@
 
 import 'dart:convert';
 
+import 'package:bite_and_seat/core/enums/payment_method.dart';
+import 'package:bite_and_seat/core/enums/payment_status.dart';
+import 'package:bite_and_seat/modules/payment_module/enums/booking_method.dart';
+
 PaymentResponseModel paymentResponseModelFromJson(String str) =>
     PaymentResponseModel.fromJson(json.decode(str));
 
@@ -11,76 +15,100 @@ String paymentResponseModelToJson(PaymentResponseModel data) =>
     json.encode(data.toJson());
 
 class PaymentResponseModel {
+  final String status;
   final String message;
-  final int orderId;
-  final String updatedPaymentMode;
-  final PaymentDetails paymentDetails;
+  final Data data;
 
   const PaymentResponseModel({
+    required this.status,
     required this.message,
-    required this.orderId,
-    required this.updatedPaymentMode,
-    required this.paymentDetails,
+    required this.data,
   });
 
   PaymentResponseModel copyWith({
+    String? status,
     String? message,
-    int? orderId,
-    String? updatedPaymentMode,
-    PaymentDetails? paymentDetails,
+    Data? data,
   }) => PaymentResponseModel(
+    status: status ?? this.status,
     message: message ?? this.message,
-    orderId: orderId ?? this.orderId,
-    updatedPaymentMode: updatedPaymentMode ?? this.updatedPaymentMode,
-    paymentDetails: paymentDetails ?? this.paymentDetails,
+    data: data ?? this.data,
   );
 
   factory PaymentResponseModel.fromJson(Map<String, dynamic> json) =>
       PaymentResponseModel(
+        status: json['status'],
         message: json['message'],
-        orderId: json['order_id'],
-        updatedPaymentMode: json['updated_payment_mode'],
-        paymentDetails: PaymentDetails.fromJson(json['payment_details']),
+        data: Data.fromJson(json['data']),
       );
 
   Map<String, dynamic> toJson() => {
+    'status': status,
     'message': message,
-    'order_id': orderId,
-    'updated_payment_mode': updatedPaymentMode,
-    'payment_details': paymentDetails.toJson(),
+    'data': data.toJson(),
   };
 }
 
-class PaymentDetails {
-  final String paymentMethod;
-  final String paymentStatus;
-  final DateTime paymentDate;
+class Data {
+  final int orderId;
+  final int paymentId;
+  final PaymentMethod paymentMethod;
+  final BookingMethod paymentType;
+  final PaymentMethod tablePaymentMode;
+  final PaymentMethod foodPaymentMode;
+  final PaymentStatus tablePaymentStatus;
+  final PaymentStatus foodPaymentStatus;
 
-  const PaymentDetails({
+  Data({
+    required this.orderId,
+    required this.paymentId,
     required this.paymentMethod,
-    required this.paymentStatus,
-    required this.paymentDate,
+    required this.paymentType,
+    required this.tablePaymentMode,
+    required this.foodPaymentMode,
+    required this.tablePaymentStatus,
+    required this.foodPaymentStatus,
   });
 
-  PaymentDetails copyWith({
-    String? paymentMethod,
-    String? paymentStatus,
-    DateTime? paymentDate,
-  }) => PaymentDetails(
+  Data copyWith({
+    int? orderId,
+    int? paymentId,
+    PaymentMethod? paymentMethod,
+    BookingMethod? paymentType,
+    PaymentMethod? tablePaymentMode,
+    PaymentMethod? foodPaymentMode,
+    PaymentStatus? tablePaymentStatus,
+    PaymentStatus? foodPaymentStatus,
+  }) => Data(
+    orderId: orderId ?? this.orderId,
+    paymentId: paymentId ?? this.paymentId,
     paymentMethod: paymentMethod ?? this.paymentMethod,
-    paymentStatus: paymentStatus ?? this.paymentStatus,
-    paymentDate: paymentDate ?? this.paymentDate,
+    paymentType: paymentType ?? this.paymentType,
+    tablePaymentMode: tablePaymentMode ?? this.tablePaymentMode,
+    foodPaymentMode: foodPaymentMode ?? this.foodPaymentMode,
+    tablePaymentStatus: tablePaymentStatus ?? this.tablePaymentStatus,
+    foodPaymentStatus: foodPaymentStatus ?? this.foodPaymentStatus,
   );
 
-  factory PaymentDetails.fromJson(Map<String, dynamic> json) => PaymentDetails(
-    paymentMethod: json['payment_method'],
-    paymentStatus: json['payment_status'],
-    paymentDate: DateTime.parse(json['payment_date']),
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+    orderId: json['order_id'],
+    paymentId: json['payment_id'],
+    paymentMethod: PaymentMethod.fromJson(json['payment_method']),
+    paymentType: BookingMethod.fromJson(json['payment_type']),
+    tablePaymentMode: PaymentMethod.fromJson(json['table_payment_mode']),
+    foodPaymentMode: PaymentMethod.fromJson(json['food_payment_mode']),
+    tablePaymentStatus: PaymentStatus.fromJson(json['table_payment_status']),
+    foodPaymentStatus: PaymentStatus.fromJson(json['food_payment_status']),
   );
 
   Map<String, dynamic> toJson() => {
-    'payment_method': paymentMethod,
-    'payment_status': paymentStatus,
-    'payment_date': paymentDate.toIso8601String(),
+    'order_id': orderId,
+    'payment_id': paymentId,
+    'payment_method': paymentMethod.toJson(),
+    'payment_type': paymentType.toJson(),
+    'table_payment_mode': tablePaymentMode.toJson(),
+    'food_payment_mode': foodPaymentMode.toJson(),
+    'table_payment_status': tablePaymentStatus.toJson(),
+    'food_payment_status': foodPaymentStatus.toJson(),
   };
 }

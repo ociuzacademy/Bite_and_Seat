@@ -145,6 +145,24 @@ class _ChatbotPageState extends State<ChatbotPage> {
                     }
                   },
                 ),
+                BlocListener<TodaysSpecialCubit, TodaysSpecialState>(
+                  listener: (context, state) {
+                    switch (state) {
+                      case TodaysSpecialSuccess(:final todaysSpecial):
+                        chatbotProvider.displayTodaysSpecial(todaysSpecial);
+                        break;
+                      case TodaysSpecialEmpty():
+                        chatbotProvider.displayTodaysSpecialError(
+                          'No special dishes found for this date.',
+                        );
+                        break;
+                      case TodaysSpecialError(:final errorMessage):
+                        chatbotProvider.displayTodaysSpecialError(errorMessage);
+                        break;
+                      default:
+                    }
+                  },
+                ),
               ],
               child: Column(
                 children: [

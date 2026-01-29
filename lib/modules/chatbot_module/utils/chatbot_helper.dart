@@ -128,4 +128,59 @@ class ChatbotHelper {
         .read<TableSeatsListCubit>();
     tableSeatsListCubit.getAllTableSeatsList(date, categoryId, slotId);
   }
+
+  void selectTodaySpecial(BuildContext context) {
+    final ChatbotProvider chatbotProvider = Provider.of(context, listen: false);
+    chatbotProvider.setMenuDate(DateTime.now());
+    getTodaysSpecial(context, chatbotProvider.menuDate);
+  }
+
+  Future<void> selectCustomDateSpecial(BuildContext context) async {
+    final DateTime today = DateTime.now();
+    final DateTime tomorrow = today.add(const Duration(days: 1));
+
+    final ChatbotProvider chatbotProvider = Provider.of(context, listen: false);
+
+    DateTime initialDateForPicker = chatbotProvider.menuDate;
+    if (chatbotProvider.menuDate.year == today.year &&
+        chatbotProvider.menuDate.month == today.month &&
+        chatbotProvider.menuDate.day == today.day) {
+      initialDateForPicker = tomorrow;
+    }
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDateForPicker,
+      firstDate: today,
+      lastDate: today.add(const Duration(days: 7)),
+      selectableDayPredicate: (DateTime day) {
+        return day.weekday != DateTime.sunday;
+      },
+    );
+
+    if (picked != null) {
+      chatbotProvider.setMenuDate(picked);
+
+      if (picked.weekday == DateTime.sunday) {
+        if (!context.mounted) return;
+        CustomSnackbar.showError(
+          context,
+          message: 'Canteen is closed on Sunday. Please select another date.',
+        );
+        chatbotProvider.setMenuDate(DateTime.now());
+      }
+    } else {
+      chatbotProvider.setMenuDate(DateTime.now());
+    }
+
+    if (context.mounted) {
+      getTodaysSpecial(context, chatbotProvider.menuDate);
+    }
+  }
+
+  void getTodaysSpecial(BuildContext context, DateTime selectedDate) {
+    final TodaysSpecialCubit todaysSpecialCubit = context
+        .read<TodaysSpecialCubit>();
+    todaysSpecialCubit.getTodaysSpecial(selectedDate);
+  }
 }

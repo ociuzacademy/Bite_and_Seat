@@ -1,17 +1,20 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // payment_provider.dart
+import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:bite_and_seat/modules/payment_module/classes/card_data.dart';
+import 'package:bite_and_seat/modules/payment_module/classes/cash_payment_data.dart';
 import 'package:bite_and_seat/modules/payment_module/classes/payment_data.dart';
 import 'package:bite_and_seat/modules/payment_module/classes/u_p_i_data.dart';
+import 'package:bite_and_seat/modules/payment_module/enums/booking_method.dart';
 import 'package:flutter/material.dart';
 
-import 'package:bite_and_seat/modules/payment_module/enums/payment_method.dart';
+import 'package:bite_and_seat/core/enums/payment_method.dart';
 
 class PaymentProvider with ChangeNotifier {
-  // Order ID
   final int orderId;
+  final BookingType bookingType;
 
-  PaymentProvider({required this.orderId});
+  PaymentProvider({required this.orderId, required this.bookingType});
 
   // Payment state
   PaymentMethod? _selectedPaymentMethod;
@@ -87,12 +90,16 @@ class PaymentProvider with ChangeNotifier {
     if (upiId.isEmpty) {
       return null;
     }
+
     return UPIData(
       paymentData: PaymentData(
         orderId: orderId,
         paymentMethod: _selectedPaymentMethod!,
       ),
       upiId: upiId,
+      bookingMethod: bookingType == BookingType.prebooked
+          ? BookingMethod.both
+          : BookingMethod.table,
     );
   }
 
@@ -126,6 +133,21 @@ class PaymentProvider with ChangeNotifier {
       cardNumber: cardNumber,
       expiryDate: expiryDate,
       cvvNumber: cvvNumber,
+      bookingMethod: bookingType == BookingType.prebooked
+          ? BookingMethod.both
+          : BookingMethod.table,
+    );
+  }
+
+  CashPaymentData validateCashPaymentData() {
+    return CashPaymentData(
+      paymentData: PaymentData(
+        orderId: orderId,
+        paymentMethod: _selectedPaymentMethod!,
+      ),
+      bookingMethod: bookingType == BookingType.prebooked
+          ? BookingMethod.both
+          : BookingMethod.table,
     );
   }
 }

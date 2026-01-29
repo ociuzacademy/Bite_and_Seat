@@ -24,4 +24,8 @@ class DailyMenuCubit extends Cubit<DailyMenuState> {
       emit(DailyMenuState.dailyMenuError(e.toString()));
     }
   }
+
+  void reset() {
+    emit(const DailyMenuState.initial());
+  }
 }

@@ -1,12 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-enum FoodTime {
-  breakfast('Breakfast'),
-  lunch('Lunch'),
-  eveningSnacks('Evening Snacks');
+enum PaymentMethod {
+  upi('upi'),
+  card('card'),
+  cash('cash');
 
   final String label;
-  const FoodTime(this.label);
+  const PaymentMethod(this.label);
 
   @override
   String toString() => label;
@@ -15,20 +15,20 @@ enum FoodTime {
   String toJson() => label;
 
   /// Parse from a label (throws if not found).
-  static FoodTime fromLabel(String label) =>
-      FoodTime.values.firstWhere((e) => e.label == label);
+  static PaymentMethod fromLabel(String label) =>
+      PaymentMethod.values.firstWhere((e) => e.label == label);
 
   /// Safe parse from label. Returns null if not found.
-  static FoodTime? tryFromLabel(String? label) {
+  static PaymentMethod? tryFromLabel(String? label) {
     if (label == null) return null;
     try {
-      return FoodTime.values.firstWhere((e) => e.label == label);
+      return PaymentMethod.values.firstWhere((e) => e.label == label);
     } catch (_) {
       return null;
     }
   }
 
   /// Parse from JSON value; falls back to [tableOnly] when unknown.
-  static FoodTime fromJson(String? value) =>
-      tryFromLabel(value) ?? FoodTime.breakfast;
+  static PaymentMethod fromJson(String? value) =>
+      tryFromLabel(value) ?? PaymentMethod.upi;
 }

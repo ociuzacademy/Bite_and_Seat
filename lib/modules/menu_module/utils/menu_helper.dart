@@ -312,11 +312,8 @@ class MenuHelper {
     DailyMenuModel dailyMenu,
     FoodTime foodTime,
   ) {
-    // Convert DailyMenuModel items to FoodItem and filter by category
-    final category = _getCategoryForFoodTime(foodTime);
-
     return dailyMenu.items
-        .where((item) => item.category.toLowerCase() == category)
+        .where((item) => item.category == foodTime)
         .map(
           (item) => FoodItem(
             foodItemId: item.id,
@@ -327,17 +324,6 @@ class MenuHelper {
           ),
         )
         .toList();
-  }
-
-  static String _getCategoryForFoodTime(FoodTime foodTime) {
-    switch (foodTime) {
-      case FoodTime.breakfast:
-        return 'breakfast';
-      case FoodTime.lunch:
-        return 'lunch';
-      case FoodTime.eveningSnacks:
-        return 'evening_snacks';
-    }
   }
 
   static int _getCategoryId(FoodTime foodTime) {

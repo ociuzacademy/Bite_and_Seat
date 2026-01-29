@@ -21,4 +21,8 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       emit(CategoriesState.categoriesError(e.toString()));
     }
   }
+
+  void reset() {
+    emit(const CategoriesState.initial());
+  }
 }

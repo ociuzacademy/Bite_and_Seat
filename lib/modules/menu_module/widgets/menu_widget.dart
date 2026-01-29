@@ -93,7 +93,7 @@ class MenuWidget extends StatelessWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 0.8,
+              childAspectRatio: 0.75,
             ),
             itemBuilder: (context, index) {
               final cartItem = cartItems

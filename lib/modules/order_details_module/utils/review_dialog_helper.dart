@@ -1,5 +1,5 @@
 // review_dialog_helper.dart
-import 'package:bite_and_seat/modules/order_details_module/bloc/submit_feedback_bloc.dart';
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 import 'package:bite_and_seat/modules/order_details_module/class/feedback_data.dart';
 import 'package:flutter/material.dart';
 import 'package:bite_and_seat/modules/order_details_module/providers/review_provider.dart';

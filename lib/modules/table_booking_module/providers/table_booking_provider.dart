@@ -1,4 +1,5 @@
 // table_booking_provider.dart
+import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:flutter/material.dart';
 import 'package:bite_and_seat/modules/table_booking_module/models/table_model.dart';
 import 'package:bite_and_seat/modules/table_booking_module/models/selected_table_seat_model.dart';
@@ -11,6 +12,7 @@ class TableBookingProvider with ChangeNotifier {
   int? _numberOfPeople;
   double? _totalRate;
   int? _slotId;
+  BookingType? _bookingType;
 
   // Getters with null safety
   List<TableModel> get allTables => _allTables;
@@ -19,6 +21,7 @@ class TableBookingProvider with ChangeNotifier {
   int? get numberOfPeople => _numberOfPeople;
   double? get totalRate => _totalRate;
   int? get slotId => _slotId;
+  BookingType? get bookingType => _bookingType;
 
   // Get tables that have available chairs OR selected chairs
   List<TableModel> get availableTables => _allTables
@@ -47,6 +50,11 @@ class TableBookingProvider with ChangeNotifier {
 
   set slotId(int? slot) {
     _slotId = slot;
+    notifyListeners();
+  }
+
+  set bookingType(BookingType? type) {
+    _bookingType = type;
     notifyListeners();
   }
 
@@ -87,6 +95,59 @@ class TableBookingProvider with ChangeNotifier {
       // Select chair
       updatedChairs[chairIndex] = chair.copyWith(status: ChairStatus.selected);
       _selectedChairs.add(updatedChairs[chairIndex]);
+    }
+
+    updatedTables[tableIndex] = table.copyWith(chairs: updatedChairs);
+    _allTables = updatedTables;
+    notifyListeners();
+  }
+
+  void toggleTableSelection(TableModel table) {
+    if (_numberOfPeople == null) return;
+
+    final tableIndex = _allTables.indexWhere((t) => t.tableId == table.tableId);
+    if (tableIndex == -1) return;
+
+    final updatedTables = List<TableModel>.from(_allTables);
+    final updatedChairs = List<ChairModel>.from(table.chairs);
+
+    // Check if any chair in this table is already selected
+    final hasSelectedChairs = table.chairs.any(
+      (c) => c.status == ChairStatus.selected,
+    );
+
+    if (hasSelectedChairs) {
+      // UNSELECT ALL selected chairs in this table
+      for (int i = 0; i < updatedChairs.length; i++) {
+        if (updatedChairs[i].status == ChairStatus.selected) {
+          updatedChairs[i] = updatedChairs[i].copyWith(
+            status: ChairStatus.available,
+          );
+          _selectedChairs.removeWhere(
+            (c) => c.chairId == updatedChairs[i].chairId,
+          );
+        }
+      }
+    } else {
+      // SELECT needed chairs
+      final currentSelected = _selectedChairs.length;
+      final needed = _numberOfPeople! - currentSelected;
+
+      if (needed <= 0) return;
+
+      int selectedInThisCall = 0;
+      for (int i = 0; i < updatedChairs.length; i++) {
+        if (selectedInThisCall >= needed) break;
+
+        if (updatedChairs[i].status == ChairStatus.available) {
+          updatedChairs[i] = updatedChairs[i].copyWith(
+            status: ChairStatus.selected,
+          );
+          _selectedChairs.add(updatedChairs[i]);
+          selectedInThisCall++;
+        }
+      }
+      if (selectedInThisCall == 0) return;
     }
 
     updatedTables[tableIndex] = table.copyWith(chairs: updatedChairs);

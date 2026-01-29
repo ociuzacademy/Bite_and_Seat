@@ -2,7 +2,7 @@
 // payment_page.dart
 
 import 'package:bite_and_seat/core/theme/app_palette.dart';
-import 'package:bite_and_seat/modules/payment_module/enums/payment_method.dart';
+import 'package:bite_and_seat/core/enums/payment_method.dart';
 import 'package:bite_and_seat/modules/payment_module/providers/payment_provider.dart';
 import 'package:bite_and_seat/widgets/buttons/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -127,6 +127,23 @@ class _PaymentPageContentState extends State<PaymentPageContent> {
                                 SizedBox(width: 10.w),
                                 Text(
                                   'Credit/Debit Cards',
+                                  style: TextStyle(fontSize: 14.sp),
+                                ),
+                              ],
+                            ),
+                          ),
+                          DropdownMenuItem<PaymentMethod>(
+                            value: PaymentMethod.cash,
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  'assets/icons/icons8-cash-in-hand-48.png',
+                                  width: 30.w,
+                                  height: 30.h,
+                                ),
+                                SizedBox(width: 10.w),
+                                Text(
+                                  'Pay on Cash',
                                   style: TextStyle(fontSize: 14.sp),
                                 ),
                               ],

@@ -98,4 +98,39 @@ class OrderDetailsHelper {
       ),
     );
   }
+
+  void showCancelOrderDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancel Order'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [Text('Are you sure you want to cancel this order?')],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // close bottom sheet
+              _cancelOrder();
+            },
+            child: const Text(
+              'Confirm',
+              style: TextStyle(color: AppPalette.firstColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _cancelOrder() {
+    final CancelOrderBloc cancelOrderBloc = context.read<CancelOrderBloc>();
+    cancelOrderBloc.add(CancelOrderEvent.cancelOrder(orderId: orderId));
+  }
 }

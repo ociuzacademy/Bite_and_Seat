@@ -26,4 +26,7 @@ class AppUrls {
   static const String submitReportUrl = '$userappUrl/report/create/';
 
   static const String getCategoriesUrl = '$userappUrl/categories/';
+  static const String getTodaysSpecialUrl = '$userappUrl/todays-special/';
+
+  static const String cancelOrderUrl = '$userappUrl/cancel-order/';
 }

@@ -63,12 +63,14 @@ class FoodItemContainer extends StatelessWidget {
 
             // Food Rate
             Text(
-              '\u{20B9}${foodItem.rate} for ${foodItem.itemsPerPlate} ${foodItem.itemsPerPlate > 1 ? 'items' : 'item'}',
+              '\u{20B9}${foodItem.rate} for ${foodItem.itemsPerPlate}',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: AppPalette.firstColor,
                 fontSize: 16,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
 
             const SizedBox(height: 4),
@@ -110,7 +112,10 @@ class FoodItemContainer extends StatelessWidget {
                         ),
                         IconButton(
                           onPressed: onAddingQuantity,
-                          icon: const Icon(Icons.add, color: AppPalette.firstColor),
+                          icon: const Icon(
+                            Icons.add,
+                            color: AppPalette.firstColor,
+                          ),
                         ),
                       ],
                     ),

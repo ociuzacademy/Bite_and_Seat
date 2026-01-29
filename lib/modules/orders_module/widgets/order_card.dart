@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/order_details_module/view/order_details_page.dart';
 import 'package:bite_and_seat/modules/orders_module/model/order_model.dart';
@@ -27,7 +28,7 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeSlot = order.timeSlot;
-    final OrderStatus status = order.isCompleted
+    final OrderStatus status = order.bookingType == BookingType.tableOnly
         ? OrderStatus.completed
         : OrderStatus.upcoming;
     final isUpcoming = status == OrderStatus.upcoming;

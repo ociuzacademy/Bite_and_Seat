@@ -1,5 +1,6 @@
 // payment_helper.dart
-import 'package:bite_and_seat/modules/payment_module/enums/payment_method.dart';
+import 'package:bite_and_seat/core/enums/payment_method.dart';
+import 'package:bite_and_seat/modules/payment_module/widgets/pay_on_cash.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,8 +37,12 @@ class PaymentHelper {
               switch (paymentProvider.selectedPaymentMethod) {
                 case PaymentMethod.upi:
                   return UPIPayment(orderId: orderId, amount: totalRate);
-                default:
+                case PaymentMethod.card:
                   return CardPayment(orderId: orderId, amount: totalRate);
+                case PaymentMethod.cash:
+                  return PayOnCash(orderId: orderId, amount: totalRate);
+                default:
+                  return const SizedBox.shrink();
               }
             },
           ),

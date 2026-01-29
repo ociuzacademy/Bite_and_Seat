@@ -4,6 +4,9 @@
 
 import 'dart:convert';
 
+import 'package:bite_and_seat/core/enums/booking_type.dart';
+import 'package:bite_and_seat/core/enums/payment_method.dart';
+
 List<UserOrderModel> userOrderModelFromJson(String str) =>
     List<UserOrderModel>.from(
       json.decode(str).map((x) => UserOrderModel.fromJson(x)),
@@ -15,7 +18,7 @@ String userOrderModelToJson(List<UserOrderModel> data) =>
 class UserOrderModel {
   final int id;
   final int userId;
-  final String bookingType;
+  final BookingType bookingType;
   final DateTime date;
   final int category;
   final String timeSlot;
@@ -23,8 +26,9 @@ class UserOrderModel {
   final List<String> tables;
   final List<Seat> seats;
   final String totalAmount;
-  final String paymentMode;
   final List<Item> items;
+  final PaymentMethod tablePaymentMode;
+  final PaymentMethod foodPaymentMode;
   final DateTime createdAt;
 
   const UserOrderModel({
@@ -38,15 +42,16 @@ class UserOrderModel {
     required this.tables,
     required this.seats,
     required this.totalAmount,
-    required this.paymentMode,
     required this.items,
+    required this.tablePaymentMode,
+    required this.foodPaymentMode,
     required this.createdAt,
   });
 
   UserOrderModel copyWith({
     int? id,
     int? userId,
-    String? bookingType,
+    BookingType? bookingType,
     DateTime? date,
     int? category,
     String? timeSlot,
@@ -54,8 +59,9 @@ class UserOrderModel {
     List<String>? tables,
     List<Seat>? seats,
     String? totalAmount,
-    String? paymentMode,
     List<Item>? items,
+    PaymentMethod? tablePaymentMode,
+    PaymentMethod? foodPaymentMode,
     DateTime? createdAt,
   }) => UserOrderModel(
     id: id ?? this.id,
@@ -68,15 +74,16 @@ class UserOrderModel {
     tables: tables ?? this.tables,
     seats: seats ?? this.seats,
     totalAmount: totalAmount ?? this.totalAmount,
-    paymentMode: paymentMode ?? this.paymentMode,
     items: items ?? this.items,
+    tablePaymentMode: tablePaymentMode ?? this.tablePaymentMode,
+    foodPaymentMode: foodPaymentMode ?? this.foodPaymentMode,
     createdAt: createdAt ?? this.createdAt,
   );
 
   factory UserOrderModel.fromJson(Map<String, dynamic> json) => UserOrderModel(
     id: json['id'],
     userId: json['user_id'],
-    bookingType: json['booking_type'],
+    bookingType: BookingType.fromJson(json['booking_type']),
     date: DateTime.parse(json['date']),
     category: json['category'],
     timeSlot: json['time_slot'],
@@ -84,15 +91,16 @@ class UserOrderModel {
     tables: List<String>.from(json['tables'].map((x) => x)),
     seats: List<Seat>.from(json['seats'].map((x) => Seat.fromJson(x))),
     totalAmount: json['total_amount'],
-    paymentMode: json['payment_mode'],
     items: List<Item>.from(json['items'].map((x) => Item.fromJson(x))),
+    tablePaymentMode: PaymentMethod.fromJson(json['table_payment_mode']),
+    foodPaymentMode: PaymentMethod.fromJson(json['food_payment_mode']),
     createdAt: DateTime.parse(json['created_at']),
   );
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'user_id': userId,
-    'booking_type': bookingType,
+    'booking_type': bookingType.name,
     'date':
         "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
     'category': category,
@@ -101,56 +109,11 @@ class UserOrderModel {
     'tables': List<dynamic>.from(tables.map((x) => x)),
     'seats': List<dynamic>.from(seats.map((x) => x.toJson())),
     'total_amount': totalAmount,
-    'payment_mode': paymentMode,
     'items': List<dynamic>.from(items.map((x) => x.toJson())),
+    'table_payment_mode': tablePaymentMode.name,
+    'food_payment_mode': foodPaymentMode.name,
     'created_at': createdAt.toIso8601String(),
   };
-
-  /// Checks if the order is completed by comparing the date and time slot end time
-  /// with the current date and time.
-  /// Returns true if the order date is in the past, or if the order date is today
-  /// and the time slot end time has passed.
-  bool get isCompleted {
-    final now = DateTime.now();
-
-    // If the order date is before today, it's completed
-    if (date.isBefore(DateTime(now.year, now.month, now.day))) {
-      return true;
-    }
-
-    // If the order date is after today, it's upcoming
-    if (date.isAfter(DateTime(now.year, now.month, now.day))) {
-      return false;
-    }
-
-    // If the order date is today, check the time slot
-    // Parse time slot format: "Lunch (11:00 - 11:30)" or "Breakfast (10:30 - 11:00)"
-    final timeSlotRegex = RegExp(r'\((\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})\)');
-    final match = timeSlotRegex.firstMatch(timeSlot);
-
-    if (match == null) {
-      // If we can't parse the time slot, fall back to date-only comparison
-      return false;
-    }
-
-    // Extract end time (second time in the range)
-    final endTimeStr = match.group(2)!;
-    final endTimeParts = endTimeStr.split(':');
-    final endHour = int.parse(endTimeParts[0]);
-    final endMinute = int.parse(endTimeParts[1]);
-
-    // Create DateTime for the end of the time slot
-    final slotEndTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      endHour,
-      endMinute,
-    );
-
-    // Order is completed if current time is after the slot end time
-    return now.isAfter(slotEndTime);
-  }
 }
 
 class Item {

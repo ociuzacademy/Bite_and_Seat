@@ -29,6 +29,7 @@ class TableBookingPageContent extends StatefulWidget {
 
 class _TableBookingPageContentState extends State<TableBookingPageContent> {
   late TableBookingHelper _tableBookingHelper;
+
   @override
   void initState() {
     super.initState();
@@ -69,6 +70,7 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                   provider.totalRate =
                       double.parse(orderDetails.totalAmount) +
                       orderDetails.numberOfPersons! * 5.0;
+                  provider.bookingType = orderDetails.bookingType;
                   _tableBookingHelper.tableSeatsListInit(
                     orderDetails.date,
                     orderDetails.category,
@@ -134,6 +136,7 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                     PaymentPage.route(
                       orderId: widget.orderId,
                       totalRate: double.parse(response.order.totalAmount),
+                      bookingType: provider.bookingType!,
                     ),
                   );
                   break;
@@ -262,13 +265,16 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                                       ),
                                     )
                                   : GridView.builder(
-                                      padding: const EdgeInsets.all(16),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
+                                      ),
                                       gridDelegate:
                                           const SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2,
-                                            crossAxisSpacing: 12,
-                                            mainAxisSpacing: 12,
-                                            childAspectRatio: 0.85,
+                                            crossAxisCount: 1,
+                                            crossAxisSpacing: 16,
+                                            mainAxisSpacing: 16,
+                                            mainAxisExtent: 320,
                                           ),
                                       itemCount:
                                           provider.availableTables.length,
@@ -277,6 +283,11 @@ class _TableBookingPageContentState extends State<TableBookingPageContent> {
                                             provider.availableTables[index];
                                         return TableWidget(
                                           table: table,
+                                          onSelectTable: () {
+                                            provider.toggleTableSelection(
+                                              table,
+                                            );
+                                          },
                                           onSelectChair: (table, chair) {
                                             provider.toggleChairSelection(
                                               table,

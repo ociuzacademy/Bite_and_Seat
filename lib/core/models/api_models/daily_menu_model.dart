@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:bite_and_seat/core/enums/food_time.dart';
+
 DailyMenuModel dailyMenuModelFromJson(String str) =>
     DailyMenuModel.fromJson(json.decode(str));
 
@@ -47,7 +49,7 @@ class Item {
   final String rate;
   final String itemPerPlate;
   final String image;
-  final String category;
+  final FoodTime category;
 
   const Item({
     required this.id,
@@ -64,7 +66,7 @@ class Item {
     String? rate,
     String? itemPerPlate,
     String? image,
-    String? category,
+    FoodTime? category,
   }) => Item(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -80,7 +82,7 @@ class Item {
     rate: json['rate'],
     itemPerPlate: json['item_per_plate'],
     image: json['image'],
-    category: json['category'],
+    category: FoodTime.fromJson(json['category']),
   );
 
   Map<String, dynamic> toJson() => {
@@ -89,6 +91,6 @@ class Item {
     'rate': rate,
     'item_per_plate': itemPerPlate,
     'image': image,
-    'category': category,
+    'category': category.toJson(),
   };
 }

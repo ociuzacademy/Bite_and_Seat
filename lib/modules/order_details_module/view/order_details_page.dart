@@ -55,30 +55,68 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      body: BlocListener<SubmitFeedbackBloc, SubmitFeedbackState>(
-        listener: (context, state) {
-          switch (state) {
-            case SubmitFeedbackLoading _:
-              OverlayLoader.show(context, message: 'Submitting feedback...');
-              break;
-            case SubmitFeedbackError(:final errorMessage):
-              OverlayLoader.hide();
-              CustomSnackbar.showError(context, message: errorMessage);
-              break;
-            case SubmitFeedbackSuccess(:final response):
-              OverlayLoader.hide();
-              CustomSnackbar.showSuccess(context, message: response.message);
-              Navigator.pushAndRemoveUntil(
-                context,
-                MenuPage.route(),
-                (_) => false,
-              );
-              break;
-            default:
-              OverlayLoader.hide();
-              break;
-          }
-        },
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<SubmitFeedbackBloc, SubmitFeedbackState>(
+            listener: (context, state) {
+              switch (state) {
+                case SubmitFeedbackLoading _:
+                  OverlayLoader.show(
+                    context,
+                    message: 'Submitting feedback...',
+                  );
+                  break;
+                case SubmitFeedbackError(:final errorMessage):
+                  OverlayLoader.hide();
+                  CustomSnackbar.showError(context, message: errorMessage);
+                  break;
+                case SubmitFeedbackSuccess(:final response):
+                  OverlayLoader.hide();
+                  CustomSnackbar.showSuccess(
+                    context,
+                    message: response.message,
+                  );
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MenuPage.route(),
+                    (_) => false,
+                  );
+                  break;
+                default:
+                  OverlayLoader.hide();
+                  break;
+              }
+            },
+          ),
+          BlocListener<CancelOrderBloc, CancelOrderState>(
+            listener: (context, state) {
+              switch (state) {
+                case CancelOrderLoading _:
+                  OverlayLoader.show(context, message: 'Canceling order...');
+                  break;
+                case CancelOrderError(:final message):
+                  OverlayLoader.hide();
+                  CustomSnackbar.showError(context, message: message);
+                  break;
+                case CancelOrderSuccess(:final response):
+                  OverlayLoader.hide();
+                  CustomSnackbar.showSuccess(
+                    context,
+                    message: response.message,
+                  );
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MenuPage.route(),
+                    (_) => false,
+                  );
+                  break;
+                default:
+                  OverlayLoader.hide();
+                  break;
+              }
+            },
+          ),
+        ],
         child: BlocBuilder<OrderCubit, OrderState>(
           builder: (context, state) {
             switch (state) {
@@ -98,6 +136,19 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                 final FoodTime foodTime = OrderDetailsHelper.getFoodTime(
                   orderDetails.category,
                 );
+
+                final now = DateTime.now();
+                final today = DateTime(now.year, now.month, now.day);
+                final bookingDate = DateTime(
+                  orderDetails.date.year,
+                  orderDetails.date.month,
+                  orderDetails.date.day,
+                );
+
+                final canCancel =
+                    !orderDetails.isCompleted &&
+                    (bookingDate.isAtSameMomentAs(today) ||
+                        bookingDate.isAfter(today));
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -120,7 +171,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Order #${orderDetails.id}',
+                                    'Order #//${orderDetails.id}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
@@ -328,6 +379,18 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
+
+                      // Cancel Order Button
+                      if (canCancel) ...[
+                        CustomButton(
+                          buttonWidth: double.infinity,
+                          backgroundColor: Colors.white,
+                          textColor: AppPalette.errorColor,
+                          labelText: 'Cancel Order',
+                          onClick: _orderDetailsHelper.showCancelOrderDialog,
+                        ),
+                        const SizedBox(height: 12),
+                      ],
 
                       // Review Button
                       CustomButton(

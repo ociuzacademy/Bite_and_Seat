@@ -7,6 +7,9 @@ import 'package:bite_and_seat/modules/chatbot_module/utils/chatbot_helper.dart';
 import 'package:bite_and_seat/core/models/api_models/daily_menu_model.dart';
 import 'package:bite_and_seat/modules/chatbot_module/models/api_models/category_model.dart';
 import 'package:bite_and_seat/core/models/api_models/all_table_seats_model.dart';
+import 'package:bite_and_seat/modules/chatbot_module/models/api_models/todays_special_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 
 class ChatbotProvider with ChangeNotifier {
   final List<ChatMessage> _messages = [];
@@ -92,6 +95,11 @@ class ChatbotProvider with ChangeNotifier {
         action: 'seat_vacancy_enquiry',
         icon: Icons.event_seat,
       ),
+      const ChatOption(
+        text: 'Today\'s Special Enquiry',
+        action: 'today_special_enquiry',
+        icon: Icons.event_seat,
+      ),
     ];
   }
 
@@ -121,6 +129,26 @@ class ChatbotProvider with ChangeNotifier {
       const ChatOption(
         text: 'Custom Day',
         action: 'seat_allocation_custom',
+        icon: Icons.calendar_today,
+      ),
+      const ChatOption(
+        text: 'Back to Main',
+        action: 'back_main',
+        icon: Icons.arrow_back,
+      ),
+    ];
+  }
+
+  List<ChatOption> _getTodaySpecialEnquiryOptions() {
+    return [
+      const ChatOption(
+        text: 'Today',
+        action: 'today_special_today',
+        icon: Icons.today,
+      ),
+      const ChatOption(
+        text: 'Custom Day',
+        action: 'today_special_custom',
         icon: Icons.calendar_today,
       ),
       const ChatOption(
@@ -264,6 +292,23 @@ class ChatbotProvider with ChangeNotifier {
         );
         break;
 
+      case 'today_special_enquiry':
+        _addBotMessage(
+          'I can help you check today\'s special. First, let\'s select a date.',
+          _getTodaySpecialEnquiryOptions(),
+        );
+        break;
+
+      case 'today_special_today':
+        if (!context.mounted) return;
+        _handleTodaySpecial(context);
+        break;
+
+      case 'today_special_custom':
+        if (!context.mounted) return;
+        _handleCustomDateSpecial(context);
+        break;
+
       case 'menu_today':
         if (!context.mounted) return;
         _handleTodayMenu(context);
@@ -296,6 +341,13 @@ class ChatbotProvider with ChangeNotifier {
 
       case 'back_main':
       case 'back_menu_enquiry':
+        if (context.mounted) {
+          context.read<DailyMenuCubit>().reset();
+          context.read<TimeSlotCubit>().reset();
+          context.read<TableSeatsListCubit>().reset();
+          context.read<CategoriesCubit>().reset();
+          context.read<TodaysSpecialCubit>().reset();
+        }
         _addBotMessage(
           "Hello! I'm your food assistant. How can I help you today?",
           _getInitialOptions(),
@@ -332,6 +384,16 @@ class ChatbotProvider with ChangeNotifier {
   void _handleCustomDateSelection(BuildContext context) {
     final chatbotHelper = ChatbotHelper();
     chatbotHelper.selectCustomDate(context);
+  }
+
+  void _handleTodaySpecial(BuildContext context) {
+    final chatbotHelper = ChatbotHelper();
+    chatbotHelper.selectTodaySpecial(context);
+  }
+
+  void _handleCustomDateSpecial(BuildContext context) {
+    final chatbotHelper = ChatbotHelper();
+    chatbotHelper.selectCustomDateSpecial(context);
   }
 
   void _handleTodaySeatAllocation(BuildContext context) {
@@ -399,8 +461,21 @@ class ChatbotProvider with ChangeNotifier {
     _addBotMessage(formattedSeats, _getBackOptions());
   }
 
+  // Call this method when you have today's special data
+  void displayTodaysSpecial(List<TodaysSpecialModel> specials) {
+    final formattedSpecials = _formatTodaysSpecialData(specials);
+    _addBotMessage(formattedSpecials, _getBackOptions());
+  }
+
   // Call this method when there's an error or no menu available
   void displayMenuError(String errorMessage) {
+    _addBotMessage(
+      '❌ $errorMessage\n\nPlease try another date or check back later.',
+      _getBackOptions(),
+    );
+  }
+
+  void displayTodaysSpecialError(String errorMessage) {
     _addBotMessage(
       '❌ $errorMessage\n\nPlease try another date or check back later.',
       _getBackOptions(),
@@ -437,5 +512,20 @@ class ChatbotProvider with ChangeNotifier {
       "Hello! I'm your food assistant. How can I help you today?",
       _getInitialOptions(),
     );
+  }
+
+  String _formatTodaysSpecialData(List<TodaysSpecialModel> specials) {
+    final buffer = StringBuffer();
+
+    buffer.writeln('🌟 Today\'s Special Dishes 🌟');
+    buffer.writeln();
+
+    for (final special in specials) {
+      buffer.writeln('🍽️ ${special.name}');
+      buffer.writeln('   📁 Category: ${special.categoryName}');
+      buffer.writeln();
+    }
+
+    return buffer.toString();
   }
 }

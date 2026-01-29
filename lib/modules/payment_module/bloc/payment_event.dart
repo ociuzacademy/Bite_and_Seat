@@ -7,4 +7,7 @@ sealed class PaymentEvent with _$PaymentEvent {
       _UpiPaymentStarted;
   const factory PaymentEvent.cardPaymentStarted(CardData cardData) =
       _CardPaymentStarted;
+  const factory PaymentEvent.cashPaymentStarted(
+    CashPaymentData cashPaymentData,
+  ) = _CashPaymentStarted;
 }

@@ -4,6 +4,9 @@
 
 import 'dart:convert';
 
+import 'package:bite_and_seat/core/enums/booking_type.dart';
+import 'package:bite_and_seat/core/enums/payment_method.dart';
+
 OrderDetailsModel orderDetailsModelFromJson(String str) =>
     OrderDetailsModel.fromJson(json.decode(str));
 
@@ -13,7 +16,7 @@ String orderDetailsModelToJson(OrderDetailsModel data) =>
 class OrderDetailsModel {
   final int id;
   final int user;
-  final String bookingType;
+  final BookingType bookingType;
   final int category;
   final DateTime date;
   final int? timeSlot;
@@ -23,10 +26,12 @@ class OrderDetailsModel {
   final List<Table> tables;
   final String tableCharge;
   final String totalAmount;
-  final String paymentMode;
+  final PaymentMethod tablePaymentMode;
+  final PaymentMethod foodPaymentMode;
   final List<Item> items;
   final List<Payment> payments;
   final DateTime createdAt;
+  final bool isCompleted;
 
   const OrderDetailsModel({
     required this.id,
@@ -41,16 +46,18 @@ class OrderDetailsModel {
     required this.tables,
     required this.tableCharge,
     required this.totalAmount,
-    required this.paymentMode,
+    required this.tablePaymentMode,
+    required this.foodPaymentMode,
     required this.items,
     required this.payments,
     required this.createdAt,
+    required this.isCompleted,
   });
 
   OrderDetailsModel copyWith({
     int? id,
     int? user,
-    String? bookingType,
+    BookingType? bookingType,
     int? category,
     DateTime? date,
     int? timeSlot,
@@ -60,10 +67,12 @@ class OrderDetailsModel {
     List<Table>? tables,
     String? tableCharge,
     String? totalAmount,
-    String? paymentMode,
+    PaymentMethod? tablePaymentMode,
+    PaymentMethod? foodPaymentMode,
     List<Item>? items,
     List<Payment>? payments,
     DateTime? createdAt,
+    bool? isCompleted,
   }) => OrderDetailsModel(
     id: id ?? this.id,
     user: user ?? this.user,
@@ -77,17 +86,19 @@ class OrderDetailsModel {
     tables: tables ?? this.tables,
     tableCharge: tableCharge ?? this.tableCharge,
     totalAmount: totalAmount ?? this.totalAmount,
-    paymentMode: paymentMode ?? this.paymentMode,
+    tablePaymentMode: tablePaymentMode ?? this.tablePaymentMode,
+    foodPaymentMode: foodPaymentMode ?? this.foodPaymentMode,
     items: items ?? this.items,
     payments: payments ?? this.payments,
     createdAt: createdAt ?? this.createdAt,
+    isCompleted: isCompleted ?? this.isCompleted,
   );
 
   factory OrderDetailsModel.fromJson(Map<String, dynamic> json) =>
       OrderDetailsModel(
         id: json['id'],
         user: json['user'],
-        bookingType: json['booking_type'],
+        bookingType: BookingType.fromJson(json['booking_type']),
         category: json['category'],
         date: DateTime.parse(json['date']),
         timeSlot: json['time_slot'],
@@ -97,18 +108,20 @@ class OrderDetailsModel {
         tables: List<Table>.from(json['tables'].map((x) => Table.fromJson(x))),
         tableCharge: json['table_charge'],
         totalAmount: json['total_amount'],
-        paymentMode: json['payment_mode'],
+        tablePaymentMode: PaymentMethod.fromJson(json['table_payment_mode']),
+        foodPaymentMode: PaymentMethod.fromJson(json['food_payment_mode']),
         items: List<Item>.from(json['items'].map((x) => Item.fromJson(x))),
         payments: List<Payment>.from(
           json['payments'].map((x) => Payment.fromJson(x)),
         ),
         createdAt: DateTime.parse(json['created_at']),
+        isCompleted: json['is_completed'],
       );
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'user': user,
-    'booking_type': bookingType,
+    'booking_type': bookingType.label,
     'category': category,
     'date':
         "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
@@ -119,62 +132,13 @@ class OrderDetailsModel {
     'tables': List<dynamic>.from(tables.map((x) => x.toJson())),
     'table_charge': tableCharge,
     'total_amount': totalAmount,
-    'payment_mode': paymentMode,
+    'table_payment_mode': tablePaymentMode.label,
+    'food_payment_mode': foodPaymentMode.label,
     'items': List<dynamic>.from(items.map((x) => x.toJson())),
     'payments': List<dynamic>.from(payments.map((x) => x.toJson())),
     'created_at': createdAt.toIso8601String(),
+    'is_completed': isCompleted,
   };
-
-  /// Checks if the order is completed by comparing the date and time slot end time
-  /// with the current date and time.
-  /// Returns true if the order date is in the past, or if the order date is today
-  /// and the time slot end time has passed.
-  bool get isCompleted {
-    final now = DateTime.now();
-
-    // If the order date is before today, it's completed
-    if (date.isBefore(DateTime(now.year, now.month, now.day))) {
-      return true;
-    }
-
-    // If the order date is after today, it's upcoming
-    if (date.isAfter(DateTime(now.year, now.month, now.day))) {
-      return false;
-    }
-
-    // If the order date is today, check the time slot end time
-    if (slotEndTime == null) {
-      // If we don't have slot end time, fall back to date-only comparison
-      return false;
-    }
-
-    // Parse slot end time (format: "10:30" or "14:00")
-    final timeParts = slotEndTime!.split(':');
-    if (timeParts.length != 2) {
-      // Invalid format, fall back to date-only comparison
-      return false;
-    }
-
-    final endHour = int.tryParse(timeParts[0]);
-    final endMinute = int.tryParse(timeParts[1]);
-
-    if (endHour == null || endMinute == null) {
-      // Invalid time values, fall back to date-only comparison
-      return false;
-    }
-
-    // Create DateTime for the end of the time slot
-    final slotEndDateTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      endHour,
-      endMinute,
-    );
-
-    // Order is completed if current time is after the slot end time
-    return now.isAfter(slotEndDateTime);
-  }
 }
 
 class Item {
@@ -225,49 +189,79 @@ class Item {
 
 class Payment {
   final String paymentMethod;
-  final String paymentStatus;
+  final String paymentType;
   final DateTime paymentDate;
+  final String? upiId;
+  final String? cardholderName;
+  final String? cardNumber;
+  final String? expiryDate;
+  final String? cvvNumber;
 
   const Payment({
     required this.paymentMethod,
-    required this.paymentStatus,
+    required this.paymentType,
     required this.paymentDate,
+    this.upiId,
+    this.cardholderName,
+    this.cardNumber,
+    this.expiryDate,
+    this.cvvNumber,
   });
 
   Payment copyWith({
     String? paymentMethod,
-    String? paymentStatus,
+    String? paymentType,
     DateTime? paymentDate,
+    String? upiId,
+    String? cardholderName,
+    String? cardNumber,
+    String? expiryDate,
+    String? cvvNumber,
   }) => Payment(
     paymentMethod: paymentMethod ?? this.paymentMethod,
-    paymentStatus: paymentStatus ?? this.paymentStatus,
+    paymentType: paymentType ?? this.paymentType,
     paymentDate: paymentDate ?? this.paymentDate,
+    upiId: upiId ?? this.upiId,
+    cardholderName: cardholderName ?? this.cardholderName,
+    cardNumber: cardNumber ?? this.cardNumber,
+    expiryDate: expiryDate ?? this.expiryDate,
+    cvvNumber: cvvNumber ?? this.cvvNumber,
   );
 
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
     paymentMethod: json['payment_method'],
-    paymentStatus: json['payment_status'],
+    paymentType: json['payment_type'],
     paymentDate: DateTime.parse(json['payment_date']),
+    upiId: json['upi_id'],
+    cardholderName: json['cardholder_name'],
+    cardNumber: json['card_number'],
+    expiryDate: json['expiry_date'],
+    cvvNumber: json['cvv_number'],
   );
 
   Map<String, dynamic> toJson() => {
     'payment_method': paymentMethod,
-    'payment_status': paymentStatus,
+    'payment_type': paymentType,
     'payment_date': paymentDate.toIso8601String(),
+    'upi_id': upiId,
+    'cardholder_name': cardholderName,
+    'card_number': cardNumber,
+    'expiry_date': expiryDate,
+    'cvv_number': cvvNumber,
   };
 }
 
 class Table {
-  final List<String> seatIds;
-  final String tableId;
+  final List<int> seatIds;
+  final int tableId;
 
   const Table({required this.seatIds, required this.tableId});
 
-  Table copyWith({List<String>? seatIds, String? tableId}) =>
+  Table copyWith({List<int>? seatIds, int? tableId}) =>
       Table(seatIds: seatIds ?? this.seatIds, tableId: tableId ?? this.tableId);
 
   factory Table.fromJson(Map<String, dynamic> json) => Table(
-    seatIds: List<String>.from(json['seat_ids'].map((x) => x)),
+    seatIds: List<int>.from(json['seat_ids'].map((x) => x)),
     tableId: json['table_id'],
   );
 

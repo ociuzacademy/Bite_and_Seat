@@ -22,4 +22,8 @@ class TimeSlotCubit extends Cubit<TimeSlotState> {
       emit(TimeSlotState.timeSlotError(e.toString()));
     }
   }
+
+  void reset() {
+    emit(const TimeSlotState.initial());
+  }
 }

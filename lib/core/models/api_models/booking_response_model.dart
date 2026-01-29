@@ -4,6 +4,9 @@
 
 import 'dart:convert';
 
+import 'package:bite_and_seat/core/enums/payment_method.dart';
+import 'package:bite_and_seat/core/enums/payment_status.dart';
+
 BookingResponseModel bookingResponseModelFromJson(String str) =>
     BookingResponseModel.fromJson(json.decode(str));
 
@@ -42,13 +45,19 @@ class Order {
   final String? slotStartTime;
   final String? slotEndTime;
   final String? slotCategoryName;
+  final String? outsiderName;
+  final String? outsiderPhone;
   final String bookingType;
   final DateTime date;
   final int? numberOfPersons;
   final List<Table> tables;
   final String tableCharge;
   final String totalAmount;
-  final String paymentMode;
+  final PaymentMethod tablePaymentMode;
+  final PaymentMethod foodPaymentMode;
+  final PaymentStatus tablePaymentStatus;
+  final PaymentStatus foodPaymentStatus;
+  final bool isCompleted;
   final DateTime createdAt;
   final int user;
   final int category;
@@ -62,13 +71,19 @@ class Order {
     this.slotStartTime,
     this.slotEndTime,
     this.slotCategoryName,
+    this.outsiderName,
+    this.outsiderPhone,
     required this.bookingType,
     required this.date,
     this.numberOfPersons,
     required this.tables,
     required this.tableCharge,
     required this.totalAmount,
-    required this.paymentMode,
+    required this.tablePaymentMode,
+    required this.foodPaymentMode,
+    required this.tablePaymentStatus,
+    required this.foodPaymentStatus,
+    required this.isCompleted,
     required this.createdAt,
     required this.user,
     required this.category,
@@ -83,13 +98,19 @@ class Order {
     String? slotStartTime,
     String? slotEndTime,
     String? slotCategoryName,
+    String? outsiderName,
+    String? outsiderPhone,
     String? bookingType,
     DateTime? date,
     int? numberOfPersons,
     List<Table>? tables,
     String? tableCharge,
     String? totalAmount,
-    String? paymentMode,
+    PaymentMethod? tablePaymentMode,
+    PaymentMethod? foodPaymentMode,
+    PaymentStatus? tablePaymentStatus,
+    PaymentStatus? foodPaymentStatus,
+    bool? isCompleted,
     DateTime? createdAt,
     int? user,
     int? category,
@@ -102,13 +123,19 @@ class Order {
     slotStartTime: slotStartTime ?? this.slotStartTime,
     slotEndTime: slotEndTime ?? this.slotEndTime,
     slotCategoryName: slotCategoryName ?? this.slotCategoryName,
+    outsiderName: outsiderName ?? this.outsiderName,
+    outsiderPhone: outsiderPhone ?? this.outsiderPhone,
     bookingType: bookingType ?? this.bookingType,
     date: date ?? this.date,
     numberOfPersons: numberOfPersons ?? this.numberOfPersons,
     tables: tables ?? this.tables,
     tableCharge: tableCharge ?? this.tableCharge,
     totalAmount: totalAmount ?? this.totalAmount,
-    paymentMode: paymentMode ?? this.paymentMode,
+    tablePaymentMode: tablePaymentMode ?? this.tablePaymentMode,
+    foodPaymentMode: foodPaymentMode ?? this.foodPaymentMode,
+    tablePaymentStatus: tablePaymentStatus ?? this.tablePaymentStatus,
+    foodPaymentStatus: foodPaymentStatus ?? this.foodPaymentStatus,
+    isCompleted: isCompleted ?? this.isCompleted,
     createdAt: createdAt ?? this.createdAt,
     user: user ?? this.user,
     category: category ?? this.category,
@@ -125,13 +152,19 @@ class Order {
     slotStartTime: json['slot_start_time'],
     slotEndTime: json['slot_end_time'],
     slotCategoryName: json['slot_category_name'],
+    outsiderName: json['outsider_name'],
+    outsiderPhone: json['outsider_phone'],
     bookingType: json['booking_type'],
     date: DateTime.parse(json['date']),
     numberOfPersons: json['number_of_persons'],
     tables: List<Table>.from(json['tables'].map((x) => Table.fromJson(x))),
     tableCharge: json['table_charge'],
     totalAmount: json['total_amount'],
-    paymentMode: json['payment_mode'],
+    tablePaymentMode: PaymentMethod.fromJson(json['table_payment_mode']),
+    foodPaymentMode: PaymentMethod.fromJson(json['food_payment_mode']),
+    tablePaymentStatus: PaymentStatus.fromJson(json['table_payment_status']),
+    foodPaymentStatus: PaymentStatus.fromJson(json['food_payment_status']),
+    isCompleted: json['is_completed'],
     createdAt: DateTime.parse(json['created_at']),
     user: json['user'],
     category: json['category'],
@@ -146,6 +179,8 @@ class Order {
     'slot_start_time': slotStartTime,
     'slot_end_time': slotEndTime,
     'slot_category_name': slotCategoryName,
+    'outsider_name': outsiderName,
+    'outsider_phone': outsiderPhone,
     'booking_type': bookingType,
     'date':
         "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
@@ -153,7 +188,11 @@ class Order {
     'tables': List<dynamic>.from(tables.map((x) => x.toJson())),
     'table_charge': tableCharge,
     'total_amount': totalAmount,
-    'payment_mode': paymentMode,
+    'table_payment_mode': tablePaymentMode.toJson(),
+    'food_payment_mode': foodPaymentMode.toJson(),
+    'table_payment_status': tablePaymentStatus.toJson(),
+    'food_payment_status': foodPaymentStatus.toJson(),
+    'is_completed': isCompleted,
     'created_at': createdAt.toIso8601String(),
     'user': user,
     'category': category,
@@ -168,6 +207,7 @@ class Item {
   final int quantity;
   final String price;
   final String totalPrice;
+  final bool isTodaysSpecial;
 
   const Item({
     required this.id,
@@ -176,6 +216,7 @@ class Item {
     required this.quantity,
     required this.price,
     required this.totalPrice,
+    required this.isTodaysSpecial,
   });
 
   Item copyWith({
@@ -185,6 +226,7 @@ class Item {
     int? quantity,
     String? price,
     String? totalPrice,
+    bool? isTodaysSpecial,
   }) => Item(
     id: id ?? this.id,
     foodItem: foodItem ?? this.foodItem,
@@ -192,6 +234,7 @@ class Item {
     quantity: quantity ?? this.quantity,
     price: price ?? this.price,
     totalPrice: totalPrice ?? this.totalPrice,
+    isTodaysSpecial: isTodaysSpecial ?? this.isTodaysSpecial,
   );
 
   factory Item.fromJson(Map<String, dynamic> json) => Item(
@@ -201,6 +244,7 @@ class Item {
     quantity: json['quantity'],
     price: json['price'],
     totalPrice: json['total_price'],
+    isTodaysSpecial: json['is_todays_special'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -210,6 +254,7 @@ class Item {
     'quantity': quantity,
     'price': price,
     'total_price': totalPrice,
+    'is_todays_special': isTodaysSpecial,
   };
 }
 

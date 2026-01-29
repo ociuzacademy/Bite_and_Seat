@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // payment_page.dart
+import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:bite_and_seat/core/exports/bloc_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,22 +18,32 @@ import 'package:bite_and_seat/widgets/snackbars/custom_snackbar.dart';
 class PaymentPage extends StatefulWidget {
   final int orderId;
   final double totalRate;
+  final BookingType bookingType;
   const PaymentPage({
     super.key,
     required this.orderId,
     required this.totalRate,
+    required this.bookingType,
   });
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 
-  static MaterialPageRoute route({required int orderId, required double totalRate}) =>
-      MaterialPageRoute(
-        builder: (context) => ChangeNotifierProvider(
-          create: (context) => PaymentProvider(orderId: orderId),
-          child: PaymentPage(orderId: orderId, totalRate: totalRate),
-        ),
-      );
+  static MaterialPageRoute route({
+    required int orderId,
+    required double totalRate,
+    required BookingType bookingType,
+  }) => MaterialPageRoute(
+    builder: (context) => ChangeNotifierProvider(
+      create: (context) =>
+          PaymentProvider(orderId: orderId, bookingType: bookingType),
+      child: PaymentPage(
+        orderId: orderId,
+        totalRate: totalRate,
+        bookingType: bookingType,
+      ),
+    ),
+  );
 }
 
 class _PaymentPageState extends State<PaymentPage> {
@@ -98,7 +109,7 @@ class _PaymentPageState extends State<PaymentPage> {
               CustomSnackbar.showSuccess(context, message: response.message);
               Navigator.pushAndRemoveUntil(
                 context,
-                QRCodePage.route(orderId: response.orderId),
+                QRCodePage.route(orderId: response.data.orderId),
                 (route) => false,
               );
               break;

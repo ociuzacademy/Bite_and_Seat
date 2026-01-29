@@ -29,4 +29,8 @@ class TableSeatsListCubit extends Cubit<TableSeatsListState> {
       emit(TableSeatsListState.tableSeatsListError(e.toString()));
     }
   }
+
+  void reset() {
+    emit(const TableSeatsListState.initial());
+  }
 }

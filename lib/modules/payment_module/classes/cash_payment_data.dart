@@ -2,13 +2,11 @@
 import 'package:bite_and_seat/modules/payment_module/classes/payment_data.dart';
 import 'package:bite_and_seat/modules/payment_module/enums/booking_method.dart';
 
-class UPIData {
+class CashPaymentData {
   final PaymentData paymentData;
-  final String upiId;
   final BookingMethod bookingMethod;
-  const UPIData({
+  const CashPaymentData({
     required this.paymentData,
-    required this.upiId,
     required this.bookingMethod,
   });
 }

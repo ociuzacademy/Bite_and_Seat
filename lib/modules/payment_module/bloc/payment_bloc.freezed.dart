@@ -55,13 +55,14 @@ extension PaymentEventPatterns on PaymentEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _UpiPaymentStarted value)?  upiPaymentStarted,TResult Function( _CardPaymentStarted value)?  cardPaymentStarted,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _UpiPaymentStarted value)?  upiPaymentStarted,TResult Function( _CardPaymentStarted value)?  cardPaymentStarted,TResult Function( _CashPaymentStarted value)?  cashPaymentStarted,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started(_that);case _UpiPaymentStarted() when upiPaymentStarted != null:
 return upiPaymentStarted(_that);case _CardPaymentStarted() when cardPaymentStarted != null:
-return cardPaymentStarted(_that);case _:
+return cardPaymentStarted(_that);case _CashPaymentStarted() when cashPaymentStarted != null:
+return cashPaymentStarted(_that);case _:
   return orElse();
 
 }
@@ -79,13 +80,14 @@ return cardPaymentStarted(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _UpiPaymentStarted value)  upiPaymentStarted,required TResult Function( _CardPaymentStarted value)  cardPaymentStarted,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _UpiPaymentStarted value)  upiPaymentStarted,required TResult Function( _CardPaymentStarted value)  cardPaymentStarted,required TResult Function( _CashPaymentStarted value)  cashPaymentStarted,}){
 final _that = this;
 switch (_that) {
 case _Started():
 return started(_that);case _UpiPaymentStarted():
 return upiPaymentStarted(_that);case _CardPaymentStarted():
-return cardPaymentStarted(_that);}
+return cardPaymentStarted(_that);case _CashPaymentStarted():
+return cashPaymentStarted(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -99,13 +101,14 @@ return cardPaymentStarted(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _UpiPaymentStarted value)?  upiPaymentStarted,TResult? Function( _CardPaymentStarted value)?  cardPaymentStarted,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _UpiPaymentStarted value)?  upiPaymentStarted,TResult? Function( _CardPaymentStarted value)?  cardPaymentStarted,TResult? Function( _CashPaymentStarted value)?  cashPaymentStarted,}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started(_that);case _UpiPaymentStarted() when upiPaymentStarted != null:
 return upiPaymentStarted(_that);case _CardPaymentStarted() when cardPaymentStarted != null:
-return cardPaymentStarted(_that);case _:
+return cardPaymentStarted(_that);case _CashPaymentStarted() when cashPaymentStarted != null:
+return cashPaymentStarted(_that);case _:
   return null;
 
 }
@@ -122,12 +125,13 @@ return cardPaymentStarted(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( UPIData upiData)?  upiPaymentStarted,TResult Function( CardData cardData)?  cardPaymentStarted,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( UPIData upiData)?  upiPaymentStarted,TResult Function( CardData cardData)?  cardPaymentStarted,TResult Function( CashPaymentData cashPaymentData)?  cashPaymentStarted,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started();case _UpiPaymentStarted() when upiPaymentStarted != null:
 return upiPaymentStarted(_that.upiData);case _CardPaymentStarted() when cardPaymentStarted != null:
-return cardPaymentStarted(_that.cardData);case _:
+return cardPaymentStarted(_that.cardData);case _CashPaymentStarted() when cashPaymentStarted != null:
+return cashPaymentStarted(_that.cashPaymentData);case _:
   return orElse();
 
 }
@@ -145,12 +149,13 @@ return cardPaymentStarted(_that.cardData);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( UPIData upiData)  upiPaymentStarted,required TResult Function( CardData cardData)  cardPaymentStarted,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( UPIData upiData)  upiPaymentStarted,required TResult Function( CardData cardData)  cardPaymentStarted,required TResult Function( CashPaymentData cashPaymentData)  cashPaymentStarted,}) {final _that = this;
 switch (_that) {
 case _Started():
 return started();case _UpiPaymentStarted():
 return upiPaymentStarted(_that.upiData);case _CardPaymentStarted():
-return cardPaymentStarted(_that.cardData);}
+return cardPaymentStarted(_that.cardData);case _CashPaymentStarted():
+return cashPaymentStarted(_that.cashPaymentData);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -164,12 +169,13 @@ return cardPaymentStarted(_that.cardData);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( UPIData upiData)?  upiPaymentStarted,TResult? Function( CardData cardData)?  cardPaymentStarted,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( UPIData upiData)?  upiPaymentStarted,TResult? Function( CardData cardData)?  cardPaymentStarted,TResult? Function( CashPaymentData cashPaymentData)?  cashPaymentStarted,}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started();case _UpiPaymentStarted() when upiPaymentStarted != null:
 return upiPaymentStarted(_that.upiData);case _CardPaymentStarted() when cardPaymentStarted != null:
-return cardPaymentStarted(_that.cardData);case _:
+return cardPaymentStarted(_that.cardData);case _CashPaymentStarted() when cashPaymentStarted != null:
+return cashPaymentStarted(_that.cashPaymentData);case _:
   return null;
 
 }
@@ -335,6 +341,72 @@ class __$CardPaymentStartedCopyWithImpl<$Res>
   return _then(_CardPaymentStarted(
 null == cardData ? _self.cardData : cardData // ignore: cast_nullable_to_non_nullable
 as CardData,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _CashPaymentStarted implements PaymentEvent {
+  const _CashPaymentStarted(this.cashPaymentData);
+  
+
+ final  CashPaymentData cashPaymentData;
+
+/// Create a copy of PaymentEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CashPaymentStartedCopyWith<_CashPaymentStarted> get copyWith => __$CashPaymentStartedCopyWithImpl<_CashPaymentStarted>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CashPaymentStarted&&(identical(other.cashPaymentData, cashPaymentData) || other.cashPaymentData == cashPaymentData));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,cashPaymentData);
+
+@override
+String toString() {
+  return 'PaymentEvent.cashPaymentStarted(cashPaymentData: $cashPaymentData)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CashPaymentStartedCopyWith<$Res> implements $PaymentEventCopyWith<$Res> {
+  factory _$CashPaymentStartedCopyWith(_CashPaymentStarted value, $Res Function(_CashPaymentStarted) _then) = __$CashPaymentStartedCopyWithImpl;
+@useResult
+$Res call({
+ CashPaymentData cashPaymentData
+});
+
+
+
+
+}
+/// @nodoc
+class __$CashPaymentStartedCopyWithImpl<$Res>
+    implements _$CashPaymentStartedCopyWith<$Res> {
+  __$CashPaymentStartedCopyWithImpl(this._self, this._then);
+
+  final _CashPaymentStarted _self;
+  final $Res Function(_CashPaymentStarted) _then;
+
+/// Create a copy of PaymentEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? cashPaymentData = null,}) {
+  return _then(_CashPaymentStarted(
+null == cashPaymentData ? _self.cashPaymentData : cashPaymentData // ignore: cast_nullable_to_non_nullable
+as CashPaymentData,
   ));
 }
 

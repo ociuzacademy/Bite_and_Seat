@@ -342,9 +342,9 @@ class ChatbotProvider with ChangeNotifier {
       case 'back_main':
       case 'back_menu_enquiry':
         if (context.mounted) {
-          context.read<DailyMenuCubit>().reset();
-          context.read<TimeSlotCubit>().reset();
-          context.read<TableSeatsListCubit>().reset();
+          // context.read<DailyMenuCubit>().reset();
+          // context.read<TimeSlotCubit>().reset();
+          // context.read<TableSeatsListCubit>().reset();
           context.read<CategoriesCubit>().reset();
           context.read<TodaysSpecialCubit>().reset();
         }
@@ -525,6 +525,9 @@ class ChatbotProvider with ChangeNotifier {
       buffer.writeln('   📁 Category: ${special.categoryName}');
       buffer.writeln();
     }
+
+    buffer.writeln('NB: These items can only be ordered from the counter.');
+    buffer.writeln();
 
     return buffer.toString();
   }

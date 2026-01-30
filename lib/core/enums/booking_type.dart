@@ -2,7 +2,8 @@
 
 enum BookingType {
   tableOnly('TABLE_ONLY'),
-  prebooked('PREBOOKED');
+  prebooked('PREBOOKED'),
+  onSpot('ONSPOT');
 
   final String label;
   const BookingType(this.label);

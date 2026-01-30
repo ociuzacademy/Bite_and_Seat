@@ -73,7 +73,7 @@ class FoodItemContainer extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
 
-            const SizedBox(height: 4),
+            const Spacer(),
 
             // Price and Add Button
             Container(

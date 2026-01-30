@@ -224,6 +224,11 @@ class _MenuPageContentState extends State<MenuPageContent> {
                 Expanded(
                   child: BlocBuilder<DailyMenuCubit, DailyMenuState>(
                     builder: (context, menuState) {
+                      if (menuState is DailyMenuInitial) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _helper.loadMenuForSelectedDate();
+                        });
+                      }
                       return TabBarView(
                         controller: widget.tabController,
                         children: <Widget>[

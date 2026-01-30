@@ -313,13 +313,13 @@ class MenuHelper {
     FoodTime foodTime,
   ) {
     return dailyMenu.items
-        .where((item) => item.category == foodTime)
+        .where((item) => item.category.name == foodTime)
         .map(
           (item) => FoodItem(
             foodItemId: item.id,
             name: item.name,
             rate: double.parse(item.rate),
-            itemsPerPlate: int.parse(item.itemPerPlate),
+            itemsPerPlate: item.itemPerPlate,
             imageUrl: '${AppUrls.baseUrl}/${item.image}',
           ),
         )

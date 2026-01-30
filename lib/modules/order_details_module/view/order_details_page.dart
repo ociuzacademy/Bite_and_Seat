@@ -210,7 +210,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                 icon: Icons.calendar_today,
                                 label: 'Date & Time',
                                 value:
-                                    '${OrderDetailsHelper.formatDate(orderDetails.date)} • ${orderDetails.slotStartTime} - ${orderDetails.slotEndTime}',
+                                    '${OrderDetailsHelper.formatDate(orderDetails.date)}${orderDetails.slotStartTime != null ? ' • ${orderDetails.slotStartTime} - ${orderDetails.slotEndTime}' : ''}',
                               ),
                               const SizedBox(height: 12),
 
@@ -228,7 +228,8 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                               OrderDetailsRow(
                                 icon: Icons.people,
                                 label: 'Number of Persons',
-                                value: orderDetails.numberOfPersons.toString(),
+                                value: (orderDetails.numberOfPersons ?? 0)
+                                    .toString(),
                               ),
                               const SizedBox(height: 12),
                             ],
@@ -322,7 +323,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                   Expanded(
                                     flex: 2,
                                     child: Text(
-                                      '${orderDetails.numberOfPersons!} x \u{20B9}5.00',
+                                      '${orderDetails.numberOfPersons ?? 0} x \u{20B9}5.00',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium,
@@ -332,7 +333,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                   Expanded(
                                     flex: 2,
                                     child: Text(
-                                      '\u{20B9}${(orderDetails.numberOfPersons! * 5.0).toStringAsFixed(2)}',
+                                      '\u{20B9}${((orderDetails.numberOfPersons ?? 0) * 5.0).toStringAsFixed(2)}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium

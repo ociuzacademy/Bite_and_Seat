@@ -85,32 +85,60 @@ class MenuWidget extends StatelessWidget {
               ),
             ),
           // Food Items Grid
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.75,
+          if (foodItems.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 60),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.restaurant_menu,
+                      size: 64,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No items available',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.7,
+              ),
+              itemBuilder: (context, index) {
+                final cartItem = cartItems
+                    .where(
+                      (element) =>
+                          element.itemId == foodItems[index].foodItemId,
+                    )
+                    .toList();
+                return FoodItemContainer(
+                  foodItem: foodItems[index],
+                  cartItem: cartItem.isNotEmpty ? cartItem.first : null,
+                  onAddingItem: () => onAddingItem(foodItems[index]),
+                  onRemovingQuantity: () =>
+                      onRemovingQuantity(foodItems[index]),
+                  onAddingQuantity: () => onAddingQuantity(foodItems[index]),
+                );
+              },
+              itemCount: foodItems.length,
             ),
-            itemBuilder: (context, index) {
-              final cartItem = cartItems
-                  .where(
-                    (element) => element.itemId == foodItems[index].foodItemId,
-                  )
-                  .toList();
-              return FoodItemContainer(
-                foodItem: foodItems[index],
-                cartItem: cartItem.isNotEmpty ? cartItem.first : null,
-                onAddingItem: () => onAddingItem(foodItems[index]),
-                onRemovingQuantity: () => onRemovingQuantity(foodItems[index]),
-                onAddingQuantity: () => onAddingQuantity(foodItems[index]),
-              );
-            },
-            itemCount: foodItems.length,
-          ),
         ],
       ),
     );

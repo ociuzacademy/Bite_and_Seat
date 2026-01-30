@@ -4,7 +4,7 @@ class FoodItem {
   final String name;
   final String imageUrl;
   final double rate;
-  final int itemsPerPlate;
+  final String itemsPerPlate;
   const FoodItem({
     required this.foodItemId,
     required this.name,

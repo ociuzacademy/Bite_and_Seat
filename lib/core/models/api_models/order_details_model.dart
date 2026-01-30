@@ -261,8 +261,10 @@ class Table {
       Table(seatIds: seatIds ?? this.seatIds, tableId: tableId ?? this.tableId);
 
   factory Table.fromJson(Map<String, dynamic> json) => Table(
-    seatIds: List<int>.from(json['seat_ids'].map((x) => x)),
-    tableId: json['table_id'],
+    seatIds: List<int>.from(
+      json['seat_ids'].map((x) => int.tryParse(x.toString()) ?? 0),
+    ),
+    tableId: int.tryParse(json['table_id'].toString()) ?? 0,
   );
 
   Map<String, dynamic> toJson() => {

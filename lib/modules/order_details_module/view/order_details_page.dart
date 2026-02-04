@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/core/enums/booking_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,7 +9,6 @@ import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/menu_module/view/menu_page.dart';
 import 'package:bite_and_seat/modules/order_details_module/utils/order_details_helper.dart';
 import 'package:bite_and_seat/modules/order_details_module/widgets/order_details_row.dart';
-import 'package:bite_and_seat/modules/orders_module/model/order_model.dart';
 import 'package:bite_and_seat/widgets/buttons/custom_button.dart';
 import 'package:bite_and_seat/widgets/custom_error_widget.dart';
 import 'package:bite_and_seat/widgets/loaders/custom_loading_widget.dart';
@@ -130,9 +130,6 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                   errorMessage: errorMessage,
                 );
               case OrderDetailsSuccess(:final orderDetails):
-                final OrderStatus status = orderDetails.isCompleted
-                    ? OrderStatus.completed
-                    : OrderStatus.upcoming;
                 final FoodTime foodTime = OrderDetailsHelper.getFoodTime(
                   orderDetails.category,
                 );
@@ -145,8 +142,13 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                   orderDetails.date.day,
                 );
 
+                final bool isUpcoming =
+                    orderDetails.bookingStatus == BookingStatus.pending ||
+                    orderDetails.bookingStatus == BookingStatus.confirmed;
+
                 final canCancel =
                     !orderDetails.isCompleted &&
+                    isUpcoming &&
                     (bookingDate.isAtSameMomentAs(today) ||
                         bookingDate.isAfter(today));
                 return SingleChildScrollView(
@@ -189,9 +191,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: Text(
-                                      status == OrderStatus.completed
-                                          ? 'Completed'
-                                          : 'Upcoming',
+                                      orderDetails.bookingStatusDisplay.name,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall
@@ -394,22 +394,27 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                       ],
 
                       // Review Button
-                      CustomButton(
-                        buttonWidth: double.infinity,
-                        backgroundColor: AppPalette.firstColor,
-                        textColor: AppPalette.secondColor,
-                        labelText: status == OrderStatus.completed
-                            ? 'Submit Review'
-                            : 'Check In',
-                        onClick: () {
-                          status == OrderStatus.completed
-                              ? _orderDetailsHelper.showReviewDialog(
-                                  orderDetails.id,
-                                  orderDetails.items,
-                                )
-                              : _orderDetailsHelper.checkIn();
-                        },
-                      ),
+                      if (orderDetails.bookingStatus != BookingStatus.pending &&
+                          orderDetails.bookingStatus != BookingStatus.cancelled)
+                        CustomButton(
+                          buttonWidth: double.infinity,
+                          backgroundColor: AppPalette.firstColor,
+                          textColor: AppPalette.secondColor,
+                          labelText:
+                              orderDetails.bookingStatus ==
+                                  BookingStatus.completed
+                              ? 'Submit Review'
+                              : 'Check In',
+                          onClick: () {
+                            orderDetails.bookingStatus ==
+                                    BookingStatus.completed
+                                ? _orderDetailsHelper.showReviewDialog(
+                                    orderDetails.id,
+                                    orderDetails.items,
+                                  )
+                                : _orderDetailsHelper.checkIn();
+                          },
+                        ),
 
                       const SizedBox(height: 20),
                     ],

@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:bite_and_seat/core/enums/booking_status.dart';
+import 'package:bite_and_seat/core/enums/booking_status_display.dart';
 import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:bite_and_seat/core/enums/payment_method.dart';
 
@@ -28,6 +30,8 @@ class OrderDetailsModel {
   final String totalAmount;
   final PaymentMethod tablePaymentMode;
   final PaymentMethod foodPaymentMode;
+  final BookingStatus bookingStatus;
+  final BookingStatusDisplay bookingStatusDisplay;
   final List<Item> items;
   final List<Payment> payments;
   final DateTime createdAt;
@@ -48,6 +52,8 @@ class OrderDetailsModel {
     required this.totalAmount,
     required this.tablePaymentMode,
     required this.foodPaymentMode,
+    required this.bookingStatus,
+    required this.bookingStatusDisplay,
     required this.items,
     required this.payments,
     required this.createdAt,
@@ -69,6 +75,8 @@ class OrderDetailsModel {
     String? totalAmount,
     PaymentMethod? tablePaymentMode,
     PaymentMethod? foodPaymentMode,
+    BookingStatus? bookingStatus,
+    BookingStatusDisplay? bookingStatusDisplay,
     List<Item>? items,
     List<Payment>? payments,
     DateTime? createdAt,
@@ -88,6 +96,8 @@ class OrderDetailsModel {
     totalAmount: totalAmount ?? this.totalAmount,
     tablePaymentMode: tablePaymentMode ?? this.tablePaymentMode,
     foodPaymentMode: foodPaymentMode ?? this.foodPaymentMode,
+    bookingStatus: bookingStatus ?? this.bookingStatus,
+    bookingStatusDisplay: bookingStatusDisplay ?? this.bookingStatusDisplay,
     items: items ?? this.items,
     payments: payments ?? this.payments,
     createdAt: createdAt ?? this.createdAt,
@@ -110,6 +120,10 @@ class OrderDetailsModel {
         totalAmount: json['total_amount'],
         tablePaymentMode: PaymentMethod.fromJson(json['table_payment_mode']),
         foodPaymentMode: PaymentMethod.fromJson(json['food_payment_mode']),
+        bookingStatus: BookingStatus.fromJson(json['booking_status']),
+        bookingStatusDisplay: BookingStatusDisplay.fromJson(
+          json['booking_status_display'],
+        ),
         items: List<Item>.from(json['items'].map((x) => Item.fromJson(x))),
         payments: List<Payment>.from(
           json['payments'].map((x) => Payment.fromJson(x)),
@@ -134,6 +148,8 @@ class OrderDetailsModel {
     'total_amount': totalAmount,
     'table_payment_mode': tablePaymentMode.label,
     'food_payment_mode': foodPaymentMode.label,
+    'booking_status': bookingStatus.label,
+    'booking_status_display': bookingStatusDisplay.label,
     'items': List<dynamic>.from(items.map((x) => x.toJson())),
     'payments': List<dynamic>.from(payments.map((x) => x.toJson())),
     'created_at': createdAt.toIso8601String(),

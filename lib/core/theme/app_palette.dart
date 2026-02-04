@@ -6,5 +6,6 @@ class AppPalette {
   static const Color whiteColor = Color(0xffffffff);
   static const Color blackColor = Color(0xff000000);
   static const Color errorColor = Colors.red;
+  static const Color pendingColor = Color(0xffFF8C00);
   static const Color greyColor = Colors.grey;
 }

@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:bite_and_seat/core/enums/booking_status.dart';
+import 'package:bite_and_seat/core/enums/booking_status_display.dart';
 import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:bite_and_seat/core/enums/payment_method.dart';
 
@@ -19,6 +21,8 @@ class UserOrderModel {
   final int id;
   final int userId;
   final BookingType bookingType;
+  final BookingStatus bookingStatus;
+  final BookingStatusDisplay bookingStatusDisplay;
   final DateTime date;
   final int category;
   final String timeSlot;
@@ -35,6 +39,8 @@ class UserOrderModel {
     required this.id,
     required this.userId,
     required this.bookingType,
+    required this.bookingStatus,
+    required this.bookingStatusDisplay,
     required this.date,
     required this.category,
     required this.timeSlot,
@@ -52,6 +58,8 @@ class UserOrderModel {
     int? id,
     int? userId,
     BookingType? bookingType,
+    BookingStatus? bookingStatus,
+    BookingStatusDisplay? bookingStatusDisplay,
     DateTime? date,
     int? category,
     String? timeSlot,
@@ -67,6 +75,8 @@ class UserOrderModel {
     id: id ?? this.id,
     userId: userId ?? this.userId,
     bookingType: bookingType ?? this.bookingType,
+    bookingStatus: bookingStatus ?? this.bookingStatus,
+    bookingStatusDisplay: bookingStatusDisplay ?? this.bookingStatusDisplay,
     date: date ?? this.date,
     category: category ?? this.category,
     timeSlot: timeSlot ?? this.timeSlot,
@@ -84,6 +94,10 @@ class UserOrderModel {
     id: json['id'],
     userId: json['user_id'],
     bookingType: BookingType.fromJson(json['booking_type']),
+    bookingStatus: BookingStatus.fromJson(json['booking_status']),
+    bookingStatusDisplay: BookingStatusDisplay.fromJson(
+      json['booking_status_display'],
+    ),
     date: DateTime.parse(json['date']),
     category: json['category'],
     timeSlot: json['time_slot'],
@@ -101,6 +115,8 @@ class UserOrderModel {
     'id': id,
     'user_id': userId,
     'booking_type': bookingType.name,
+    'booking_status': bookingStatus.name,
+    'booking_status_display': bookingStatusDisplay.name,
     'date':
         "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
     'category': category,

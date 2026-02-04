@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:bite_and_seat/core/enums/booking_status_display.dart';
 import 'package:bite_and_seat/core/enums/payment_method.dart';
 import 'package:bite_and_seat/core/enums/payment_status.dart';
 
@@ -62,6 +63,7 @@ class Order {
   final int user;
   final int category;
   final int? timeSlot;
+  final BookingStatusDisplay status;
 
   const Order({
     required this.id,
@@ -88,6 +90,7 @@ class Order {
     required this.user,
     required this.category,
     this.timeSlot,
+    required this.status,
   });
 
   Order copyWith({
@@ -115,6 +118,7 @@ class Order {
     int? user,
     int? category,
     int? timeSlot,
+    BookingStatusDisplay? status,
   }) => Order(
     id: id ?? this.id,
     items: items ?? this.items,
@@ -140,6 +144,7 @@ class Order {
     user: user ?? this.user,
     category: category ?? this.category,
     timeSlot: timeSlot ?? this.timeSlot,
+    status: status ?? this.status,
   );
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
@@ -169,6 +174,7 @@ class Order {
     user: json['user'],
     category: json['category'],
     timeSlot: json['time_slot'],
+    status: BookingStatusDisplay.fromJson(json['status']),
   );
 
   Map<String, dynamic> toJson() => {
@@ -197,6 +203,7 @@ class Order {
     'user': user,
     'category': category,
     'time_slot': timeSlot,
+    'status': status.toJson(),
   };
 }
 

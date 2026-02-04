@@ -1,9 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/modules/order_details_module/view/order_details_page.dart';
-import 'package:bite_and_seat/modules/orders_module/model/order_model.dart';
 import 'package:bite_and_seat/core/typedefs/format_date_to_string.dart';
 import 'package:bite_and_seat/core/typedefs/format_time_slot_to_string.dart';
 import 'package:bite_and_seat/modules/orders_module/model/user_order_model.dart';
@@ -28,10 +26,7 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeSlot = order.timeSlot;
-    final OrderStatus status = order.bookingType == BookingType.tableOnly
-        ? OrderStatus.completed
-        : OrderStatus.upcoming;
-    final isUpcoming = status == OrderStatus.upcoming;
+    final statusDisplay = order.bookingStatusDisplay;
 
     return GestureDetector(
       onTap: () =>
@@ -61,19 +56,13 @@ class OrderCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: isUpcoming
-                          ? AppPalette.firstColor.withValues(alpha: 0.2)
-                          : AppPalette.secondColor.withValues(alpha: 0.2),
+                      color: statusDisplay.containerColor,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
-                      status == OrderStatus.completed
-                          ? 'Completed'
-                          : 'Upcoming',
+                      statusDisplay.label,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isUpcoming
-                            ? AppPalette.blackColor
-                            : AppPalette.firstColor,
+                        color: statusDisplay.color,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

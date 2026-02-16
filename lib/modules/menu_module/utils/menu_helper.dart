@@ -312,7 +312,8 @@ class MenuHelper {
     DailyMenuModel dailyMenu,
     FoodTime foodTime,
   ) {
-    return dailyMenu.items
+    // Get regular items for this time
+    final regularItems = dailyMenu.items
         .where((item) => item.category.name == foodTime)
         .map(
           (item) => FoodItem(
@@ -321,9 +322,27 @@ class MenuHelper {
             rate: double.parse(item.rate),
             itemsPerPlate: item.itemPerPlate,
             imageUrl: '${AppUrls.baseUrl}/${item.image}',
+            isTodaysSpecial: false,
           ),
-        )
-        .toList();
+        );
+
+    // Get today's specials for this time
+    final specialItems = dailyMenu.todaysSpecials
+        .where((item) => item.categoryName == foodTime)
+        .map(
+          (item) => FoodItem(
+            foodItemId: item.id,
+            name: item.name,
+            rate: double.parse(item.rate),
+            itemsPerPlate: item.itemPerPlate,
+            imageUrl: '${AppUrls.baseUrl}/${item.image}',
+            isTodaysSpecial: true,
+            bookingRestrictions: item.bookingRestrictions,
+          ),
+        );
+
+    // Combine both lists
+    return [...specialItems, ...regularItems];
   }
 
   static int _getCategoryId(FoodTime foodTime) {

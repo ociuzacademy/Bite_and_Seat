@@ -55,6 +55,11 @@ class MenuServices {
             },
           );
 
+      debugPrint(
+        'MenuServices: bookingStep1 response status: ${resp.statusCode}',
+      );
+      debugPrint('MenuServices: bookingStep1 response body: ${resp.body}');
+
       if (resp.statusCode == 201) {
         final dynamic decoded = jsonDecode(resp.body);
         final BookingResponseModel response = BookingResponseModel.fromJson(

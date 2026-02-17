@@ -49,7 +49,7 @@ class ComplaintsProvider with ChangeNotifier {
   }
 
   int get selectedImagesCount => _selectedImages.length;
-  bool get canAddMoreImages => _selectedImages.length < 5;
+  bool get canAddMoreImages => _selectedImages.length < 2;
 
   ComplaintsData? validateComplaintsData() {
     if (!isFormValid) {

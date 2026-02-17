@@ -39,16 +39,39 @@ class FoodItemContainer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Food Image
-            Container(
-              height: 100,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                image: DecorationImage(
-                  image: CachedNetworkImageProvider(foodItem.imageUrl),
-                  fit: BoxFit.cover,
-                ),
-              ),
+            Builder(
+              builder: (context) {
+                return Builder(
+                  builder: (context) {
+                    debugPrint('Loading image: ${foodItem.imageUrl}');
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: CachedNetworkImage(
+                        imageUrl: foodItem.imageUrl,
+                        fit: BoxFit.cover,
+                        height: 100,
+                        width: double.infinity,
+                        placeholder: (context, url) => Container(
+                          color: AppPalette.firstColor.withValues(alpha: 0.1),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppPalette.firstColor.withValues(alpha: 0.1),
+                          child: const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              color: AppPalette.firstColor,
+                              size: 40,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                );
+              }
             ),
             const SizedBox(height: 8),
 

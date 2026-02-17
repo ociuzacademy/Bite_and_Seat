@@ -3,7 +3,7 @@
 enum FoodTime {
   breakfast('Breakfast'),
   lunch('Lunch'),
-  eveningSnacks('Evening Snacks');
+  eveningSnacks('Evening snack');
 
   final String label;
   const FoodTime(this.label);

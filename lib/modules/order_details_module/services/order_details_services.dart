@@ -106,7 +106,7 @@ class OrderDetailsServices {
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(resp.body);
         throw Exception(
-          'Failed to cancel order: ${errorResponse['message'] ?? 'Unknown error'}',
+          'Failed to cancel order: ${errorResponse['error'] ?? 'Unknown error'}',
         );
       }
     } on TimeoutException catch (e) {

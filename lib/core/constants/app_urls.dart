@@ -1,5 +1,5 @@
 class AppUrls {
-  static const String baseUrl = 'https://n926wmtj-8002.inc1.devtunnels.ms';
+  static const String baseUrl = 'https://j5mx6p03-8000.inc1.devtunnels.ms';
   static const String userappUrl = '$baseUrl/userapp';
 
   static const String loginUrl = '$userappUrl/login/';

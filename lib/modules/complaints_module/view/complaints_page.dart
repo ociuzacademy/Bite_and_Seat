@@ -151,8 +151,8 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
                           icon: const Icon(Icons.photo_library),
                           label: Text(
                             complaintsProvider.canAddMoreImages
-                                ? 'Select Images (${complaintsProvider.selectedImagesCount}/5)'
-                                : 'Maximum 5 images reached',
+                                ? 'Select Images (${complaintsProvider.selectedImagesCount}/2)'
+                                : 'Maximum 2 images reached',
                           ),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),

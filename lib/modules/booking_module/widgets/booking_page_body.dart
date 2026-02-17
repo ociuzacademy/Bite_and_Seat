@@ -260,14 +260,16 @@ class _BookingPageBodyState extends State<BookingPageBody> {
                                           filteredTimeSlots = timeSlots.where((
                                             slot,
                                           ) {
-                                            final slotTime =
-                                                TimeUtils.stringToTimeOfDay(
-                                                  slot.startTime,
+                                            final slotEndTime =
+                                                TimeUtils.stringToTimeOfDayWithFoodTime(
+                                                  slot.endTime,
+                                                  foodTime,
                                                 );
-                                            final slotMinutes =
-                                                slotTime.hour * 60 +
-                                                slotTime.minute;
-                                            return slotMinutes > nowMinutes;
+                                            final slotEndMinutes =
+                                                slotEndTime.hour * 60 +
+                                                slotEndTime.minute;
+                                                debugPrint('Slot end time: ${slot.endTime}, Slot end minutes: $slotEndMinutes, Now minutes: $nowMinutes');
+                                            return slotEndMinutes > nowMinutes;
                                           }).toList();
                                         }
 

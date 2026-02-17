@@ -223,7 +223,7 @@ class ChatbotProvider with ChangeNotifier {
       buffer.writeln('🍽️ ${item.name}');
       buffer.writeln('   💰 Price: ₹${item.rate}');
       buffer.writeln('   🍽️ ${item.itemPerPlate} per plate');
-      buffer.writeln('   📁 Category: ${item.category}');
+      buffer.writeln('   📁 Category: ${item.category.name.label}');
       buffer.writeln();
     }
 

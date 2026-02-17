@@ -75,6 +75,13 @@ class _MenuPageContentState extends State<MenuPageContent> {
             ).textTheme.titleLarge?.copyWith(color: AppPalette.whiteColor),
             backgroundColor: AppPalette.firstColor,
             iconTheme: const IconThemeData(color: AppPalette.whiteColor),
+            actions: [
+              IconButton(
+                onPressed: () => _helper.loadMenuForSelectedDate(),
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Refresh Menu',
+              ),
+            ],
             bottom: TabBar(
               controller: widget.tabController,
               onTap: (index) {

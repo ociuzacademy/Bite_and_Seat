@@ -24,6 +24,10 @@ class FoodItemContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool canBePrebooked = foodItem.isTodaysSpecial
+        ? (foodItem.bookingRestrictions?.canBeBookedByUsersPrebooked ?? true)
+        : true;
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -33,118 +37,152 @@ class FoodItemContainer extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Food Image
-            Builder(
-              builder: (context) {
-                return Builder(
-                  builder: (context) {
-                    debugPrint('Loading image: ${foodItem.imageUrl}');
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: CachedNetworkImage(
-                        imageUrl: foodItem.imageUrl,
-                        fit: BoxFit.cover,
-                        height: 100,
-                        width: double.infinity,
-                        placeholder: (context, url) => Container(
-                          color: AppPalette.firstColor.withValues(alpha: 0.1),
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: AppPalette.firstColor.withValues(alpha: 0.1),
-                          child: const Center(
-                            child: Icon(
-                              Icons.broken_image,
-                              color: AppPalette.firstColor,
-                              size: 40,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                );
-              }
-            ),
-            const SizedBox(height: 8),
-
-            // Food Name
-            Text(
-              foodItem.name,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-
-            // Food Rate
-            Text(
-              '\u{20B9}${foodItem.rate} for ${foodItem.itemsPerPlate}',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppPalette.firstColor,
-                fontSize: 16,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            const Spacer(),
-
-            // Price and Add Button
-            Container(
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppPalette.firstColor),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: cartItem == null
-                  ? TextButton(
-                      onPressed: onAddingItem,
-                      child: const Text(
-                        'ADD',
-                        style: TextStyle(
-                          color: AppPalette.firstColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          onPressed: onRemovingQuantity,
-                          icon: const Icon(
-                            Icons.remove,
-                            color: AppPalette.firstColor,
-                          ),
-                        ),
-                        Text(
-                          cartItem?.count.toString() ?? '0',
-                          style: const TextStyle(
-                            color: AppPalette.firstColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: onAddingQuantity,
-                          icon: const Icon(
-                            Icons.add,
-                            color: AppPalette.firstColor,
-                          ),
-                        ),
-                      ],
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Food Image
+                Container(
+                  height: 100,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: CachedNetworkImageProvider(foodItem.imageUrl),
+                      fit: BoxFit.cover,
                     ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Food Name
+                Text(
+                  foodItem.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+
+                // Food Rate
+                Text(
+                  '\u{20B9}${foodItem.rate} for ${foodItem.itemsPerPlate}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppPalette.firstColor,
+                    fontSize: 16,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                const Spacer(),
+
+                // Price and Add Button
+                if (canBePrebooked)
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppPalette.firstColor),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: cartItem == null
+                        ? TextButton(
+                            onPressed: onAddingItem,
+                            child: const Text(
+                              'ADD',
+                              style: TextStyle(
+                                color: AppPalette.firstColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                onPressed: onRemovingQuantity,
+                                icon: const Icon(
+                                  Icons.remove,
+                                  color: AppPalette.firstColor,
+                                ),
+                              ),
+                              Text(
+                                cartItem?.count.toString() ?? '0',
+                                style: const TextStyle(
+                                  color: AppPalette.firstColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: onAddingQuantity,
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: AppPalette.firstColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                  )
+                else
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.grey.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Text(
+                      foodItem.bookingRestrictions?.message ??
+                          'Cannot be prebooked',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 2,
+                    ),
+                  ),
+              ],
             ),
-          ],
-        ),
+          ),
+          if (foodItem.isTodaysSpecial)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: const BoxDecoration(
+                  color: AppPalette.secondColor,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(12),
+                    bottomLeft: Radius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  "Today's Special",
+                  style: TextStyle(
+                    color: AppPalette.firstColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -134,7 +134,7 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        'You can upload up to 5 images to support your complaint',
+                        'You can upload up to 2 images to support your complaint',
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       const SizedBox(height: 15),

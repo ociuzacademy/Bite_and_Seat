@@ -63,14 +63,19 @@ class DailyMenuTabContent extends StatelessWidget {
         );
       case DailyMenuSuccess(:final dailyMenu):
         final foodItems = MenuHelper.getFoodItemsForTime(dailyMenu, foodTime);
-        return DailyMenuWidget(
-          foodTime: foodTime,
-          foodItems: foodItems,
-          cartItems: cartItems,
-          onAddingItem: onAddingItem,
-          onRemovingQuantity: onRemovingQuantity,
-          onAddingQuantity: onAddingQuantity,
-          onSkippingAddToCart: onSkippingAddToCart,
+        return RefreshIndicator(
+          onRefresh: () async {
+            loadMenuForSelectedDate();
+          },
+          child: DailyMenuWidget(
+            foodTime: foodTime,
+            foodItems: foodItems,
+            cartItems: cartItems,
+            onAddingItem: onAddingItem,
+            onRemovingQuantity: onRemovingQuantity,
+            onAddingQuantity: onAddingQuantity,
+            onSkippingAddToCart: onSkippingAddToCart,
+          ),
         );
     }
   }

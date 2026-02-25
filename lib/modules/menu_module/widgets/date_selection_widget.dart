@@ -42,54 +42,56 @@ class DateSelectionWidget extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Radio Buttons
-          Row(
-            children: [
-              Row(
-                children: [
-                  Radio<String>(
-                    value: 'Today',
-                    groupValue: dateSelectionType,
-                    onChanged: (value) {
-                      onTodaySelected();
-                    },
-                    activeColor: AppPalette.firstColor,
-                  ),
-                  GestureDetector(
-                    onTap: onTodaySelected,
-                    child: const Text(
-                      'Today',
-                      style: TextStyle(
-                        color: AppPalette.firstColor,
-                        fontWeight: FontWeight.w500,
+          RadioGroup<String>(
+            groupValue: dateSelectionType,
+            onChanged: (value) {
+              if (value == 'Today') {
+                onTodaySelected();
+              } else if (value == 'Custom Date') {
+                onDateSelected();
+              }
+            },
+            child: Row(
+              children: [
+                Row(
+                  children: [
+                    const Radio<String>(
+                      value: 'Today',
+                      activeColor: AppPalette.firstColor,
+                    ),
+                    GestureDetector(
+                      onTap: onTodaySelected,
+                      child: const Text(
+                        'Today',
+                        style: TextStyle(
+                          color: AppPalette.firstColor,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 20),
-              Row(
-                children: [
-                  Radio<String>(
-                    value: 'Custom Date',
-                    groupValue: dateSelectionType,
-                    onChanged: (value) {
-                      onDateSelected();
-                    },
-                    activeColor: AppPalette.firstColor,
-                  ),
-                  GestureDetector(
-                    onTap: onDateSelected,
-                    child: const Text(
-                      'Custom Date',
-                      style: TextStyle(
-                        color: AppPalette.firstColor,
-                        fontWeight: FontWeight.w500,
+                  ],
+                ),
+                const SizedBox(width: 20),
+                Row(
+                  children: [
+                    const Radio<String>(
+                      value: 'Custom Date',
+                      activeColor: AppPalette.firstColor,
+                    ),
+                    GestureDetector(
+                      onTap: onDateSelected,
+                      child: const Text(
+                        'Custom Date',
+                        style: TextStyle(
+                          color: AppPalette.firstColor,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
 
           // Selected Date Display

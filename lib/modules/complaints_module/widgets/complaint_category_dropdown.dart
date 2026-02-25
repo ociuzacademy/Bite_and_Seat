@@ -17,7 +17,7 @@ class ComplaintCategoryDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: selectedCategory,
+      initialValue: selectedCategory,
       decoration: const InputDecoration(
         labelText: 'Complaint Category',
         border: OutlineInputBorder(),

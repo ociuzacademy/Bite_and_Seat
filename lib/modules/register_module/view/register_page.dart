@@ -167,7 +167,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         const SizedBox(height: 8),
                         DropdownButtonFormField<UserType>(
-                          value: registerProvider.userType,
+                          initialValue: registerProvider.userType,
                           decoration: const InputDecoration(
                             hintText: 'User Type',
                             border: OutlineInputBorder(),

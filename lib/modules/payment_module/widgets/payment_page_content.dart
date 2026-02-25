@@ -94,7 +94,7 @@ class _PaymentPageContentState extends State<PaymentPageContent> {
                   Consumer<PaymentProvider>(
                     builder: (context, paymentProvider, child) {
                       return DropdownButtonFormField<PaymentMethod>(
-                        value: paymentProvider.selectedPaymentMethod,
+                        initialValue: paymentProvider.selectedPaymentMethod,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.r),

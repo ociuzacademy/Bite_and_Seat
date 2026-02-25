@@ -47,7 +47,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Details'),
+        title: const Text('Booking Details'),
         backgroundColor: AppPalette.firstColor,
         iconTheme: const IconThemeData(color: AppPalette.secondColor),
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -92,17 +92,18 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             listener: (context, state) {
               switch (state) {
                 case CancelOrderLoading _:
-                  OverlayLoader.show(context, message: 'Canceling order...');
+                  OverlayLoader.show(context, message: 'Canceling booking...');
                   break;
                 case CancelOrderError(:final message):
                   OverlayLoader.hide();
                   CustomSnackbar.showError(context, message: message);
                   break;
-                case CancelOrderSuccess(:final response):
+                case CancelOrderSuccess _:
                   OverlayLoader.hide();
                   CustomSnackbar.showSuccess(
                     context,
-                    message: response.message,
+                    message:
+                        'Booking cancelled successfully. Please check your email for refund details.',
                   );
                   Navigator.pushAndRemoveUntil(
                     context,
@@ -122,7 +123,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             switch (state) {
               case OrderLoading _:
                 return const CustomLoadingWidget(
-                  message: 'Loading order details...',
+                  message: 'Loading booking details...',
                 );
               case OrderError(:final errorMessage):
                 return CustomErrorWidget(
@@ -173,7 +174,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Order #//${orderDetails.id}',
+                                    'Booking #${orderDetails.id}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
@@ -387,7 +388,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                           buttonWidth: double.infinity,
                           backgroundColor: Colors.white,
                           textColor: AppPalette.errorColor,
-                          labelText: 'Cancel Order',
+                          labelText: 'Cancel Booking',
                           onClick: _orderDetailsHelper.showCancelOrderDialog,
                         ),
                         const SizedBox(height: 12),

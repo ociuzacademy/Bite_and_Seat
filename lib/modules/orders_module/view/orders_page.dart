@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bite_and_seat/core/enums/booking_status.dart';
+import 'package:bite_and_seat/modules/orders_module/model/user_order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,7 +39,7 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Orders'),
+        title: const Text('My Bookings'),
         backgroundColor: AppPalette.firstColor,
         iconTheme: const IconThemeData(color: AppPalette.secondColor),
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -60,13 +62,21 @@ class _OrdersPageState extends State<OrdersPage> {
             case UserOrdersEmpty _:
               return const EmptyOrdersList();
             case UserOrdersSuccess(:final userOrders):
+              final List<UserOrderModel> filteredOrders = userOrders
+                  .where(
+                    (order) => order.bookingStatus != BookingStatus.pending,
+                  )
+                  .toList();
+              if (filteredOrders.isEmpty) {
+                return const EmptyOrdersList();
+              }
               return ListView.separated(
                 padding: const EdgeInsets.all(16),
-                itemCount: userOrders.length,
+                itemCount: filteredOrders.length,
                 separatorBuilder: (context, index) =>
                     const SizedBox(height: 12),
                 itemBuilder: (context, index) {
-                  final order = userOrders[index];
+                  final order = filteredOrders[index];
                   return OrderCard(
                     order: order,
                     formatDate: OrdersHelper.formatDate,

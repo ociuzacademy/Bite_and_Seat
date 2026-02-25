@@ -122,6 +122,7 @@ class _PaymentPageState extends State<PaymentPage> {
               totalRate: widget.totalRate,
               priceController: _pricecontroller,
               onOpeningPaymentContainer: _paymentHelper.makePayment,
+              bookingType: widget.bookingType,
             );
           },
         ),

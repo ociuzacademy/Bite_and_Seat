@@ -2,7 +2,9 @@
 
 enum PaymentStatus {
   pending('pending'),
-  paid('paid');
+  paid('paid'),
+  refundInitiated('refund_initiated'),
+  refunded('refunded');
 
   final String label;
   const PaymentStatus(this.label);

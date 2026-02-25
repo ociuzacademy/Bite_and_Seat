@@ -25,7 +25,7 @@ class ComplaintsHelper {
       );
 
       if (pickedFiles.isNotEmpty) {
-        if (provider.selectedImagesCount + pickedFiles.length <= 5) {
+        if (provider.selectedImagesCount + pickedFiles.length <= 2) {
           provider.addImages(
             pickedFiles.map((xFile) => File(xFile.path)).toList(),
           );
@@ -33,7 +33,7 @@ class ComplaintsHelper {
           if (!context.mounted) return;
           CustomSnackbar.showError(
             context,
-            message: 'You can only select up to 5 images',
+            message: 'You can only select up to 2 images',
           );
         }
       }
@@ -61,7 +61,7 @@ class ComplaintsHelper {
           );
         }
       } else {
-        CustomSnackbar.showError(context, message: 'Please upload 5 images.');
+        CustomSnackbar.showError(context, message: 'Please upload 2 images.');
       }
     } else {
       CustomSnackbar.showError(

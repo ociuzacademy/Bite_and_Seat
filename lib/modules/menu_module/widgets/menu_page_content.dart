@@ -127,7 +127,7 @@ class _MenuPageContentState extends State<MenuPageContent> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.shopping_bag),
-                  title: const Text('Orders'),
+                  title: const Text('My Bookings'),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context, OrdersPage.route());

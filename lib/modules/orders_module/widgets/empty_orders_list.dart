@@ -13,14 +13,14 @@ class EmptyOrdersList extends StatelessWidget {
           const Icon(Icons.receipt_long, size: 64, color: AppPalette.greyColor),
           const SizedBox(height: 16),
           Text(
-            'No reservations yet',
+            'No bookings yet',
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(color: AppPalette.greyColor),
           ),
           const SizedBox(height: 8),
           Text(
-            'Your reservations will appear here',
+            'Your bookings will appear here',
             style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(color: AppPalette.greyColor),
@@ -31,7 +31,7 @@ class EmptyOrdersList extends StatelessWidget {
               // Navigate to booking page
               Navigator.pop(context);
             },
-            child: const Text('Make a Reservation'),
+            child: const Text('Make a Booking'),
           ),
         ],
       ),

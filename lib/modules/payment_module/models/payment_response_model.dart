@@ -59,7 +59,7 @@ class Data {
   final PaymentStatus tablePaymentStatus;
   final PaymentStatus foodPaymentStatus;
 
-  Data({
+  const Data({
     required this.orderId,
     required this.paymentId,
     required this.paymentMethod,

@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // payment_page.dart
 
+import 'package:bite_and_seat/core/enums/booking_type.dart';
 import 'package:bite_and_seat/core/theme/app_palette.dart';
 import 'package:bite_and_seat/core/enums/payment_method.dart';
 import 'package:bite_and_seat/modules/payment_module/providers/payment_provider.dart';
@@ -14,6 +15,7 @@ class PaymentPageContent extends StatefulWidget {
   final double totalRate;
   final TextEditingController priceController;
   final VoidCallback onOpeningPaymentContainer;
+  final BookingType bookingType;
 
   const PaymentPageContent({
     super.key,
@@ -21,6 +23,7 @@ class PaymentPageContent extends StatefulWidget {
     required this.totalRate,
     required this.priceController,
     required this.onOpeningPaymentContainer,
+    required this.bookingType,
   });
 
   @override
@@ -50,6 +53,7 @@ class _PaymentPageContentState extends State<PaymentPageContent> {
 
   @override
   Widget build(BuildContext context) {
+    final isPrebooked = widget.bookingType == BookingType.prebooked;
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -132,23 +136,24 @@ class _PaymentPageContentState extends State<PaymentPageContent> {
                               ],
                             ),
                           ),
-                          DropdownMenuItem<PaymentMethod>(
-                            value: PaymentMethod.cash,
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  'assets/icons/icons8-cash-in-hand-48.png',
-                                  width: 30.w,
-                                  height: 30.h,
-                                ),
-                                SizedBox(width: 10.w),
-                                Text(
-                                  'Pay on Cash',
-                                  style: TextStyle(fontSize: 14.sp),
-                                ),
-                              ],
+                          if (isPrebooked)
+                            DropdownMenuItem<PaymentMethod>(
+                              value: PaymentMethod.cash,
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/icons/icons8-cash-in-hand-48.png',
+                                    width: 30.w,
+                                    height: 30.h,
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Text(
+                                    'Pay on Cash',
+                                    style: TextStyle(fontSize: 14.sp),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
                         ],
                         onChanged: (PaymentMethod? newValue) {
                           paymentProvider.setPaymentMethod(newValue!);

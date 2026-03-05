@@ -45,14 +45,14 @@ class _ProfilePageState extends State<ProfilePage> {
           color: AppPalette.secondColor,
           fontWeight: FontWeight.bold,
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit, color: AppPalette.secondColor),
-            onPressed: () {
-              // Navigate to edit profile page
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.edit, color: AppPalette.secondColor),
+        //     onPressed: () {
+        //       // Navigate to edit profile page
+        //     },
+        //   ),
+        // ],
       ),
       body: BlocBuilder<UserProfileCubit, UserProfileState>(
         builder: (context, state) {

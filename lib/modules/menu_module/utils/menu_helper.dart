@@ -329,7 +329,7 @@ class MenuHelper {
         );
 
     // Get today's specials for this time
-    final specialItems = dailyMenu.todaysSpecials
+    final specialItems = (dailyMenu.todaysSpecials ?? [])
         .where((item) => item.categoryName == foodTime)
         .map(
           (item) => FoodItem(

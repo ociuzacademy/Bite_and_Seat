@@ -16,13 +16,13 @@ class DailyMenuModel {
   final int id;
   final DateTime date;
   final List<Item> items;
-  final List<TodaysSpecial> todaysSpecials;
+  final List<TodaysSpecial>? todaysSpecials;
 
   const DailyMenuModel({
     required this.id,
     required this.date,
     required this.items,
-    required this.todaysSpecials,
+     this.todaysSpecials,
   });
 
   DailyMenuModel copyWith({
@@ -40,10 +40,13 @@ class DailyMenuModel {
   factory DailyMenuModel.fromJson(Map<String, dynamic> json) => DailyMenuModel(
     id: json['id'],
     date: DateTime.parse(json['date']),
-    items: List<Item>.from(json['items'].map((x) => Item.fromJson(x))),
-    todaysSpecials: List<TodaysSpecial>.from(
-      json['todays_specials'].map((x) => TodaysSpecial.fromJson(x)),
-    ),
+    items: json['items'] == null
+      ? <Item>[]
+      : List<Item>.from((json['items'] as List).map((x) => Item.fromJson(x))),
+    todaysSpecials: json['todays_specials'] == null
+      ? null
+      : List<TodaysSpecial>.from((json['todays_specials'] as List)
+        .map((x) => TodaysSpecial.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -51,9 +54,9 @@ class DailyMenuModel {
     'date':
         "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
     'items': List<dynamic>.from(items.map((x) => x.toJson())),
-    'todays_specials': List<dynamic>.from(
-      todaysSpecials.map((x) => x.toJson()),
-    ),
+    'todays_specials': todaysSpecials == null
+      ? null
+      : List<dynamic>.from(todaysSpecials!.map((x) => x.toJson())),
   };
 }
 
@@ -64,7 +67,7 @@ class Item {
   final String rate;
   final String itemPerPlate;
   final Category category;
-  final bool isTodaysSpecial;
+  final bool? isTodaysSpecial;
   final DateTime? specialDate;
   final TodaysSpecialBookingInfo? todaysSpecialBookingInfo;
   final ItemSource itemSource;

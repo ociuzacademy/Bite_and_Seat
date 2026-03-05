@@ -55,7 +55,7 @@ class OrderDetailsServices {
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(resp.body);
         throw Exception(
-          'Failed to booking: ${errorResponse['message'] ?? 'Unknown error'}',
+          'Failed to submit feedback: ${errorResponse['message'] ?? 'Unknown error'}',
         );
       }
     } on TimeoutException catch (e) {

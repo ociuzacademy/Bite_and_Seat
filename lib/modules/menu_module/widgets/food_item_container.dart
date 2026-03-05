@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // food_item_container.dart
+import 'package:bite_and_seat/modules/menu_module/widgets/broken_image_placeholder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -45,15 +46,21 @@ class FoodItemContainer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Food Image
-                Container(
-                  height: 100,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(
-                      image: CachedNetworkImageProvider(foodItem.imageUrl),
-                      fit: BoxFit.cover,
-                    ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: SizedBox(
+                    height: 100,
+                    width: double.infinity,
+                    child:
+                        (foodItem.imageUrl == null ||
+                            foodItem.imageUrl!.trim().isEmpty)
+                        ? const BrokenImagePlaceholder()
+                        : CachedNetworkImage(
+                            imageUrl: foodItem.imageUrl!,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, _, _) =>
+                                const BrokenImagePlaceholder(),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 8),

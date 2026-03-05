@@ -321,7 +321,9 @@ class MenuHelper {
             name: item.name,
             rate: double.parse(item.rate),
             itemsPerPlate: item.itemPerPlate,
-            imageUrl: '${AppUrls.baseUrl}/${item.image}',
+            imageUrl: item.image != null
+                ? '${AppUrls.baseUrl}/${item.image}'
+                : null,
             isTodaysSpecial: false,
           ),
         );

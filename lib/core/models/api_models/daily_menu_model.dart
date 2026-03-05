@@ -1,6 +1,6 @@
 // To parse this JSON data, do
 //
-//     final dailyMenuModel = dailyMenuModelFromJson(jsonString);
+//     final outstandingOrderModel = outstandingOrderModelFromJson(jsonString);
 
 import 'dart:convert';
 
@@ -60,25 +60,25 @@ class DailyMenuModel {
 class Item {
   final int id;
   final String name;
-  final String image;
+  final String? image;
   final String rate;
   final String itemPerPlate;
   final Category category;
   final bool isTodaysSpecial;
   final DateTime? specialDate;
-  final dynamic todaysSpecialBookingInfo;
+  final TodaysSpecialBookingInfo? todaysSpecialBookingInfo;
   final ItemSource itemSource;
 
   const Item({
     required this.id,
     required this.name,
-    required this.image,
+    this.image,
     required this.rate,
     required this.itemPerPlate,
     required this.category,
     required this.isTodaysSpecial,
-    required this.specialDate,
-    required this.todaysSpecialBookingInfo,
+    this.specialDate,
+    this.todaysSpecialBookingInfo,
     required this.itemSource,
   });
 
@@ -91,7 +91,7 @@ class Item {
     Category? category,
     bool? isTodaysSpecial,
     DateTime? specialDate,
-    dynamic todaysSpecialBookingInfo,
+    TodaysSpecialBookingInfo? todaysSpecialBookingInfo,
     ItemSource? itemSource,
   }) => Item(
     id: id ?? this.id,
@@ -118,7 +118,11 @@ class Item {
     specialDate: json['special_date'] == null
         ? null
         : DateTime.parse(json['special_date']),
-    todaysSpecialBookingInfo: json['todays_special_booking_info'],
+    todaysSpecialBookingInfo: json['todays_special_booking_info'] == null
+        ? null
+        : TodaysSpecialBookingInfo.fromJson(
+            json['todays_special_booking_info'],
+          ),
     itemSource: ItemSource.fromJson(json['item_source']),
   );
 
@@ -132,7 +136,7 @@ class Item {
     'is_todays_special': isTodaysSpecial,
     'special_date':
         "${specialDate!.year.toString().padLeft(4, '0')}-${specialDate!.month.toString().padLeft(2, '0')}-${specialDate!.day.toString().padLeft(2, '0')}",
-    'todays_special_booking_info': todaysSpecialBookingInfo,
+    'todays_special_booking_info': todaysSpecialBookingInfo?.toJson(),
     'item_source': itemSource.toJson(),
   };
 }
@@ -152,10 +156,54 @@ class Category {
   Map<String, dynamic> toJson() => {'id': id, 'name': name.toJson()};
 }
 
+class TodaysSpecialBookingInfo {
+  final List<String> allowedBookingTypes;
+  final List<dynamic> restrictedBookingTypes;
+  final String message;
+
+  const TodaysSpecialBookingInfo({
+    required this.allowedBookingTypes,
+    required this.restrictedBookingTypes,
+    required this.message,
+  });
+
+  TodaysSpecialBookingInfo copyWith({
+    List<String>? allowedBookingTypes,
+    List<dynamic>? restrictedBookingTypes,
+    String? message,
+  }) => TodaysSpecialBookingInfo(
+    allowedBookingTypes: allowedBookingTypes ?? this.allowedBookingTypes,
+    restrictedBookingTypes:
+        restrictedBookingTypes ?? this.restrictedBookingTypes,
+    message: message ?? this.message,
+  );
+
+  factory TodaysSpecialBookingInfo.fromJson(Map<String, dynamic> json) =>
+      TodaysSpecialBookingInfo(
+        allowedBookingTypes: List<String>.from(
+          json['allowed_booking_types'].map((x) => x),
+        ),
+        restrictedBookingTypes: List<String>.from(
+          json['restricted_booking_types'].map((x) => x),
+        ),
+        message: json['message'],
+      );
+
+  Map<String, dynamic> toJson() => {
+    'allowed_booking_types': List<dynamic>.from(
+      allowedBookingTypes.map((x) => x),
+    ),
+    'restricted_booking_types': List<dynamic>.from(
+      restrictedBookingTypes.map((x) => x),
+    ),
+    'message': message,
+  };
+}
+
 class TodaysSpecial {
   final int id;
   final String name;
-  final String image;
+  final String? image;
   final String rate;
   final String itemPerPlate;
   final int category;
@@ -164,10 +212,10 @@ class TodaysSpecial {
   final ItemSource itemSource;
   final BookingRestrictions bookingRestrictions;
 
-  const TodaysSpecial({
+  TodaysSpecial({
     required this.id,
     required this.name,
-    required this.image,
+    this.image,
     required this.rate,
     required this.itemPerPlate,
     required this.category,
